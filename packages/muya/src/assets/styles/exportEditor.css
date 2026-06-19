@@ -10,6 +10,13 @@
     margin-right: auto;
 }
 
+.export-editor-document .mu-table-inner td,
+.export-editor-document .mu-table-inner th {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+
 @media print {
     .export-editor-document .mu-container {
         max-width: 100%;
@@ -17,10 +24,19 @@
     }
 
     .export-editor-document .mu-table {
+        max-width: 100%;
         overflow: visible;
     }
 
     .export-editor-document .mu-table-inner {
+        zoom: var(--mu-table-scale, 1) !important;
         transform-origin: top left;
+    }
+
+    .export-editor-document .mu-table-inner td,
+    .export-editor-document .mu-table-inner th {
+        word-break: break-word !important;
+        overflow-wrap: anywhere !important;
+        white-space: normal !important;
     }
 }

@@ -77,6 +77,20 @@ body .mt-export-measure-sandbox {
   body article.print-container .export-editor-document .mu-container {
     overflow-x: visible;
   }
+  body article.print-container .export-editor-document .mu-table {
+    max-width: 100%;
+    overflow: visible;
+  }
+  body article.print-container .export-editor-document .mu-table-inner {
+    zoom: var(--mu-table-scale, 1) !important;
+    transform-origin: top left;
+  }
+  body article.print-container .export-editor-document .mu-table-inner td,
+  body article.print-container .export-editor-document .mu-table-inner th {
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+    white-space: normal !important;
+  }
   body article.markdown-body {
     box-sizing: border-box;
     min-width: 200px;

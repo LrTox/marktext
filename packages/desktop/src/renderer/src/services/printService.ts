@@ -99,12 +99,19 @@ class MarkdownPrint {
 
     void printContainer.offsetWidth
 
-    const markdownBodies = printContainer.querySelectorAll('.markdown-body')
     let availableWidth = pageWidth
-    for (const body of markdownBodies) {
-      const width = (body as HTMLElement).clientWidth
-      if (width > 0)
-        availableWidth = width
+    const exportContainer = printContainer.querySelector('.export-editor-document .mu-container') as HTMLElement | null
+    if (exportContainer) {
+      const measured = exportContainer.clientWidth
+      if (measured > 0)
+        availableWidth = measured
+    } else {
+      const markdownBodies = printContainer.querySelectorAll('.markdown-body')
+      for (const body of markdownBodies) {
+        const width = (body as HTMLElement).clientWidth
+        if (width > 0)
+          availableWidth = width
+      }
     }
 
     if (availableWidth > 0) {

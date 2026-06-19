@@ -35,6 +35,7 @@ describe('fitEditorTablesForExport', () => {
         fitEditorTablesForExport(root, 200);
         const inner = root.querySelector('.mu-table-inner') as HTMLElement;
         expect(inner.style.getPropertyValue('--mu-table-scale')).toBeTruthy();
+        expect(inner.style.zoom).toBeTruthy();
         root.remove();
     });
 });
