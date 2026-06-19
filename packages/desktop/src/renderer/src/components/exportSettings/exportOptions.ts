@@ -64,12 +64,12 @@ export const getHeaderFooterStyles = (): PrefSelectOption<number>[] => [
 
 export const getExportThemeList = (): PrefSelectOption<string>[] => [
   {
-    label: t('exportSettings.options.themes.academic'),
-    value: 'academic'
-  },
-  {
     label: t('exportSettings.options.themes.default'),
     value: 'default'
+  },
+  {
+    label: t('exportSettings.options.themes.academic'),
+    value: 'academic'
   },
   {
     label: t('exportSettings.options.themes.liber'),

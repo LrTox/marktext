@@ -5,10 +5,11 @@ import prismCss from 'prismjs/themes/prism.css?inline';
 import exportStyle from '../assets/styles/exportStyle.css?inline';
 import { EXPORT_DOMPURIFY_CONFIG } from '../config';
 import { isHTMLElement, sanitize, unescapeHTML } from '../utils';
+import { fitExportTablesInContainer } from '../utils/fitExportTables';
 import loadRenderer from '../utils/diagram';
+import { injectExportHeadingIds } from '../utils/injectExportHeadingIds';
 
 import { getHighlightHtml } from '../utils/marked';
-import { generateGithubSlug } from '../utils/slug';
 
 // Core stylesheets inlined into the exported document so the output is fully
 // self-contained and renders offline / behind CSP / air-gapped. Linking these
@@ -50,11 +51,10 @@ export class MarkdownToHtml {
             preEle.replaceWith(mermaidContainer);
         }
         const mermaid = await loadRenderer('mermaid');
-        // We only export light theme, so set mermaid theme to `default`, in the future, we can choose which theme to export.
         mermaid.initialize({
             startOnLoad: false,
             securityLevel: 'strict',
-            theme: 'default',
+            theme: this._muya?.options.mermaidTheme ?? 'default',
         });
         await mermaid.run({
             nodes: [...this._exportContainer!.querySelectorAll('div.mermaid')],
@@ -97,7 +97,7 @@ export class MarkdownToHtml {
                     actions: false,
                     tooltip: false,
                     renderer: 'svg',
-                    theme: 'latimes', // only render light theme
+                    theme: this._muya?.options.vegaTheme ?? 'latimes',
                 });
             }
             else if (functionType === 'sequence') {
@@ -127,41 +127,27 @@ export class MarkdownToHtml {
         }
     }
 
-    // Assign a github-compatible slug `id` to every `<h1>..<h6>` in the
-    // export container. Headings that already carry an explicit id (none today,
-    // but defensive) are left as-is and reserve that id. Duplicates are
-    // deduplicated by incrementing a `-N` suffix until the *full* candidate id
-    // is unused — so a later heading whose text already looks like an earlier
-    // `-N` slug (e.g. `heading`, `heading`, `heading-1`) still resolves to a
-    // unique anchor, matching github.
-    private _injectHeadingIds(container: HTMLElement) {
-        const headings = container.querySelectorAll('h1, h2, h3, h4, h5, h6');
-        const seen = new Set<string>();
+    // Scale wide tables to fit the export content width (mirrors editor `Table#_fitToContainer`).
+    private _fitExportTables(measureWidthPx: number, capWidthPx?: number) {
+        const container = this._exportContainer;
+        if (!container)
+            return;
 
-        // Reserve any pre-existing ids first so generated slugs never collide
-        // with them.
-        for (const heading of headings) {
-            if (heading.id)
-                seen.add(heading.id);
+        container.classList.add('markdown-body');
+        container.style.boxSizing = 'border-box';
+        const targetWidth = capWidthPx && capWidthPx > 0
+            ? capWidthPx
+            : measureWidthPx;
+        if (targetWidth > 0) {
+            container.style.width = `${targetWidth}px`;
+            container.style.maxWidth = `${targetWidth}px`;
         }
 
-        for (const heading of headings) {
-            if (heading.id)
-                continue;
-
-            const base = generateGithubSlug(heading.textContent ?? '') || 'heading';
-            let slug = base;
-            let n = 1;
-            while (seen.has(slug))
-                slug = `${base}-${n++}`;
-
-            seen.add(slug);
-            heading.id = slug;
-        }
+        fitExportTablesInContainer(container, measureWidthPx, capWidthPx);
     }
 
     // render pure html by marked
-    async renderHtml() {
+    async renderHtml(contentWidth?: number, maxTableWidth?: number) {
         let html = getHighlightHtml(this.markdown, {
             superSubScript: this._muya?.options?.superSubScript ?? true,
             footnote: this._muya?.options?.footnote ?? false,
@@ -174,7 +160,7 @@ export class MarkdownToHtml {
 
         const exportContainer = (this._exportContainer
             = document.createElement('div'));
-        exportContainer.classList.add('mu-render-container');
+        exportContainer.classList.add('ag-render-container', 'markdown-body');
         exportContainer.innerHTML = html;
         document.body.appendChild(exportContainer);
 
@@ -186,7 +172,10 @@ export class MarkdownToHtml {
         // exported document's [TOC] / `getHtmlToc` `href="#slug"` anchors
         // resolve. Scoped to this export DOM path — the conformance
         // renderer (`renderToStaticHTML`) is deliberately left untouched.
-        this._injectHeadingIds(exportContainer);
+        injectExportHeadingIds(exportContainer);
+
+        if (contentWidth && contentWidth > 0)
+            this._fitExportTables(contentWidth, maxTableWidth);
 
         let result = exportContainer.innerHTML;
         exportContainer.remove();
@@ -219,9 +208,17 @@ export class MarkdownToHtml {
      * back to CDN `<link>` tags.
      */
     async generate(
-        options: { title?: string; extraCSS?: string; inlineStyles?: boolean } = {},
+        options: {
+            title?: string;
+            extraCSS?: string;
+            inlineStyles?: boolean;
+            /** Editor content width in px — used to compute table zoom (editor parity). */
+            contentWidth?: number;
+            /** Max table width in px — caps zoom for PDF/print page width. */
+            maxTableWidth?: number;
+        } = {},
     ) {
-        const html = await this.renderHtml();
+        const html = await this.renderHtml(options.contentWidth, options.maxTableWidth);
 
         // `extraCSS` may changed in the mean time.
         const { title = '', extraCSS = '', inlineStyles = true } = options;

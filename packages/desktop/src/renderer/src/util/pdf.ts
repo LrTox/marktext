@@ -10,6 +10,12 @@ import academicTheme from '@/assets/themes/export/academic.theme.css?inline'
 import liberTheme from '@/assets/themes/export/liber.theme.css?inline'
 import { deepClone } from '../util'
 import { sanitize, EXPORT_DOMPURIFY_CONFIG } from '../util/dompurify'
+import {
+  getEditorExportAppearanceCss,
+  resolvePrintableWidthPx,
+  type EditorExportAppearance
+} from './editorExportStyle'
+import type { PreferencesState } from '../store/preferences'
 
 export interface PdfCssOptions {
   type?: string
@@ -22,8 +28,10 @@ export interface PdfCssOptions {
   lineHeight?: number | string
   autoNumberingHeadings?: boolean
   showFrontMatter?: boolean
-  theme?: string
+  theme?: string | null
   headerFooterFontSize?: number
+  /** When set and `theme` is empty, export inherits editor theme/fonts/line width. */
+  editorAppearance?: EditorExportAppearance
   [key: string]: unknown
 }
 
@@ -40,29 +48,35 @@ export const getCssForOptions = async(options: PdfCssOptions): Promise<string> =
     autoNumberingHeadings,
     showFrontMatter,
     theme,
-    headerFooterFontSize
+    headerFooterFontSize,
+    editorAppearance
   } = options
   const isPrintable = type !== 'styledHtml'
+  const useEditorAppearance = !theme && editorAppearance
 
   let output = ''
   if (isPrintable) {
     output += `@media print{@page{
-      margin: ${pageMarginTop}mm ${pageMarginRight}mm ${pageMarginBottom}mm ${pageMarginLeft}mm;}`
+      margin: ${pageMarginTop}mm ${pageMarginRight}mm ${pageMarginBottom}mm ${pageMarginLeft}mm;}}`
   }
 
-  // Font options
-  output += '.markdown-body{'
-  if (fontFamily) {
-    output += `font-family:"${fontFamily}",${FALLBACK_FONT_FAMILIES};`
-    output = `.hf-container{font-family:"${fontFamily}",${FALLBACK_FONT_FAMILIES};}${output}`
+  if (useEditorAppearance) {
+    output += getEditorExportAppearanceCss(editorAppearance)
+  } else {
+    // Font options (export theme or legacy GitHub defaults)
+    output += '.markdown-body{'
+    if (fontFamily) {
+      output += `font-family:"${fontFamily}",${FALLBACK_FONT_FAMILIES};`
+      output = `.hf-container{font-family:"${fontFamily}",${FALLBACK_FONT_FAMILIES};}${output}`
+    }
+    if (fontSize) {
+      output += `font-size:${fontSize}px;`
+    }
+    if (lineHeight) {
+      output += `line-height:${lineHeight};`
+    }
+    output += '}'
   }
-  if (fontSize) {
-    output += `font-size:${fontSize}px;`
-  }
-  if (lineHeight) {
-    output += `line-height:${lineHeight};`
-  }
-  output += '}'
 
   // Auto numbering headings via CSS
   if (autoNumberingHeadings) {
@@ -104,11 +118,60 @@ export const getCssForOptions = async(options: PdfCssOptions): Promise<string> =
     }`
   }
 
-  if (isPrintable) {
-    // Close @page
-    output += '}'
-  }
   return unescapeHTML(sanitize(escapeHTML(output), EXPORT_DOMPURIFY_CONFIG))
+}
+
+/** Merge export-dialog options with live editor preferences for CSS generation. */
+export const buildExportCssOptions = (
+  exportOptions: Record<string, unknown>,
+  preferences: PreferencesState
+): PdfCssOptions => {
+  const exportTheme = exportOptions.theme as string | null | undefined
+  const fontSettingsOverwrite = !!exportOptions.fontSettingsOverwrite
+  const cssOptions = { ...exportOptions } as PdfCssOptions
+
+  if (!exportTheme) {
+    const appearance: EditorExportAppearance = {
+      editorTheme: preferences.theme,
+      editorFontFamily: preferences.editorFontFamily,
+      fontSize: fontSettingsOverwrite
+        ? Number(exportOptions.fontSize ?? preferences.fontSize)
+        : preferences.fontSize,
+      lineHeight: fontSettingsOverwrite
+        ? ((exportOptions.lineHeight ?? preferences.lineHeight) as number | string)
+        : preferences.lineHeight,
+      editorLineWidth: preferences.editorLineWidth,
+      codeFontFamily: preferences.codeFontFamily,
+      codeFontSize: preferences.codeFontSize,
+      customCss: preferences.customCss,
+      wrapCodeBlocks: preferences.wrapCodeBlocks
+    }
+    if (fontSettingsOverwrite) {
+      const family = exportOptions.fontFamily as string | null | undefined
+      if (family) {
+        appearance.editorFontFamily = family
+      }
+    }
+    cssOptions.editorAppearance = appearance
+    if (exportOptions.type !== 'styledHtml') {
+      appearance.maxContentWidthPx = resolvePrintableWidthPx(
+        exportOptions as Parameters<typeof resolvePrintableWidthPx>[0]
+      )
+    }
+  } else if (fontSettingsOverwrite) {
+    const family = exportOptions.fontFamily as string | null | undefined
+    if (family) {
+      cssOptions.fontFamily = family
+    }
+    if (exportOptions.fontSize != null) {
+      cssOptions.fontSize = Number(exportOptions.fontSize)
+    }
+    if (exportOptions.lineHeight != null) {
+      cssOptions.lineHeight = exportOptions.lineHeight as number | string
+    }
+  }
+
+  return cssOptions
 }
 
 export interface TocEntry {

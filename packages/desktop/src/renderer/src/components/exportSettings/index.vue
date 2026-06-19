@@ -297,8 +297,10 @@ import Range from '@/prefComponents/common/range/index.vue'
 import TextBox from '@/prefComponents/common/textBox/index.vue'
 import { getPageSizeList, getHeaderFooterTypes, getExportThemeList } from './exportOptions'
 import { useI18n } from 'vue-i18n'
+import { usePreferencesStore } from '@/store/preferences'
 
 const { t } = useI18n()
+const preferencesStore = usePreferencesStore()
 
 const exportType = ref('')
 const themesLoaded = ref(false)
@@ -365,6 +367,11 @@ const showDialog = (type: unknown) => {
   showExportSettingsDialog.value = true
   bus.emit('editor-blur')
 
+  // Preview editor typography in the font override panel.
+  fontFamily.value = preferencesStore.editorFontFamily
+  fontSize.value = preferencesStore.fontSize
+  lineHeight.value = preferencesStore.lineHeight
+
   if (!themesLoaded.value) {
     themesLoaded.value = true
     loadThemesFromDisk()
@@ -385,6 +392,7 @@ const handleClicked = () => {
     autoNumberingHeadings: autoNumberingHeadings.value,
     showFrontMatter: showFrontMatter.value,
     theme: theme.value === 'default' ? null : theme.value,
+    fontSettingsOverwrite: fontSettingsOverwrite.value,
     tocTitle: tocTitle.value,
     tocIncludeTopHeading: tocIncludeTopHeading.value
   }

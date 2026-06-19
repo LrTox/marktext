@@ -144,6 +144,24 @@ export interface EditorState {
 
 const autoSaveTimers = new Map<string, ReturnType<typeof setTimeout>>()
 
+const handleExportSuccess = (
+  _: unknown,
+  payload: { type?: string; filePath?: string } | undefined
+): void => {
+  const filePath = payload?.filePath ?? ''
+  notice
+    .notify({
+      title: t('store.editor.exportSuccessTitle'),
+      message: t('store.editor.exportSuccessMessage', {
+        name: window.path.basename(filePath)
+      }),
+      showConfirm: true
+    })
+    .then(() => {
+      window.electron.shell.showItemInFolder(filePath)
+    })
+}
+
 export const useEditorStore = defineStore('editor', {
   state: (): EditorState => ({
     currentFile: null,
@@ -1528,20 +1546,8 @@ export const useEditorStore = defineStore('editor', {
     },
 
     LISTEN_FOR_EXPORT_SUCCESS(): void {
-      window.electron.ipcRenderer.on('mt::export-success', (_, payload) => {
-        const filePath = payload?.filePath ?? ''
-        notice
-          .notify({
-            title: t('store.editor.exportSuccessTitle'),
-            message: t('store.editor.exportSuccessMessage', {
-              name: window.path.basename(filePath)
-            }),
-            showConfirm: true
-          })
-          .then(() => {
-            window.electron.shell.showItemInFolder(filePath)
-          })
-      })
+      window.electron.ipcRenderer.removeAllListeners('mt::export-success')
+      window.electron.ipcRenderer.on('mt::export-success', handleExportSuccess)
     },
 
     PRINT_RESPONSE(): void {

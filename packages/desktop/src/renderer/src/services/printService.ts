@@ -4,7 +4,16 @@
 // left untouched. Ported from the legacy muyajs `getImageInfo(src)` so the
 // desktop no longer depends on the muyajs engine (@muyajs/core's `getImageInfo`
 // takes a DOM element, and its `getImageSrc` would double-prefix `file://`).
+import { fitEditorTablesForExport, fitExportTablesInContainer } from '@muyajs/core'
+
 const IMAGE_EXT_REG = /\.(?:jpeg|jpg|png|gif|svg|webp)(?=\?|$)/i
+
+const PRINT_STYLE_ID = 'mt-print-export-styles'
+
+export interface PrintTableFitOptions {
+  contentWidth?: number
+  maxTableWidth?: number
+}
 
 function resolveImageSrcForStaticPrint(src: string): string {
   if (!src) return src
@@ -21,6 +30,20 @@ function resolveImageSrcForStaticPrint(src: string): string {
   return src
 }
 
+/** Split a full export HTML document into injectable styles and body markup. */
+const parseExportDocument = (html: string): { styles: string; bodyContent: string } => {
+  if (!/<html[\s>]/i.test(html)) {
+    return { styles: '', bodyContent: html }
+  }
+
+  const doc = new DOMParser().parseFromString(html, 'text/html')
+  const styles = Array.from(doc.querySelectorAll('style'))
+    .map((node) => node.textContent ?? '')
+    .join('\n')
+  const bodyContent = doc.body?.innerHTML?.trim() ? doc.body.innerHTML : html
+  return { styles, bodyContent }
+}
+
 class MarkdownPrint {
   private container: HTMLElement | null = null
 
@@ -31,12 +54,28 @@ class MarkdownPrint {
    * @param html HTML string
    * @param renderStatic Render for static files like PDF documents
    */
-  renderMarkdown(html: string, renderStatic?: boolean): void {
+  renderMarkdown(
+    html: string,
+    renderStatic?: boolean,
+    tableFit?: PrintTableFitOptions
+  ): void {
     this.clearup()
+    const { styles, bodyContent } = parseExportDocument(html)
+
+    if (styles) {
+      let styleEl = document.getElementById(PRINT_STYLE_ID) as HTMLStyleElement | null
+      if (!styleEl) {
+        styleEl = document.createElement('style')
+        styleEl.id = PRINT_STYLE_ID
+        document.head.appendChild(styleEl)
+      }
+      styleEl.textContent = styles
+    }
+
     const printContainer = document.createElement('article')
     printContainer.classList.add('print-container')
     this.container = printContainer
-    printContainer.innerHTML = html
+    printContainer.innerHTML = bodyContent
 
     // Fix images when rendering for static files like PDF (GH#678).
     if (renderStatic) {
@@ -49,6 +88,32 @@ class MarkdownPrint {
     }
 
     document.body.appendChild(printContainer)
+
+    const pageWidth = tableFit?.maxTableWidth ?? tableFit?.contentWidth ?? 0
+    if (pageWidth > 0) {
+      // Must be measurable before print — default `display:none` yields clientWidth/scrollWidth 0.
+      printContainer.classList.add('mt-print-measure')
+      printContainer.style.width = `${pageWidth}px`
+      printContainer.style.maxWidth = `${pageWidth}px`
+    }
+
+    void printContainer.offsetWidth
+
+    const markdownBodies = printContainer.querySelectorAll('.markdown-body')
+    let availableWidth = pageWidth
+    for (const body of markdownBodies) {
+      const width = (body as HTMLElement).clientWidth
+      if (width > 0)
+        availableWidth = width
+    }
+
+    if (availableWidth > 0) {
+      const usesEditorDom = !!printContainer.querySelector('.export-editor-document')
+      if (usesEditorDom)
+        fitEditorTablesForExport(printContainer, availableWidth)
+      else
+        fitExportTablesInContainer(printContainer, availableWidth, availableWidth)
+    }
   }
 
   /**
@@ -58,6 +123,7 @@ class MarkdownPrint {
     if (this.container) {
       this.container.remove()
     }
+    document.getElementById(PRINT_STYLE_ID)?.remove()
   }
 }
 

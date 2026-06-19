@@ -1,0 +1,37 @@
+/* Light-theme editor CSS variables used when exporting with the editor theme. */
+:root {
+  --editorAreaWidth: 750px;
+
+  --themeColor: rgba(33, 181, 111, 1);
+  --themeColor90: rgba(33, 181, 111, 0.9);
+  --themeColor80: rgba(33, 181, 111, 0.8);
+  --themeColor70: rgba(33, 181, 111, 0.7);
+  --themeColor60: rgba(33, 181, 111, 0.6);
+  --themeColor50: rgba(33, 181, 111, 0.5);
+  --themeColor40: rgba(33, 181, 111, 0.4);
+  --themeColor30: rgba(33, 181, 111, 0.3);
+  --themeColor20: rgba(33, 181, 111, 0.2);
+  --themeColor10: rgba(33, 181, 111, 0.1);
+
+  --editorColor: rgba(0, 0, 0, 0.7);
+  --editorColor80: rgba(0, 0, 0, 0.8);
+  --editorColor60: rgba(0, 0, 0, 0.6);
+  --editorColor50: rgba(0, 0, 0, 0.5);
+  --editorColor40: rgba(0, 0, 0, 0.4);
+  --editorColor30: rgba(0, 0, 0, 0.3);
+  --editorColor10: rgba(0, 0, 0, 0.1);
+  --editorColor04: rgba(0, 0, 0, 0.03);
+  --editorBgColor: rgba(255, 255, 255, 1);
+  --codeBgColor: #d8d8d869;
+  --codeBlockBgColor: rgba(0, 0, 0, 0.03);
+  --footnoteBgColor: rgba(0, 0, 0, 0.03);
+  --tableBorderColor: #e5e5e5;
+
+  --headingColor: var(--editorColor80);
+  --blockquoteTextColor: var(--editorColor50);
+  --blockquoteBorderColor: var(--themeColor);
+  --hrColor: var(--editorColor10);
+  --linkColor: var(--themeColor);
+  --strongColor: var(--editorColor);
+  --emColor: var(--editorColor);
+}

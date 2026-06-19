@@ -129,7 +129,8 @@ import { SpellChecker } from '@/spellchecker'
 import { isOsx, animatedScrollTo } from '@/util'
 import { moveImageToFolder, uploadImage } from '@/util/fileSystem'
 import { guessClipboardFilePath } from '@/util/clipboard'
-import { getCssForOptions, getHtmlToc, type PdfCssOptions, type HtmlTocOptions } from '@/util/pdf'
+import { getCssForOptions, getHtmlToc, buildExportCssOptions, type HtmlTocOptions } from '@/util/pdf'
+import { resolveExportContentWidthPx, resolvePrintableWidthPx } from '@/util/editorExportStyle'
 import { addCommonStyle, setEditorWidth, setWrapCodeBlocks } from '@/util/theme'
 import { usePreferencesStore } from '@/store/preferences'
 import { useEditorStore } from '@/store/editor'
@@ -164,7 +165,7 @@ const MUYA_LOCALES: Record<string, ILocale> = {
   'zh-TW': zhTW
 }
 
-const getMuyaLocale = (language: string): ILocale => MUYA_LOCALES[language] ?? en
+const getMuyaLocale = (language: string): ILocale => MUYA_LOCALES[language] ?? zhCN
 
 // `Muya.use(...)` appends to the static `Muya.plugins` array, and every
 // `init()` instantiates the full list. Registration is process-global, so guard
@@ -1224,11 +1225,25 @@ const handleExport = async (options: unknown) => {
     throw new Error(`Invalid type to export: "${type}".`)
   }
 
-  const extraCss = await getCssForOptions(opts as unknown as PdfCssOptions)
+  if (!editor.value) {
+    notice.notify({
+      title: t('editor.export.failed', { type: type.toUpperCase() }),
+      type: 'error',
+      message: t('editor.export.error')
+    })
+    return
+  }
+
+  try {
+  const extraCss = await getCssForOptions(
+    buildExportCssOptions(opts as Record<string, unknown>, preferencesStore.$state)
+  )
   const htmlToc = getHtmlToc(editor.value.getTOC(), opts as unknown as HtmlTocOptions)
   const markdown = editor.value.getMarkdown()
   const header = (opts.header ?? null) as HeaderFooterPart | null
   const footer = (opts.footer ?? null) as HeaderFooterPart | null
+  const contentWidth = resolveExportContentWidthPx(preferencesStore.editorLineWidth)
+  const maxTableWidth = type === 'styledHtml' ? undefined : resolvePrintableWidthPx(opts)
 
   switch (type) {
     case 'styledHtml': {
@@ -1237,7 +1252,9 @@ const handleExport = async (options: unknown) => {
           title: htmlTitle || '',
           printOptimization: false,
           extraCss,
-          toc: htmlToc
+          toc: htmlToc,
+          contentWidth,
+          maxTableWidth
         })
         editorStore.EXPORT({ type, content })
       } catch (err) {
@@ -1269,9 +1286,11 @@ const handleExport = async (options: unknown) => {
           toc: htmlToc,
           header,
           footer,
-          headerFooterStyled: headerFooterStyled as boolean | undefined
+          headerFooterStyled: headerFooterStyled as boolean | undefined,
+          contentWidth,
+          maxTableWidth
         })
-        printer!.renderMarkdown(html, true)
+        printer!.renderMarkdown(html, true, { contentWidth, maxTableWidth })
         editorStore.EXPORT({ type, pageOptions })
       } catch (err) {
         log.error('Failed to export document:', err)
@@ -1294,9 +1313,11 @@ const handleExport = async (options: unknown) => {
           toc: htmlToc,
           header,
           footer,
-          headerFooterStyled: headerFooterStyled as boolean | undefined
+          headerFooterStyled: headerFooterStyled as boolean | undefined,
+          contentWidth,
+          maxTableWidth
         })
-        printer!.renderMarkdown(html, true)
+        printer!.renderMarkdown(html, true, { contentWidth, maxTableWidth })
         editorStore.PRINT_RESPONSE()
       } catch (err) {
         log.error('Failed to export document:', err)
@@ -1309,6 +1330,16 @@ const handleExport = async (options: unknown) => {
       }
       break
     }
+  }
+  } catch (err) {
+    log.error('Failed to export document:', err)
+    notice.notify({
+      title: t('editor.export.failed', { type: type.toUpperCase() }),
+      type: 'error',
+      message:
+        (err as { message?: string } | null | undefined)?.message ?? t('editor.export.error')
+    })
+    handlePrintServiceClearup()
   }
 }
 
@@ -1803,6 +1834,52 @@ onMounted(() => {
     if (imageViewerRef.value) {
       imageViewer = new SimpleImageViewer(imageViewerRef.value, { url: data })
       setImageViewerVisible(true)
+    }
+  })
+
+  editor.value.on('copy-image', async({ src }: { src: string }) => {
+    try {
+      const copied = await window.electron.clipboard.writeImage(src)
+      notice.notify({
+        title: copied ? 'Image copied' : 'Failed to copy image',
+        message: '',
+        type: copied ? 'primary' : 'error',
+        time: 2000
+      })
+    } catch (error) {
+      log.error('Failed to copy image.', error)
+      notice.notify({
+        title: 'Failed to copy image',
+        message: error instanceof Error ? error.message : String(error),
+        type: 'error'
+      })
+    }
+  })
+
+  editor.value.on('download-image', async({
+    data,
+    filename
+  }: {
+    data: string
+    filename?: string
+  }) => {
+    try {
+      const result = await window.fileUtils.saveImageAs(data, filename)
+      if (!result.canceled) {
+        notice.notify({
+          title: 'Image saved',
+          message: result.filePath || '',
+          type: 'primary',
+          time: 3000
+        })
+      }
+    } catch (error) {
+      log.error('Failed to save image.', error)
+      notice.notify({
+        title: 'Failed to save image',
+        message: error instanceof Error ? error.message : String(error),
+        type: 'error'
+      })
     }
   })
 

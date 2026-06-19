@@ -24,8 +24,56 @@
     white-space: pre-wrap;
 }
 
+/* Auto layout — avoid `table-layout: fixed` which crushes columns in PDF. */
 .markdown-body table {
     display: table;
+    width: max-content;
+    max-width: 100%;
+    table-layout: auto;
+    border-collapse: collapse;
+    overflow: visible;
+}
+
+.markdown-body table.export-table-fit {
+    zoom: var(--export-table-scale, 1);
+    transform-origin: top left;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+    word-break: normal;
+    overflow-wrap: break-word;
+    white-space: normal;
+    vertical-align: top;
+}
+
+@media print {
+    .markdown-body {
+        box-sizing: border-box;
+        max-width: 100%;
+        padding: 0;
+    }
+
+    .markdown-body table {
+        display: table;
+        width: max-content;
+        max-width: 100%;
+        table-layout: auto;
+        overflow: visible;
+    }
+
+    .markdown-body table.export-table-fit {
+        zoom: var(--export-table-scale, 1);
+        transform-origin: top left;
+    }
+
+    .markdown-body table th,
+    .markdown-body table td {
+        word-break: normal;
+        overflow-wrap: break-word;
+        white-space: normal;
+        vertical-align: top;
+    }
 }
 
 .markdown-body img[data-align='center'] {
