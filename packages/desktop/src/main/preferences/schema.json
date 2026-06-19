@@ -69,7 +69,7 @@
   "language": {
     "description": "General--The language MarkText use.",
     "type": "string",
-    "default": "en"
+    "default": "zh-CN"
   },
   "editorFontFamily": {
     "description": "Editor--editor font family",

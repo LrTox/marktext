@@ -118,9 +118,9 @@ const resolveGlobal = (container: VueI18nGlobalContainer | undefined): VueI18nGl
 }
 
 const resolveLocale = (g: VueI18nGlobal | undefined): string => {
-  if (!g || !g.locale) return 'en'
+  if (!g || !g.locale) return 'zh-CN'
   if (typeof g.locale === 'string') return g.locale
-  return g.locale.value ?? 'en'
+  return g.locale.value ?? 'zh-CN'
 }
 
 // Creates a reactive translated mapping function

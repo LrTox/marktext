@@ -70,14 +70,6 @@ class Preference extends TypedEmitter<PreferenceEvents> {
       if (nativeTheme.shouldUseDarkColors) {
         defaultSettings!.theme = 'dark'
       }
-
-      // Set system language on first application start
-      if (!this.hasPreferencesFile) {
-        const systemLanguage = this._getSystemLanguage()
-        if (systemLanguage) {
-          defaultSettings!.language = systemLanguage
-        }
-      }
     } catch (err) {
       log.error(err)
     }

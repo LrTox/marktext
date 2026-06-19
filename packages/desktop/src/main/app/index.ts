@@ -194,11 +194,11 @@ class App {
           'ru-RU': 'ru'
         }
 
-        currentLanguage = languageMap[systemLanguage] || 'en'
+        currentLanguage = languageMap[systemLanguage] || 'zh-CN'
 
-        // If the detected language is not in the supported list, use English
+        // If the detected language is not in the supported list, use Simplified Chinese
         if (!supportedLanguages.includes(currentLanguage)) {
-          currentLanguage = 'en'
+          currentLanguage = 'zh-CN'
         }
 
         // Save the detected language setting
@@ -210,8 +210,8 @@ class App {
       log.info(`Main process language initialized to: ${currentLanguage}`)
     } catch (error) {
       log.error('Failed to initialize main process language:', error)
-      // If an error occurs, use English as the default language
-      setLanguage('en')
+      // If an error occurs, use Simplified Chinese as the default language
+      setLanguage('zh-CN')
     }
   }
 
@@ -662,7 +662,7 @@ class App {
     // Handle language setting requests
     ipcMain.on('mt::get-current-language', (event) => {
       const { language } = this._accessor.preferences.getAll()
-      event.reply('mt::current-language', language || 'en')
+      event.reply('mt::current-language', language || 'zh-CN')
     })
 
     ipcMain.on('app-create-editor-window', () => {

@@ -1,5 +1,5 @@
 import htmlTags, { voidHtmlTags } from 'html-tags';
-import { en } from '../locales/en';
+import { zhCN } from '../locales/zh-CN';
 
 export const VOID_HTML_TAGS = voidHtmlTags;
 export const HTML_TAGS = htmlTags;
@@ -343,7 +343,7 @@ export const MUYA_DEFAULT_OPTIONS = {
     autoMoveCheckedToEnd: false,
     // Whether HTML rendering is disabled or not.
     disableHtml: false,
-    locale: en,
+    locale: zhCN,
 };
 
 export const punctuation = [

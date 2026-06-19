@@ -2,6 +2,7 @@ import { createI18n } from 'vue-i18n'
 import bus from '../bus'
 
 // Directly import translation files
+import zhCNTranslations from '../../../../static/locales/zh-CN.json'
 import enTranslations from '../../../../static/locales/en.json'
 
 // Create the Vue i18n instance.
@@ -10,9 +11,9 @@ import enTranslations from '../../../../static/locales/en.json'
 // at the call site rather than spreading `any` further.
 const i18n = createI18n({
   legacy: false,
-  locale: 'en', // default is en
+  locale: 'zh-CN',
   fallbackLocale: 'en',
-  messages: { en: enTranslations }, // Load en by default only
+  messages: { 'zh-CN': zhCNTranslations, en: enTranslations },
   // Disable linking to avoid '@' symbols being misinterpreted
   modifiers: {
     '@': () => '@'
