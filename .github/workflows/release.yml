@@ -6,9 +6,15 @@ on:
     # (e.g. `vbad.tag`) instead of them silently not triggering anything.
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Release tag to build (e.g. v0.20.3)'
+        required: true
+        default: 'v0.20.3'
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version_tag || github.ref }}
   cancel-in-progress: false
 
 permissions:
@@ -20,8 +26,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Validate semver tag
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version_tag || github.ref_name }}
         run: |
-          tag="${GITHUB_REF_NAME}"
+          tag="$RELEASE_TAG"
           # SemVer 2.0.0 with leading "v"
           if ! [[ "$tag" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
             echo "::error::Tag '$tag' is not a valid semver (expected vX.Y.Z[-prerelease][+build])"
@@ -61,6 +69,8 @@ jobs:
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4.3.1
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version_tag || github.ref }}
 
       - name: Enable Git long paths on Windows
         if: matrix.platform == 'windows'
@@ -182,7 +192,8 @@ jobs:
 
       - name: Compose release notes body
         env:
-          IS_PRERELEASE: ${{ contains(github.ref_name, '-') }}
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version_tag || github.ref_name }}
+          IS_PRERELEASE: ${{ contains(github.event_name == 'workflow_dispatch' && github.event.inputs.version_tag || github.ref_name, '-') }}
         run: |
           {
             if [[ "$IS_PRERELEASE" == "true" ]]; then
@@ -206,10 +217,11 @@ jobs:
       - name: Publish release
         uses: softprops/action-gh-release@v2.6.2
         with:
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version_tag || github.ref_name }}
           draft: false
-          prerelease: ${{ contains(github.ref_name, '-') }}
+          prerelease: ${{ contains(github.event_name == 'workflow_dispatch' && github.event.inputs.version_tag || github.ref_name, '-') }}
           generate_release_notes: true
-          name: ${{ github.ref_name }}
+          name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version_tag || github.ref_name }}
           body_path: release_body.md
           fail_on_unmatched_files: true
           files: dist/*
