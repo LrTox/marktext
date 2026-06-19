@@ -6,16 +6,6 @@ import type Keybindings from '../../keyboard/shortcutHandler'
 export default function(keybindings: Keybindings): MenuItemConstructorOptions {
   const submenu: MenuItemConstructorOptions[] = [
     {
-      label: t('menu.view.commandPalette'),
-      accelerator: keybindings.getAccelerator('view.command-palette') ?? undefined,
-      click(_menuItem, focusedWindow) {
-        actions.showCommandPalette(focusedWindow as BrowserWindow | undefined)
-      }
-    },
-    {
-      type: 'separator'
-    },
-    {
       id: 'sourceCodeModeMenuItem',
       label: t('menu.view.sourceCodeMode'),
       accelerator: keybindings.getAccelerator('view.source-code-mode') ?? undefined,
@@ -66,21 +56,6 @@ export default function(keybindings: Keybindings): MenuItemConstructorOptions {
       checked: false,
       click(_item, focusedWindow) {
         actions.toggleTabBar(focusedWindow as BrowserWindow | undefined)
-      }
-    },
-    {
-      label: t('menu.view.toggleTableOfContents'),
-      id: 'tocMenuItem',
-      accelerator: keybindings.getAccelerator('view.toggle-toc') ?? undefined,
-      click(_, focusedWindow) {
-        actions.showTableOfContents(focusedWindow as BrowserWindow | undefined)
-      }
-    },
-    {
-      label: t('menu.view.reloadImages'),
-      accelerator: keybindings.getAccelerator('view.reload-images') ?? undefined,
-      click(_item, focusedWindow) {
-        actions.reloadImageCache(focusedWindow as BrowserWindow | undefined)
       }
     }
   ]

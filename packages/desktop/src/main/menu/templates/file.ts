@@ -146,41 +146,6 @@ export default function(
       type: 'separator'
     },
     {
-      label: t('menu.file.import'),
-      click(_menuItem, browserWindow) {
-        actions.importFile((browserWindow as BrowserWindow | undefined) ?? null)
-      }
-    },
-    {
-      label: t('menu.file.export'),
-      submenu: [
-        {
-          label: t('menu.file.exportHtml'),
-          click(_menuItem, browserWindow) {
-            actions.exportFile(browserWindow as BrowserWindow | undefined, 'styledHtml')
-          }
-        },
-        {
-          label: t('menu.file.exportPdf'),
-          accelerator: keybindings.getAccelerator('file.export-file.pdf') ?? undefined,
-          click(_menuItem, browserWindow) {
-            actions.exportFile(browserWindow as BrowserWindow | undefined, 'pdf')
-          }
-        }
-      ]
-    },
-    {
-      label: t('menu.file.print'),
-      accelerator: keybindings.getAccelerator('file.print') ?? undefined,
-      click(_menuItem, browserWindow) {
-        actions.printDocument(browserWindow as BrowserWindow | undefined)
-      }
-    },
-    {
-      type: 'separator',
-      visible: !isOsx
-    },
-    {
       label: t('menu.file.preferences'),
       accelerator: keybindings.getAccelerator('file.preferences') ?? undefined,
       visible: !isOsx,

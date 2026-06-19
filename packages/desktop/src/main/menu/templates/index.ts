@@ -4,11 +4,11 @@ import prefEdit from './prefEdit'
 import file from './file'
 import help from './help'
 import marktext from './marktext'
+import code from './code'
+import navigate from './navigate'
+import tools from './tools'
 import view from './view'
 import window from './window'
-import paragraph from './paragraph'
-import format from './format'
-import theme from './theme'
 import type Keybindings from '../../keyboard/shortcutHandler'
 import type Preference from '../../preferences'
 
@@ -43,11 +43,11 @@ export default function(
     ...(process.platform === 'darwin' ? [marktext(keybindings)] : []),
     file(keybindings, preferences, recentlyUsedFiles),
     edit(keybindings),
-    paragraph(keybindings),
-    format(keybindings),
-    window(keybindings),
-    theme(preferences),
     view(keybindings),
+    navigate(keybindings),
+    code(keybindings),
+    tools(keybindings, preferences),
+    window(keybindings),
     help()
   ]
 }

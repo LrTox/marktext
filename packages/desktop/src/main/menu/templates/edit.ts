@@ -1,6 +1,5 @@
 import { type BrowserWindow, type MenuItemConstructorOptions } from 'electron'
 import * as actions from '../actions/edit'
-import { isOsx } from '../../config'
 import { COMMANDS } from '../../commands'
 import { t } from '../../i18n'
 import type Keybindings from '../../keyboard/shortcutHandler'
@@ -103,59 +102,6 @@ export default function(keybindings: Keybindings): MenuItemConstructorOptions {
         accelerator: keybindings.getAccelerator(COMMANDS.EDIT_DELETE_PARAGRAPH) ?? undefined,
         click(_menuItem, browserWindow) {
           actions.editorDeleteParagraph(browserWindow as BrowserWindow | undefined)
-        }
-      },
-      {
-        type: 'separator'
-      },
-      {
-        label: t('menu.edit.find'),
-        accelerator: keybindings.getAccelerator(COMMANDS.EDIT_FIND) ?? undefined,
-        click(_menuItem, browserWindow) {
-          actions.editorFind(browserWindow as BrowserWindow | undefined)
-        }
-      },
-      {
-        label: t('menu.edit.findNext'),
-        accelerator: keybindings.getAccelerator(COMMANDS.EDIT_FIND_NEXT) ?? undefined,
-        click(_menuItem, browserWindow) {
-          actions.editorFindNext(browserWindow as BrowserWindow | undefined)
-        }
-      },
-      {
-        label: t('menu.edit.findPrevious'),
-        accelerator: keybindings.getAccelerator(COMMANDS.EDIT_FIND_PREVIOUS) ?? undefined,
-        click(_menuItem, browserWindow) {
-          actions.editorFindPrevious(browserWindow as BrowserWindow | undefined)
-        }
-      },
-      {
-        label: t('menu.edit.replace'),
-        accelerator: keybindings.getAccelerator(COMMANDS.EDIT_REPLACE) ?? undefined,
-        click(_menuItem, browserWindow) {
-          actions.editorReplace(browserWindow as BrowserWindow | undefined)
-        }
-      },
-      {
-        type: 'separator'
-      },
-      {
-        label: t('menu.edit.findInFolder'),
-        accelerator: keybindings.getAccelerator(COMMANDS.EDIT_FIND_IN_FOLDER) ?? undefined,
-        click(_menuItem, browserWindow) {
-          actions.findInFolder(browserWindow as BrowserWindow | undefined)
-        }
-      },
-      {
-        type: 'separator'
-      },
-      {
-        label: t('menu.edit.screenshot'),
-        id: 'screenshot',
-        visible: isOsx,
-        accelerator: keybindings.getAccelerator(COMMANDS.EDIT_SCREENSHOT) ?? undefined,
-        click(_menuItem, browserWindow) {
-          actions.screenshot(browserWindow as BrowserWindow | undefined)
         }
       },
       {
