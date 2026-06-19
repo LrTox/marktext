@@ -1,5 +1,7 @@
 appId: com.github.marktext.marktext
 productName: marktext
+# Use the workspace-installed Electron binary (avoids re-download / cache issues in monorepos).
+electronDist: node_modules/electron/dist
 directories:
   buildResources: build
   output: ../../dist
@@ -93,6 +95,7 @@ fileAssociations:
 win:
   executableName: marktext
   artifactName: 'marktext-win-${arch}-${version}.${ext}'
+  signAndEditExecutable: false
   target:
     - target: 'nsis'
     - target: 'zip'
