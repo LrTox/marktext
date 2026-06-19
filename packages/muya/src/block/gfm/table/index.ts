@@ -22,6 +22,10 @@ class Table extends Parent {
 
     static override blockName = 'table';
 
+    private _resizeObserver: ResizeObserver | null = null;
+
+    private _resizeAnimationFrame: number | null = null;
+
     static create(muya: Muya, state: ITableState) {
         const table = new Table(muya);
 
@@ -82,6 +86,7 @@ class Table extends Parent {
         this.classList = ['mu-table'];
         this.createDomNode();
         this._listenDomEvent();
+        this._observeResize();
     }
 
     isEmpty() {
@@ -107,6 +112,49 @@ class Table extends Parent {
 
         const mousedownObservable = fromEvent(domNode!, 'mousedown');
         mousedownObservable.subscribe(mousedownHandler);
+    }
+
+    private _observeResize() {
+        if (typeof ResizeObserver === 'undefined' || !this.domNode)
+            return;
+
+        this._resizeObserver = new ResizeObserver(() => {
+            this._scheduleFitToContainer();
+        });
+        this._resizeObserver.observe(this.domNode);
+        this._scheduleFitToContainer();
+    }
+
+    private _scheduleFitToContainer() {
+        if (typeof requestAnimationFrame === 'undefined') {
+            this._fitToContainer();
+            return;
+        }
+
+        if (this._resizeAnimationFrame != null)
+            cancelAnimationFrame(this._resizeAnimationFrame);
+
+        this._resizeAnimationFrame = requestAnimationFrame(() => {
+            this._resizeAnimationFrame = null;
+            this._fitToContainer();
+        });
+    }
+
+    private _fitToContainer() {
+        const tableFigure = this.domNode;
+        const tableInner = (this.firstChild as TableInner | null)?.domNode as HTMLTableElement | null;
+        if (!tableFigure || !tableInner)
+            return;
+
+        tableInner.style.removeProperty('--mu-table-scale');
+
+        const availableWidth = tableFigure.clientWidth;
+        const naturalWidth = tableInner.scrollWidth;
+        if (availableWidth <= 0 || naturalWidth <= 0)
+            return;
+
+        const scale = Math.min(1, availableWidth / naturalWidth);
+        tableInner.style.setProperty('--mu-table-scale', scale.toFixed(4));
     }
 
     queryBlock(path: TBlockPath) {
@@ -158,6 +206,8 @@ class Table extends Parent {
         else
             (this.firstChild as TableInner).insertBefore(rowBlock, currentRow as TableRow);
 
+        this._scheduleFitToContainer();
+
         return rowBlock.firstContentInDescendant();
     }
 
@@ -178,6 +228,8 @@ class Table extends Parent {
             if (!firstCellInNewColumn)
                 firstCellInNewColumn = cell;
         });
+
+        this._scheduleFitToContainer();
 
         return firstCellInNewColumn!.firstChild as TableCellContent;
     }
@@ -207,6 +259,8 @@ class Table extends Parent {
             this.remove();
             return outsideContent ?? null;
         }
+
+        this._scheduleFitToContainer();
 
         return (survivor.firstChild as TableBodyCell).firstChild as TableCellContent;
     }
@@ -245,6 +299,8 @@ class Table extends Parent {
                 cell.remove();
         });
 
+        this._scheduleFitToContainer();
+
         return (neighbourCell?.firstChild as TableCellContent | undefined) ?? null;
     }
 
@@ -269,6 +325,8 @@ class Table extends Parent {
                 this.jsonState.editOperation(path, diffToTextOp(diffs));
             }
         });
+
+        this._scheduleFitToContainer();
     }
 
     /**
@@ -321,6 +379,18 @@ class Table extends Parent {
 
     override getState(): ITableState {
         return (this.firstChild as TableInner).getState();
+    }
+
+    override remove(source = 'user') {
+        this._resizeObserver?.disconnect();
+        this._resizeObserver = null;
+
+        if (this._resizeAnimationFrame != null && typeof cancelAnimationFrame !== 'undefined') {
+            cancelAnimationFrame(this._resizeAnimationFrame);
+            this._resizeAnimationFrame = null;
+        }
+
+        return super.remove(source);
     }
 }
 
