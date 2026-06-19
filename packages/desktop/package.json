@@ -1,6 +1,6 @@
 {
   "name": "marktext",
-  "version": "0.20.1",
+  "version": "0.20.2",
   "description": "MarkText",
   "main": "./out/main/index.js",
   "author": {
@@ -109,7 +109,12 @@
     "webfontloader": "^1.6.28"
   },
   "optionalDependencies": {
-    "native-keymap": "^3.3.9"
+    "native-keymap": "^3.3.9",
+    "@vscode/ripgrep-darwin-arm64": "^1.18.0",
+    "@vscode/ripgrep-darwin-x64": "^1.18.0",
+    "@vscode/ripgrep-linux-x64": "^1.18.0",
+    "@vscode/ripgrep-win32-arm64": "^1.18.0",
+    "@vscode/ripgrep-win32-x64": "^1.18.0"
   },
   "devDependencies": {
     "@electron/rebuild": "^4.0.4",
