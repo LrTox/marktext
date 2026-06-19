@@ -175,6 +175,15 @@
       "tokyoNightLight": "Tokyo Night ライト",
       "tokyoNightStorm": "Tokyo Night Storm",
       "ulyssesLight": "ユリシーズ ライト"
+    },
+    "navigate": {
+      "navigate": "移動"
+    },
+    "code": {
+      "code": "コード"
+    },
+    "tools": {
+      "tools": "ツール"
     }
   },
   "contextMenu": {

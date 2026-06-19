@@ -175,6 +175,15 @@
       "tokyoNightLight": "Tokyo Night Light",
       "tokyoNightStorm": "Tokyo Night Storm",
       "ulyssesLight": "Ulysses Light"
+    },
+    "navigate": {
+      "navigate": "Gezin"
+    },
+    "code": {
+      "code": "Kod"
+    },
+    "tools": {
+      "tools": "Araçlar"
     }
   },
   "contextMenu": {

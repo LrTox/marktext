@@ -175,6 +175,15 @@
       "tokyoNightLight": "Tokyo Night 淺色",
       "tokyoNightStorm": "Tokyo Night Storm",
       "ulyssesLight": "Ulysses 淺色"
+    },
+    "navigate": {
+      "navigate": "導覽"
+    },
+    "code": {
+      "code": "程式碼"
+    },
+    "tools": {
+      "tools": "工具"
     }
   },
   "contextMenu": {

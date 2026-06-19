@@ -175,6 +175,15 @@
       "tokyoNightLight": "Tokyo Night Hell",
       "tokyoNightStorm": "Tokyo Night Storm",
       "ulyssesLight": "Ulysses Hell"
+    },
+    "navigate": {
+      "navigate": "Navigieren"
+    },
+    "code": {
+      "code": "Code"
+    },
+    "tools": {
+      "tools": "Werkzeuge"
     }
   },
   "contextMenu": {

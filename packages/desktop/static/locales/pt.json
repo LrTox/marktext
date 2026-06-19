@@ -175,6 +175,15 @@
       "tokyoNightLight": "Tokyo Night Claro",
       "tokyoNightStorm": "Tokyo Night Storm",
       "ulyssesLight": "Ulysses Claro"
+    },
+    "navigate": {
+      "navigate": "Navegar"
+    },
+    "code": {
+      "code": "Código"
+    },
+    "tools": {
+      "tools": "Ferramentas"
     }
   },
   "contextMenu": {

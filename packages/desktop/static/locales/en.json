@@ -175,6 +175,15 @@
       "tokyoNightLight": "Tokyo Night Light",
       "tokyoNightStorm": "Tokyo Night Storm",
       "ulyssesLight": "Ulysses Light"
+    },
+    "navigate": {
+      "navigate": "Navigate"
+    },
+    "code": {
+      "code": "Code"
+    },
+    "tools": {
+      "tools": "Tools"
     }
   },
   "contextMenu": {
@@ -278,14 +287,14 @@
     "showFrontMatter": "Show front matter",
     "style": {
       "label": "Style",
-      "overwriteThemeFont": "Overwrite theme font settings",
+      "overwriteThemeFont": "Overwrite editor font settings",
       "fontFamily": "Font family:",
       "fontSize": "Font size",
       "lineHeight": "Line height"
     },
     "theme": {
       "label": "Theme",
-      "description": "You can change the document appearance by choosing a theme or create a handcrafted one.",
+      "description": "By default the export follows your current editor theme. You can also choose a dedicated export theme or a custom one.",
       "theme": "Theme"
     },
     "headerFooter": {
@@ -331,8 +340,8 @@
         "styled": "Styled"
       },
       "themes": {
+        "default": "Follow Editor",
         "academic": "Academic",
-        "default": "GitHub (Default)",
         "liber": "Liber"
       }
     }
