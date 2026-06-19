@@ -119,6 +119,7 @@ import {
   type ILocale
 } from '@muyajs/core'
 import { exportStyledHTML, type HeaderFooterPart } from '@/util/exportHtml'
+import { applyCursor, isIndexCursor } from '@/util/cursor'
 import EditorSearch from '../search/index.vue'
 import bus from '@/bus'
 import { DEFAULT_EDITOR_FONT_FAMILY } from '@/config'
@@ -1179,24 +1180,35 @@ const scrollToCords = (y: number) => {
   })
 }
 
+// Smoothly scroll the editor so `anchor` sits at the standard top offset.
+// Shared by the TOC, search-highlight, and any other "reveal this element"
+// caller so the getBoundingClientRect + animatedScrollTo math lives once.
+const scrollElementIntoView = (anchor: Element | null | undefined, duration = 300) => {
+  const container = getScrollContainer()
+  if (!container || !anchor) return
+  const { y } = anchor.getBoundingClientRect()
+  animatedScrollTo(container, container.scrollTop + y - STANDAR_Y, duration)
+}
+
 const scrollToHighlight = () => {
   return scrollToElement('.mu-highlight')
 }
 
+/**
+ * Scrolls the editor to the heading for a TOC entry. See
+ * `resolveTocHeadingElement` for why the slug is resolved by document order
+ * against the top-level headings only.
+ * @param slug The TOC entry's slug from the `scroll-to-header` bus event.
+ */
 const scrollToHeader = (slug: unknown) => {
-  return scrollToElement(`#${slug}`)
+  const container = getScrollContainer()
+  if (!container) return
+  scrollElementIntoView(resolveTocHeadingElement(container, editorStore.listToc, slug))
 }
 
 const scrollToElement = (selector: string) => {
   // Scroll to search highlight word
-  const container = getScrollContainer()
-  if (!container) return
-  const anchor = document.querySelector(selector)
-  if (anchor) {
-    const { y } = anchor.getBoundingClientRect()
-    const DURATION = 300
-    animatedScrollTo(container, container.scrollTop + y - STANDAR_Y, DURATION)
-  }
+  scrollElementIntoView(document.querySelector(selector))
 }
 
 const handleFindAction = (action: unknown) => {
@@ -1433,8 +1445,17 @@ const setMarkdownToEditor = (payload: unknown) => {
       resetSyntheticHistory(id, editor.value.getMarkdown())
     }
     if (newCursor) {
-      editor.value.setCursor(newCursor)
+      applyCursor(editor.value, newCursor)
+      // A folder-search jump carries an index cursor; a freshly opened file
+      // starts scrolled to the top, so reveal the resolved caret.
+      if (isIndexCursor(newCursor)) {
+        scrollToCursor()
+      }
     }
+    // `setContent` rebuilds the block tree synchronously but fires no
+    // `json-change`, so seed the TOC explicitly (otherwise it stays empty until
+    // the first edit, and a file switch keeps the previous file's TOC).
+    editorStore.UPDATE_TOC(editor.value.getTOC())
   }
 }
 
@@ -1447,22 +1468,6 @@ interface FileChangePayload {
   scrollTop?: number
   muyaIndexCursor?: unknown
   blocks?: unknown
-}
-
-// A source-mode (CodeMirror) index cursor: `{ anchor, focus }` in `{ line, ch }`
-// coordinates. Produced by sourceCode.vue and carried on `file-changed` as
-// `muyaIndexCursor` when handing a tab back to WYSIWYG. Both `line` AND `ch`
-// must be present numbers — otherwise the engine would clamp a missing `ch` to
-// 0 and silently restore the caret to the wrong column.
-const isIndexPosition = (pos: unknown): pos is { line: number; ch: number } => {
-  const p = pos as { line?: unknown; ch?: unknown } | null
-  return !!p && typeof p.line === 'number' && typeof p.ch === 'number'
-}
-const isIndexCursor = (
-  cursor: unknown
-): cursor is { anchor: { line: number; ch: number }; focus: { line: number; ch: number } } => {
-  const c = cursor as { anchor?: unknown; focus?: unknown } | null
-  return !!c && isIndexPosition(c.anchor) && isIndexPosition(c.focus)
 }
 
 // listen for markdown change form source mode or change tabs etc
@@ -1507,6 +1512,7 @@ const handleFileChange = (payload: unknown) => {
       // remapping below.
       editor.value.replaceContent(newMarkdown, preSourceModeSelection)
       preSourceModeSelection = null
+      editorStore.UPDATE_TOC(editor.value.getTOC())
       // Map the CodeMirror `{ line, ch }` cursor onto a block-key cursor so the
       // WYSIWYG caret lands where the source-mode cursor was (PG2).
       editor.value.setCursorByOffset(muyaIndexCursor)
@@ -1517,8 +1523,11 @@ const handleFileChange = (payload: unknown) => {
       // `history` in the payload is the synthetic desktop-shaped history used
       // for save tracking, not the engine history.
       editor.value.setContent(newMarkdown)
+      // Tab switch swaps content without firing `json-change`, so re-seed the
+      // TOC (otherwise returning to an open tab keeps the other tab's TOC).
+      editorStore.UPDATE_TOC(editor.value.getTOC())
       if (newCursor) {
-        editor.value.setCursor(newCursor)
+        applyCursor(editor.value, newCursor)
       } else if (isIndexCursor(muyaIndexCursor)) {
         // Source-mode handoff for a tab the engine has no history for (e.g.
         // first interaction after load): fall back to a caret-only remap. The
@@ -1539,7 +1548,7 @@ const handleFileChange = (payload: unknown) => {
       }
     }
   } else if (newCursor) {
-    editor.value.setCursor(newCursor)
+    applyCursor(editor.value, newCursor)
   }
 
   if (typeof scrollTop === 'number') {
@@ -1577,9 +1586,13 @@ const handleModalOpening = () => {
   }
 }
 
-const handleScreenShot = () => {
-  if (editor.value) {
-    document.execCommand('paste')
+// macOS Edit → Screenshot. The main process captures the region, saves it to a
+// PNG, and hands us the path. `document.execCommand('paste')` no longer fires in
+// Electron 42 Chromium, so insert the saved image at the cursor through the
+// engine (routing via `imageAction` → upload/folder/path).
+const handleScreenShot = (filePath?: unknown) => {
+  if (editor.value && typeof filePath === 'string' && filePath) {
+    editor.value.pasteImage(filePath)
   }
 }
 
@@ -1700,6 +1713,9 @@ onMounted(() => {
   // the document tree and instantiates the registered UI plugins).
   muya.init()
   editor.value = muya
+  // The first document's content is set via constructor options, so no
+  // `file-loaded` / `setMarkdownToEditor` runs for it — seed its TOC here.
+  editorStore.UPDATE_TOC(muya.getTOC())
 
   // Seed the save-tracking baseline for the mount-loaded document (from the
   // engine's OWN serialization, same reason as setMarkdownToEditor). Without

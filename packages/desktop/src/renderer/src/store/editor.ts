@@ -438,8 +438,8 @@ export const useEditorStore = defineStore('editor', {
     },
 
     LISTEN_SCREEN_SHOT(): void {
-      window.electron.ipcRenderer.on('mt::screenshot-captured', () => {
-        bus.emit('screenshot-captured')
+      window.electron.ipcRenderer.on('mt::screenshot-captured', (_, filePath) => {
+        bus.emit('screenshot-captured', filePath)
       })
     },
 
@@ -1355,6 +1355,22 @@ export const useEditorStore = defineStore('editor', {
       if (didUpdateSaveStatus) {
         debouncedSendBufferedState()
       }
+    },
+
+    /**
+     * Replaces the table of contents with a fresh snapshot from the engine.
+     *
+     * Used on file load and tab switch, where the engine fires no `json-change`
+     * event (so `LISTEN_FOR_CONTENT_CHANGE` never runs and the TOC would
+     * otherwise stay empty until the first edit). Assigns unconditionally: this
+     * is a re-seed on load/switch, so there is no `equal` guard to short-circuit
+     * — the incoming snapshot always wins, even if it happens to deep-equal the
+     * current TOC.
+     * @param toc Flat list of headings returned by `muya.getTOC()`.
+     */
+    UPDATE_TOC(toc: TocItem[]): void {
+      this.listToc = toc ?? []
+      this.toc = listToTree<TocItem>(toc ?? [])
     },
 
     // Content change from realtime preview editor and source code editor
