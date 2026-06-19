@@ -34,7 +34,7 @@
     "minify-locales": "tsx ../../scripts/minify-locales.ts",
     "rebuild-native": "electron-rebuild -f",
     "start": "cross-env PERF_TESTING=true electron-vite preview",
-    "dev": "electron-vite dev",
+    "dev": "cross-env MARKTEXT_DEV_USER_DATA_DIR=../../.home/marktext-dev MARKTEXT_DEV_DISABLE_GPU=1 electron-vite dev",
     "build": "electron-vite build",
     "build:unpack": "tsx ../../scripts/minify-locales.ts && electron-vite build",
     "build:win": "tsx ../../scripts/minify-locales.ts && electron-rebuild && electron-vite build && electron-builder --win --x64 --publish never",

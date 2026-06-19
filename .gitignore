@@ -1,22 +1,55 @@
+# Dependencies
 node_modules
+node_modules.old-*/
+node_modules.partial-*/
+**/node_modules
+.pnpm-store/
+.electron-cache/
+
 packages/*/node_modules
+packages/*/node_modules.old-*/
+packages/*/*/node_modules.old-*/
+
+# Build output
 dist
 out
+out*/
 packages/*/out
 packages/*/dist
-.DS_Store
-.eslintcache
-*.log*
-.trae/
-.cursor/
-doc/
-# Ignore temp artifacts
+packages/desktop/out
+packages/desktop/out-*/
+
+# Dev runtime / local user data
+.home/
+
+# Temp artifacts
 temp/
 logs/
+*.log*
+pnpm-install-debug*.log
+
+# Test & coverage
 test-results/
 playwright-report/
-*.min.json
+coverage/
+**/coverage/
+
+# Tooling cache
+.eslintcache
+*.tsbuildinfo
+.vite/
+.turbo/
+
+# OS / IDE
+.DS_Store
+.idea/
+.trae/
+.cursor/
 .claude/settings.local.json
 .claude/
 .agents/
 .agent/
+
+# Project-specific
+doc/
+*.min.json

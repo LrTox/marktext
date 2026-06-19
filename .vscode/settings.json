@@ -2,8 +2,32 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   "eslint.format.enable": true,
-  "[javascript][typescript][vue]": {
+  "eslint.workingDirectories": [
+    { "directory": ".", "changeProcessCWD": true },
+    { "directory": "packages/desktop", "changeProcessCWD": true },
+    { "directory": "packages/muyajs", "changeProcessCWD": true },
+    { "directory": "packages/muya", "changeProcessCWD": true }
+  ],
+  "eslint.validate": ["javascript", "typescript", "vue", "json", "jsonc"],
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "vue.server.hybridMode": true,
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/out": true,
+    "**/.eslintcache": true,
+    "**/playwright-report": true,
+    "**/test-results": true
+  },
+  "[javascript][typescript][vue][json][jsonc][markdown]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "cSpell.words": [
     "commonmark",

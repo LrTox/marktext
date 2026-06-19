@@ -12,7 +12,13 @@ const cli = (): ParsedArgs => {
   let argv = process.argv.slice(1)
   if (process.env.NODE_ENV === 'development') {
     // Don't pass electron development arguments to MarkText and change user data path.
-    argv = ['--user-data-dir', path.join(getPath('appData'), 'marktext-dev')]
+    argv = [
+      '--user-data-dir',
+      process.env.MARKTEXT_DEV_USER_DATA_DIR || path.join(getPath('appData'), 'marktext-dev')
+    ]
+    if (process.env.MARKTEXT_DEV_DISABLE_GPU) {
+      argv.push('--disable-gpu')
+    }
   }
 
   const args = parseArgs(argv, true)

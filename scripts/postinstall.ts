@@ -27,6 +27,13 @@ const fs = require('fs')
 
 const repoRoot = path.join(__dirname, '..')
 const desktopRoot = path.join(repoRoot, 'packages', 'desktop')
+const windowsVCToolsVersion =
+  process.platform === 'win32' &&
+  fs.existsSync(
+    'C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\MSVC\\14.44.35207'
+  )
+    ? '14.44.35207'
+    : undefined
 
 function run(cmd, opts = {}) {
   const { cwd = repoRoot, env = {} } = opts
@@ -153,7 +160,10 @@ run(`"${patchPackageBin}"`, { cwd: desktopRoot })
 
 // ── 4. Rebuild native modules for Electron ABI ──────────────────────────────
 console.log('Rebuilding native modules for Electron...')
-run(`"${electronRebuildBin}" -f`, { cwd: desktopRoot })
+run(`"${electronRebuildBin}" -f`, {
+  cwd: desktopRoot,
+  env: windowsVCToolsVersion ? { VCToolsVersion: windowsVCToolsVersion } : {}
+})
 
 // ── 5. Generate minified locale files ───────────────────────────────────────
 console.log('Minifying locales...')

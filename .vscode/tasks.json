@@ -1,0 +1,77 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Install dependencies",
+      "type": "shell",
+      "command": "corepack enable && corepack prepare pnpm@10.33.4 --activate && cmd /d /s /c \"call \\\"C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat\\\" && set VCToolsVersion=14.44.35207 && pnpm install\"",
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev: desktop",
+      "type": "shell",
+      "command": "pnpm run dev",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev: muya examples",
+      "type": "shell",
+      "command": "pnpm -C packages/muya/examples dev:demo",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev: website",
+      "type": "shell",
+      "command": "pnpm --filter marktext-website dev",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Build: unpack",
+      "type": "shell",
+      "command": "pnpm run build:unpack",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint",
+      "type": "shell",
+      "command": "pnpm run lint",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Typecheck",
+      "type": "shell",
+      "command": "pnpm run typecheck",
+      "group": "test",
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "Test: unit",
+      "type": "shell",
+      "command": "pnpm run test:unit",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Test: e2e",
+      "type": "shell",
+      "command": "pnpm run test:e2e",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Check",
+      "dependsOrder": "sequence",
+      "dependsOn": ["Lint", "Typecheck"],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}
