@@ -62,8 +62,13 @@ body .mt-export-measure-sandbox {
     display: none !important;
   }
 
-  body article.print-container {
-    display: block;
+  body article.print-container,
+  body article.print-container.mt-print-measure {
+    display: block !important;
+    visibility: visible !important;
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
     overflow-x: visible;
   }
   body article.print-container .export-editor-document {

@@ -114,6 +114,11 @@ class MarkdownPrint {
       else
         fitExportTablesInContainer(printContainer, availableWidth, availableWidth)
     }
+
+    // Layout pass done — off-screen measure styles must not reach printToPDF.
+    printContainer.classList.remove('mt-print-measure')
+    printContainer.style.width = ''
+    printContainer.style.maxWidth = ''
   }
 
   /**
