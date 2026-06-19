@@ -1,11 +1,13 @@
 .mu-float-wrapper.mu-image-toolbar-container {
     overflow: visible;
+    width: auto;
+    min-width: 340px;
 
     border-radius: 2px;
 }
 
 .mu-image-toolbar {
-    width: 240px;
+    width: 340px;
     height: 30px;
 }
 
@@ -46,7 +48,7 @@
     margin-right: 8px;
 }
 
-.mu-image-toolbar li.item:first-of-type::before {
+.mu-image-toolbar li.item.edit::before {
     position: absolute;
     top: 7px;
     right: -10px;

@@ -81,4 +81,50 @@ describe('duplicate same-src images: resize bar targets the clicked image', () =
         expect(handler).toHaveBeenCalledTimes(1);
         expect(handler).toHaveBeenCalledWith(containers[1]);
     });
+
+    it('does not emit toolbar or resize references when the image container is missing', () => {
+        const src = 'https://example.com/pic.png';
+        const muya = boot(`![alt](${src})`);
+        const wrapper = muya.domNode.querySelector<HTMLElement>(
+            `span.${CLASS_NAMES.MU_INLINE_IMAGE}`,
+        )!;
+        const container = injectImages(muya, src)[0]!;
+        const img = container.querySelector('img')!;
+        container.remove();
+
+        const toolbarHandler = vi.fn();
+        const resizeHandler = vi.fn();
+        muya.eventCenter.on('muya-image-toolbar', (payload: { reference?: unknown }) => {
+            if (payload && payload.reference)
+                toolbarHandler(payload.reference);
+        });
+        muya.eventCenter.on('muya-transformer', (payload: { reference?: unknown }) => {
+            if (payload && payload.reference)
+                resizeHandler(payload.reference);
+        });
+
+        expect(() => {
+            wrapper.appendChild(img);
+            img.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+        }).not.toThrow();
+
+        expect(toolbarHandler).not.toHaveBeenCalled();
+        expect(resizeHandler).not.toHaveBeenCalled();
+    });
+
+    it('does not crash when selecting an image after a formatted block was active', () => {
+        const src = 'https://example.com/pic.png';
+        const muya = boot(`# title\n\n![alt](${src})`);
+        const heading = muya.editor.scrollPage!.firstContentInDescendant()!;
+        muya.editor.activeContentBlock = heading;
+
+        const container = injectImages(muya, src)[0]!;
+        const img = container.querySelector('img')!;
+
+        expect(() => {
+            img.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+        }).not.toThrow();
+
+        expect(muya.editor.selection.image).toBeTruthy();
+    });
 });

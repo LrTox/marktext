@@ -1,6 +1,8 @@
 import fs from 'fs-extra'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import { statSync, constants, type Stats } from 'fs'
-import { ipcMain } from 'electron'
+import { BrowserWindow, dialog, ipcMain } from 'electron'
 import { isFile as commonIsFile, isDirectory as commonIsDirectory } from 'common/filesystem'
 
 interface SerializedStat {
@@ -37,6 +39,78 @@ const toBuffer = (data: unknown): unknown => {
   return data
 }
 
+const IMAGE_FILTERS = [
+  { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'] },
+  { name: 'All Files', extensions: ['*'] }
+]
+
+const IMAGE_CONTENT_TYPE_EXTENSIONS: Record<string, string> = {
+  'image/gif': '.gif',
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/svg+xml': '.svg',
+  'image/webp': '.webp'
+}
+
+const sanitizeFilename = (filename?: string): string => {
+  const trimmed = filename?.trim() || 'image'
+  const basename = path.basename(trimmed).replace(/[<>:"/\\|?*\u0000-\u001f]/g, '_')
+  return basename || 'image'
+}
+
+const extensionFromDataUrl = (src: string): string => {
+  const contentType = src.match(/^data:([^;,]+)/i)?.[1]?.toLowerCase()
+  return contentType ? IMAGE_CONTENT_TYPE_EXTENSIONS[contentType] || '' : ''
+}
+
+const ensureExtension = (filename: string, src: string, contentType?: string): string => {
+  if (path.extname(filename)) return filename
+
+  const urlExt = /^file:\/\//i.test(src)
+    ? path.extname(fileURLToPath(src))
+    : path.extname(src.split(/[?#]/)[0] || '')
+  const ext = urlExt || extensionFromDataUrl(src) || (contentType ? IMAGE_CONTENT_TYPE_EXTENSIONS[contentType] : '') || '.png'
+  return `${filename}${ext}`
+}
+
+const pathFromFileUrl = (src: string): string => {
+  try {
+    return fileURLToPath(src)
+  } catch {
+    return decodeURIComponent(src.replace(/^file:\/\//i, ''))
+  }
+}
+
+export const imageBufferFromSource = async(
+  src: string
+): Promise<{ buffer: Buffer; contentType?: string }> => {
+  if (/^file:\/\//i.test(src)) {
+    return { buffer: await fs.readFile(pathFromFileUrl(src)) }
+  }
+
+  const dataUrlMatch = src.match(/^data:([^;,]+)?((?:;[^,]+)*),(.*)$/i)
+  if (dataUrlMatch) {
+    const [, contentType, options, data] = dataUrlMatch
+    return {
+      buffer: Buffer.from(decodeURIComponent(data), options.includes(';base64') ? 'base64' : 'utf8'),
+      contentType: contentType?.toLowerCase()
+    }
+  }
+
+  if (/^https?:\/\//i.test(src)) {
+    const response = await fetch(src)
+    if (!response.ok) {
+      throw new Error(`Download failed with HTTP ${response.status}`)
+    }
+    return {
+      buffer: Buffer.from(await response.arrayBuffer()),
+      contentType: response.headers.get('content-type')?.split(';')[0]?.toLowerCase()
+    }
+  }
+
+  return { buffer: await fs.readFile(src) }
+}
+
 export const registerFsHandlers = (): void => {
   ipcMain.handle('mt::fs::is-file', (_e, p: string) => commonIsFile(p))
   ipcMain.handle('mt::fs::is-directory', (_e, p: string) => commonIsDirectory(p))
@@ -58,6 +132,25 @@ export const registerFsHandlers = (): void => {
   ipcMain.handle('mt::fs::read-file', async(_e, p: string, encoding?: BufferEncoding) => {
     const buf = await fs.readFile(p, encoding)
     return buf
+  })
+  ipcMain.handle('mt::fs::save-image-as', async(e, src: string, filename?: string) => {
+    const { buffer, contentType } = await imageBufferFromSource(src)
+    const win = BrowserWindow.fromWebContents(e.sender)
+    const defaultPath = ensureExtension(sanitizeFilename(filename), src, contentType)
+    const { canceled, filePath } = win
+      ? await dialog.showSaveDialog(win, {
+          defaultPath,
+          filters: IMAGE_FILTERS
+        })
+      : await dialog.showSaveDialog({
+          defaultPath,
+          filters: IMAGE_FILTERS
+        })
+
+    if (canceled || !filePath) return { canceled: true }
+
+    await fs.writeFile(filePath, buffer)
+    return { canceled: false, filePath }
   })
   ipcMain.handle('mt::fs::path-exists', (_e, p: string) => fs.pathExists(p))
   ipcMain.handle('mt::fs::unlink', (_e, p: string) => fs.unlink(p))

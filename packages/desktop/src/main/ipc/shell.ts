@@ -1,6 +1,7 @@
-import { ipcMain, shell, clipboard } from 'electron'
+import { ipcMain, shell, clipboard, nativeImage } from 'electron'
 import log from 'electron-log'
 import plist from 'plist'
+import { imageBufferFromSource } from './fs'
 
 export const registerShellHandlers = (): void => {
   ipcMain.handle('mt::shell::open-external', async(_e, url: string) => {
@@ -43,6 +44,20 @@ export const registerShellHandlers = (): void => {
       return clipboard.readText()
     } catch {
       return ''
+    }
+  })
+
+  ipcMain.handle('mt::clipboard::write-image', async(_e, src: string) => {
+    try {
+      const { buffer } = await imageBufferFromSource(src)
+      const image = nativeImage.createFromBuffer(buffer)
+      if (image.isEmpty()) return false
+
+      clipboard.writeImage(image)
+      return true
+    } catch (err) {
+      log.error('clipboard.writeImage failed:', err)
+      return false
     }
   })
 

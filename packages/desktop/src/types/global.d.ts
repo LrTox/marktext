@@ -50,6 +50,7 @@ declare global {
 
   interface ElectronClipboardAPI {
     writeText(text: string): void
+    writeImage(src: string): Promise<boolean>
     readText(): Promise<string>
     guessFilePath(): Promise<string | null>
   }
@@ -110,6 +111,7 @@ declare global {
     pathExists(p: string): Promise<boolean>
     unlink(p: string): Promise<void>
     readdir(p: string): Promise<string[]>
+    saveImageAs(src: string, filename?: string): Promise<{ canceled: boolean; filePath?: string }>
     isExecutable(p: string): Promise<boolean>
     isChildOfDirectory(dir: string, child: string): boolean
     hasMarkdownExtension(filename: string): boolean

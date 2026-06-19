@@ -274,6 +274,7 @@ blockquote .mu-hide.mu-math > .mu-math-render {
     position: relative;
 
     display: inline-block;
+    max-width: 100%;
 
     background: var(--code-block-bg-color);
     border-radius: 2px;
@@ -309,11 +310,14 @@ blockquote .mu-hide.mu-math > .mu-math-render {
 .mu-image-marked-text ~ img {
     display: inline-block;
     max-width: 100%;
+    height: auto;
     margin: 0 auto;
 }
 
 .mu-inline-image .mu-image-container img {
     max-width: 100%;
+    height: auto;
+    object-fit: contain;
 }
 
 .mu-inline-image.mu-image-success {

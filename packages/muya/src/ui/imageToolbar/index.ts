@@ -5,7 +5,9 @@ import type { Muya } from '../../index';
 
 import type { ImageToken } from '../../inlineRenderer/types';
 import type { Icon } from './config';
+import { CLASS_NAMES } from '../../config';
 import { h, patch } from '../../utils/snabbdom';
+import { getImageSrc } from '../../utils/image';
 import BaseFloat from '../baseFloat';
 import icons from './config';
 import './index.css';
@@ -45,6 +47,11 @@ export class ImageToolBar extends BaseFloat {
         this.listen();
     }
 
+    override hide() {
+        this._oldVNode = null;
+        super.hide();
+    }
+
     override listen() {
         const { eventCenter } = this.muya;
         super.listen();
@@ -53,9 +60,10 @@ export class ImageToolBar extends BaseFloat {
             if (reference) {
                 this._block = block;
                 this._imageInfo = imageInfo;
+                this._render();
                 setTimeout(() => {
-                    this.show(reference);
-                    this._render();
+                    const liveReference = this._resolveReference() ?? reference;
+                    this.show(liveReference);
                 }, 0);
             }
             else {
@@ -64,8 +72,37 @@ export class ImageToolBar extends BaseFloat {
         });
     }
 
+    private _resolveReference(): ReferenceElement | null {
+        const { _imageInfo: imageInfo } = this;
+        if (!imageInfo)
+            return null;
+
+        const wrapper = this.muya.domNode.querySelector<HTMLElement>(
+            `#${CSS.escape(imageInfo.imageId)}`,
+        );
+        if (!wrapper)
+            return null;
+
+        const imageContainer = wrapper.querySelector<HTMLElement>(
+            `.${CLASS_NAMES.MU_IMAGE_CONTAINER}`,
+        );
+        if (!imageContainer)
+            return null;
+
+        return {
+            getBoundingClientRect: () => imageContainer.getBoundingClientRect(),
+            width: wrapper.offsetWidth,
+            height: wrapper.offsetHeight,
+        };
+    }
+
     private _render() {
-        const { _icons: icons, _oldVNode: oldVNode, _toolbarContainer: toolbarContainer, _imageInfo: imageInfo } = this;
+        const {
+            _icons: icons,
+            _oldVNode: oldVNode,
+            _toolbarContainer: toolbarContainer,
+            _imageInfo: imageInfo,
+        } = this;
         const { i18n } = this.muya;
         const { attrs } = imageInfo!.token;
         const dataAlign = attrs['data-align'];
@@ -111,12 +148,21 @@ export class ImageToolBar extends BaseFloat {
 
         const vnode = h('ul', children);
 
-        if (oldVNode)
-            patch(oldVNode, vnode);
-        else
-            patch(toolbarContainer, vnode);
-
+        patch(oldVNode ?? toolbarContainer, vnode);
         this._oldVNode = vnode;
+    }
+
+    private _getImageSrc() {
+        const { _imageInfo: imageInfo } = this;
+        if (!imageInfo)
+            return '';
+
+        const tokenSrc = imageInfo.token.attrs?.src || imageInfo.token.src || '';
+        const renderedSrc = document.querySelector<HTMLImageElement>(
+            `#${imageInfo.imageId} img`,
+        )?.getAttribute('src') || '';
+
+        return getImageSrc(tokenSrc).src || renderedSrc;
     }
 
     private _selectItem(event: Event, item: Icon) {
@@ -127,6 +173,40 @@ export class ImageToolBar extends BaseFloat {
 
         switch (item.type) {
             // Delete image.
+            case 'copy': {
+                const src = this._getImageSrc();
+                if (imageInfo && src) {
+                    this.muya.eventCenter.emit('copy-image', {
+                        src,
+                    });
+                }
+
+                return this.hide();
+            }
+
+            case 'preview': {
+                const src = this._getImageSrc();
+                if (src) {
+                    this.muya.eventCenter.emit('preview-image', {
+                        data: src,
+                    });
+                }
+
+                return this.hide();
+            }
+
+            case 'download': {
+                const src = this._getImageSrc();
+                if (src) {
+                    this.muya.eventCenter.emit('download-image', {
+                        data: src,
+                        filename: imageInfo!.token.attrs?.title || imageInfo!.token.attrs?.alt || imageInfo!.token.src,
+                    });
+                }
+
+                return this.hide();
+            }
+
             case 'delete':
                 this._block!.deleteImage(imageInfo!);
                 // Hide image transformer

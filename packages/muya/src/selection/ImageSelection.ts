@@ -101,10 +101,19 @@ class ImageSelection {
             return;
         }
 
-        if (isHTMLElement(target) && target.tagName === 'IMG') {
-            if (event instanceof MouseEvent && (event.metaKey || event.ctrlKey)) {
+        const imageContainer = imageWrapper.querySelector<HTMLElement>(
+            `.${CLASS_NAMES.MU_IMAGE_CONTAINER}`,
+        );
+        const clickedInsideImage = isHTMLElement(target)
+            && (target.tagName === 'IMG'
+                || target === imageContainer
+                || !!imageContainer?.contains(target));
+
+        if (clickedInsideImage && imageContainer) {
+            if (target.tagName === 'IMG' && event instanceof MouseEvent && (event.metaKey || event.ctrlKey)) {
                 const tokenSrc = imageInfo.token.src || imageInfo.token.attrs.src || '';
-                const src = getImageSrc(tokenSrc).src || target.getAttribute('src') || '';
+                const imgTarget = target as HTMLImageElement;
+                const src = getImageSrc(tokenSrc).src || imgTarget.getAttribute('src') || '';
                 if (src) {
                     eventCenter.emit('format-click', {
                         event,
@@ -114,11 +123,8 @@ class ImageSelection {
                 }
             }
 
-            const rect = imageWrapper
-                .querySelector(`.${CLASS_NAMES.MU_IMAGE_CONTAINER}`)
-                ?.getBoundingClientRect();
             const reference = {
-                getBoundingClientRect: () => rect,
+                getBoundingClientRect: () => imageContainer.getBoundingClientRect(),
                 width: imageWrapper.offsetWidth,
                 height: imageWrapper.offsetHeight,
             };
@@ -134,10 +140,6 @@ class ImageSelection {
             // duplicate DOM ids, so a `document.querySelector('#id ...')` lookup
             // would resolve to the first occurrence and place the resize bar on
             // the wrong image.
-            const imageContainer = imageWrapper.querySelector(
-                `.${CLASS_NAMES.MU_IMAGE_CONTAINER}`,
-            );
-
             eventCenter.emit('muya-transformer', {
                 block: contentBlock,
                 reference: imageContainer,

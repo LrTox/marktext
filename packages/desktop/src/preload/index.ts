@@ -75,6 +75,7 @@ const shellAPI = {
 
 const clipboardAPI = {
   writeText: (text: string) => send('mt::clipboard::write-text', text),
+  writeImage: (src: string) => invoke('mt::clipboard::write-image', src),
   readText: () => invoke('mt::clipboard::read-text'),
   guessFilePath: () => invoke('mt::clipboard::guess-file-path')
 }
@@ -169,6 +170,7 @@ const fileUtilsAPI = {
   pathExists: (p: string) => invoke('mt::fs::path-exists', p),
   unlink: (p: string) => invoke('mt::fs::unlink', p),
   readdir: (p: string) => invoke('mt::fs::readdir', p),
+  saveImageAs: (src: string, filename?: string) => invoke('mt::fs::save-image-as', src, filename),
   isExecutable: (p: string) => invoke('mt::fs::is-executable', p),
   // Pure-string predicates — synchronous, no IPC for the common case.
   isChildOfDirectory,

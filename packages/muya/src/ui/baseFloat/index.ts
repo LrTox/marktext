@@ -182,6 +182,9 @@ abstract class BaseFloat {
                     top: `${y}px`,
                     opacity: 1,
                 });
+            }).catch(() => {
+                if (this._cleanup === cleanup)
+                    this.hide();
             });
         });
         this._cleanup = cleanup;

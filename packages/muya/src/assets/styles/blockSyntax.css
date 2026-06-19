@@ -534,14 +534,18 @@ li.mu-task-list-item > span.mu-checkbox-checked::before {
 
 /* table */
 .mu-table {
+    box-sizing: border-box;
+    max-width: 100%;
     margin: 0.5em 0 0;
     padding: 0.5em 0;
+    overflow: visible;
 }
 
 .mu-table-inner {
     padding: 0;
 
     word-break: initial;
+    zoom: var(--mu-table-scale, 1);
 
     border-collapse: collapse;
 }
@@ -680,6 +684,18 @@ figure.mu-math-block .mu-math-preview,
 figure.mu-diagram-block .mu-diagram-preview {
     display: block;
     width: 100%;
+    max-width: 100%;
+}
+
+figure.mu-html-block .mu-html-preview img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+figure.mu-html-block .mu-html-preview table {
+    max-width: 100%;
+    border-collapse: collapse;
 }
 
 figure.mu-math-block .mu-math-preview .katex-display {
@@ -690,6 +706,8 @@ figure.mu-math-block .mu-math-preview .katex-display {
 /* to prevent plantuml img overflow */
 figure.mu-diagram-block .mu-diagram-preview img {
     max-width: 100%;
+    height: auto;
+    object-fit: contain;
 }
 
 figure.mu-html-block .mu-html-preview > pre {

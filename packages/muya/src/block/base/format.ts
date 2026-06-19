@@ -293,8 +293,11 @@ class Format extends Content {
         const { labels } = this.inlineRenderer;
         const { text } = this;
         const { start: cStart, end: cEnd, anchor, focus } = cursor;
-        const anchorOffset = cStart ? cStart.offset : anchor!.offset;
-        const focusOffset = cEnd ? cEnd.offset : focus!.offset;
+        const anchorOffset = cStart ? cStart.offset : anchor?.offset;
+        const focusOffset = cEnd ? cEnd.offset : focus?.offset;
+        if (anchorOffset == null || focusOffset == null)
+            return false;
+
         const NO_NEED_TOKEN_REG = /text|hard_line_break|soft_line_break/;
 
         for (const token of tokenizer(text, {
@@ -326,7 +329,10 @@ class Format extends Content {
 
     override blurHandler() {
         super.blurHandler();
-        const needRender = this.checkNeedRender();
+        const { anchor, focus } = this.selection;
+        const needRender = anchor && focus
+            ? this.checkNeedRender({ anchor, focus })
+            : true;
         if (needRender)
             this.update();
     }

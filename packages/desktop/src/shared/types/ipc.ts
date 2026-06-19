@@ -42,6 +42,7 @@ export interface IpcInvokeChannels {
   'mt::boot-info-async': { args: []; ret: BootInfo }
   'mt::clipboard::guess-file-path': { args: []; ret: string | null }
   'mt::clipboard::read-text': { args: []; ret: string }
+  'mt::clipboard::write-image': { args: [src: string]; ret: boolean }
   'mt::cmd::exists': { args: [name: string]; ret: boolean }
   'mt::fonts::list': { args: []; ret: string[] }
   'mt::fs-trash-item': { args: [pathname: string]; ret: void }
@@ -56,6 +57,10 @@ export interface IpcInvokeChannels {
   'mt::fs::path-exists': { args: [path: string]; ret: boolean }
   'mt::fs::read-file': { args: [path: string, encoding?: string]; ret: string | Uint8Array }
   'mt::fs::readdir': { args: [path: string]; ret: string[] }
+  'mt::fs::save-image-as': {
+    args: [src: string, filename?: string]
+    ret: { canceled: boolean; filePath?: string }
+  }
   'mt::fs::stat': { args: [path: string]; ret: SerializedStat }
   'mt::fs::unlink': { args: [path: string]; ret: void }
   'mt::fs::write-file': { args: [path: string, data: string | Uint8Array]; ret: void }
