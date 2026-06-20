@@ -5,12 +5,10 @@ import { useEffect, useState } from 'react'
 import { DOWNLOAD } from '@/lib/downloads'
 import { useToggleTheme } from '@/hooks/useTheme'
 import { GitHubIcon, MoonIcon, SearchIcon, SunIcon } from '@/components/Icons'
+import { usePalette } from './palette-context'
 
-type Props = {
-  onSearchOpen: () => void
-}
-
-export default function DocsHeader({ onSearchOpen }: Props) {
+export default function DocsHeader() {
+  const { openPalette } = usePalette()
   const toggleTheme = useToggleTheme()
   const [shortcut, setShortcut] = useState<string | null>(null)
 
@@ -30,7 +28,7 @@ export default function DocsHeader({ onSearchOpen }: Props) {
         <button
           type="button"
           className="docnav-search"
-          onClick={onSearchOpen}
+          onClick={openPalette}
           aria-label="Search docs"
         >
           <SearchIcon />

@@ -135,11 +135,9 @@ class ImageSelection {
                 imageInfo,
             });
 
-            // Resolve the image container from the clicked wrapper directly.
-            // Images that share the same src (and paragraph offset) render with
-            // duplicate DOM ids, so a `document.querySelector('#id ...')` lookup
-            // would resolve to the first occurrence and place the resize bar on
-            // the wrong image.
+            // 从被点击 wrapper 直接解析 image container。
+            // 同 src（及段落 offset）的图片 DOM id 重复，`document.querySelector('#id ...')`
+            // 会命中第一个，缩放条会挂到错误图片上。
             eventCenter.emit('muya-transformer', {
                 block: contentBlock,
                 reference: imageContainer,

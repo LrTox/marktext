@@ -302,17 +302,12 @@ const searchFn = () => {
       searchErrorMsg.value = t('search.invalidRegex', { pattern: searchValue.value })
       return
     }
-    // Handle match empty string, no need to search.
-    try {
-      const SEARCH_REG = new RegExp(searchValue.value)
-      if (searchValue.value && SEARCH_REG.test('')) {
-        throw new Error()
-      }
-      searchErrorMsg.value = ''
-    } catch {
+    const SEARCH_REG = new RegExp(searchValue.value)
+    if (searchValue.value && SEARCH_REG.test('')) {
       searchErrorMsg.value = t('search.regexMatchEmpty', { pattern: searchValue.value })
       return
     }
+    searchErrorMsg.value = ''
   }
 
   bus.emit('searchValue', {
@@ -396,15 +391,9 @@ const noop = () => {}
   display: inline-block;
   font-weight: 500;
   color: var(--sideBarIconColor);
-  &.left {
-    margin-right: 10px;
-  }
   &.right {
     margin-left: 10px;
   }
-}
-.button.active {
-  color: var(--themeColor);
 }
 .search-bar .button > svg {
   width: 16px;
@@ -479,7 +468,6 @@ const noop = () => {}
 
 .input-wrapper input {
   flex: 1;
-  padding: 0 8px;
   height: 26px;
   outline: none;
   border: none;

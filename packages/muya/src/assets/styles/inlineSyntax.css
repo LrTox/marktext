@@ -20,19 +20,15 @@ span.mu-inline-rule.mu-link {
     color: var(--link-color, rgb(20 86 240));
 }
 
-/* Note: previously this rule also set `pointer-events: none` to suppress
-   native navigation on `<a href>` clicks. That broke our hover-based
-   linkTools popover detection because every mouse event hit-tested
-   straight through to the editor container. Removed in PR-11b; the
-   `editor/linkMouseEvents.ts` click handler calls `preventDefault()`
-   on link clicks instead (standard contenteditable rich-text pattern). */
+/* 说明：此规则曾设 `pointer-events: none` 以阻止 `<a href>` 原生导航，
+   但会导致 hover 型 linkTools 无法命中（事件穿透到编辑器容器）。
+   PR-11b 已移除；`editor/linkMouseEvents.ts` 在链接点击时调用 preventDefault()（常见 contenteditable 富文本模式）。 */
 
 .mu-link-in-bracket {
     color: var(--editor-color-50);
 }
 
-/* strong and emphasis — default to `inherit` (the surrounding editor color)
-   so the bundled light theme is unchanged; themes can recolor them. */
+/* 粗体与斜体 —— 默认 `inherit`（沿用周围编辑器颜色）， bundled 浅色主题不变；主题可单独设色 */
 strong.mu-inline-rule {
     color: var(--strong-color, inherit);
 }
@@ -263,7 +259,7 @@ blockquote .mu-hide.mu-math > .mu-math-render {
     margin-left: -0.3em;
 }
 
-/* inline image and <img> image */
+/* 行内图片与 <img> 图片 */
 .mu-inline-image,
 .mu-image-container {
     font-size: 0;

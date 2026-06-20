@@ -4,7 +4,7 @@ import { addFile, unlinkFile, addDirectory, unlinkDirectory, resortTree, updateF
 import { usePreferencesStore } from './preferences'
 import bus from '../bus'
 import { create, paste, rename, type FileCreateType, type PasteOptions } from '../util/fileSystem'
-import { PATH_SEPARATOR } from '../config'
+import { PATH_SEPARATOR } from '@/config'
 import notice from '../services/notification'
 import { getFileStateFromData } from './help'
 import { useLayoutStore } from './layout'

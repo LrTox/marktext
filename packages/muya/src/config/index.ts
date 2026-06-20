@@ -6,8 +6,7 @@ export const HTML_TAGS = htmlTags;
 export const BLOCK_DOM_PROPERTY = '__MUYA_BLOCK__';
 
 /**
- * [genUpper2LowerKeyHash generate constants map hash, the value is lowercase of the key,
- * also translate `_` to `-`]
+ * 生成常量 map：值为 key 的小写，并将 `_` 转为 `-`
  */
 function genUpper2LowerKeyHash(keys: string[]): Record<string, string> {
     return keys.reduce((acc, key) => {
@@ -18,7 +17,7 @@ function genUpper2LowerKeyHash(keys: string[]): Record<string, string> {
 }
 
 /**
- * generate constants map, the value is the key.
+ * 生成常量 map：值等于 key
  */
 function generateKeyHash(keys: string[]): Record<string, string> {
     return keys.reduce((acc, key) => {
@@ -91,7 +90,7 @@ export const EVENT_KEYS = generateKeyHash([
     'Escape',
 ]);
 
-// TODO remove unused classnames after muya stable.
+// TODO：muya 稳定后移除未使用的 classname
 export const CLASS_NAMES = genUpper2LowerKeyHash([
     'MU_EDITOR',
     'MU_ACTIVE',
@@ -308,7 +307,7 @@ export const MUYA_DEFAULT_OPTIONS = {
     lineHeight: 1.6,
     focusMode: false,
     markdown: '',
-    // Whether to trim the beginning and ending empty line in code block when open markdown.
+    // 打开 markdown 时是否修剪代码块首尾空行
     trimUnnecessaryCodeBlockEmptyLines: false,
     preferLooseListItem: true,
     autoPairBracket: true,
@@ -318,7 +317,7 @@ export const MUYA_DEFAULT_OPTIONS = {
     orderListDelimiter: '.',
     tabSize: 4,
     codeBlockLineNumbers: false,
-    // bullet/list marker width + listIndentation, tab or Daring Fireball Markdown (4 spaces) --> list indentation
+    // bullet/list 标记宽度 + listIndentation，tab 或 Daring Fireball Markdown（4 空格）→ 列表缩进
     listIndentation: 1,
     frontmatterType: '-',
     mermaidTheme: 'default', // dark / forest / default
@@ -328,20 +327,19 @@ export const MUYA_DEFAULT_OPTIONS = {
     hideQuickInsertHint: false,
     hideLinkPopup: false,
     autoCheck: false,
-    // Whether we should set spellcheck attribute on our container to highlight misspelled words.
-    // NOTE: The browser is not able to correct misspelled words words without a custom
-    // implementation like in MarkText.
+    // 是否在容器上设置 spellcheck 以高亮拼写错误。
+    // 注意：浏览器无法在无自定义实现（如 MarkText）时纠正错词。
     spellcheckEnabled: false,
-    // Markdown extensions
-    frontMatter: true, // Whether to support frontmatter.
+    // Markdown 扩展
+    frontMatter: true, // 是否支持 frontmatter
     superSubScript: true,
     footnote: false,
-    // Whether math block is supported.
+    // 是否支持数学块
     math: true,
     isGitlabCompatibilityEnabled: true,
-    // Move checked task list item to the end of task list.
+    // 将已勾选 task 项移到列表末尾
     autoMoveCheckedToEnd: false,
-    // Whether HTML rendering is disabled or not.
+    // 是否禁用 HTML 渲染
     disableHtml: false,
     locale: zhCN,
 };
@@ -380,7 +378,7 @@ export const punctuation = [
     '}',
     '~',
 ];
-// Electron detection (kept for reference; renderer-process check).
+// Electron 环境检测（供参考；renderer 进程检查）
 export const IMAGE_EXT_REG = /\.(jpeg|jpg|png|gif|svg|webp)(?=\?|$)/i;
 export const isFirefox
     = typeof navigator !== 'undefined' && navigator.userAgent.includes('Firefox');
@@ -395,13 +393,12 @@ export const isWin
 // http[s] (domain or IPv4 or localhost or IPv6) [port] /not-white-space
 export const URL_REG
     = /^http(s)?:\/\/([\w\-.~]+\.[a-z]{2,}|[0-9.]+|localhost|\[[a-f0-9.:]+\])(:\d{1,5})?\/\S+/i;
-// A fully-formed base64/percent-encoded image data URL, e.g.
-// `data:image/png;base64,iVBORw0KGg...`. A bare `data:image/` prefix is not
-// treated as a safe-to-embed source.
+// 完整 base64/percent-encoded 图片 data URL，如 `data:image/png;base64,iVBORw0KGg...`。
+// 裸 `data:image/` 前缀不视为可安全嵌入的 src。
 export const DATA_URL_REG
     = /^data:image\/[\w+-]+(?:;[\w-]+=[\w-]+|;base64)*,[a-zA-Z0-9+/]+={0,2}$/;
 export const PREVIEW_DOMPURIFY_CONFIG = {
-    // do not forbid `class` because `code` element use class to present language
+    // 不禁用 `class`，code 元素用 class 表示语言
     FORBID_ATTR: ['style', 'contenteditable'],
     ALLOW_DATA_ATTR: false,
     USE_PROFILES: {
@@ -423,7 +420,7 @@ export const EXPORT_DOMPURIFY_CONFIG = {
         mathMl: false,
     },
     RETURN_TRUSTED_TYPE: false,
-    // Allow "file" protocol to export images on Windows (#1997).
+    // 允许 file 协议以在 Windows 导出本地图片（#1997）
     ALLOWED_URI_REGEXP:
     /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp|file):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i,
 };
@@ -449,8 +446,7 @@ export const DEFAULT_TURNDOWN_CONFIG = {
     linkReferenceStyle: 'full',
     blankReplacement(
         _content: unknown,
-        // Turndown passes its internal node object: a real DOM Element
-        // plus the augmented `isBlock` flag the library adds when walking.
+        // Turndown 传入内部 node：真实 DOM Element 加库遍历时附加的 `isBlock` 标志
         node: Element & { isBlock?: boolean },
         _options: unknown,
     ) {

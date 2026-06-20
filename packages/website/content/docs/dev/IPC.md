@@ -33,9 +33,9 @@ always use `mt::`.
 Each entry tells you the args tuple and (for invoke/sync) the return
 type:
 
-```ts
-'mt::fs::stat': { args: [path: string]; ret: SerializedStat }
-'mt::format-link-click': [payload: { data: unknown; dirname: string }]   // send shape
+```text
+'mt::fs::stat'        → args: [path: string], ret: SerializedStat
+'mt::format-link-click' → send payload: { data, dirname }
 ```
 
 ## Renderer side

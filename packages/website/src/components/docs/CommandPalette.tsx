@@ -4,16 +4,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { loadIndex, search, type IndexedPage, type SearchHit } from '@/lib/docs-search'
 import { SearchIcon } from '@/components/Icons'
-
-type Props = {
-  open: boolean
-  onClose: () => void
-}
+import { usePalette } from './palette-context'
 
 type GroupedHit = { hit: SearchHit; index: number }
 type HitGroup = { key: string; label: string; hits: GroupedHit[] }
 
-export default function CommandPalette({ open, onClose }: Props) {
+export default function CommandPalette() {
+  const { open, closePalette } = usePalette()
   const router = useRouter()
   const inputRef = useRef<HTMLInputElement | null>(null)
   const listRef = useRef<HTMLDivElement | null>(null)
@@ -52,9 +49,9 @@ export default function CommandPalette({ open, onClose }: Props) {
     (hit: SearchHit) => {
       const href = hit.headingId ? hit.page.href + '#' + hit.headingId : hit.page.href
       router.push(href)
-      onClose()
+      closePalette()
     },
-    [router, onClose]
+    [router, closePalette]
   )
 
   useEffect(() => {
@@ -63,7 +60,7 @@ export default function CommandPalette({ open, onClose }: Props) {
       if (ev.isComposing) return
       if (ev.key === 'Escape') {
         ev.preventDefault()
-        onClose()
+        closePalette()
         return
       }
       if (ev.key === 'ArrowDown') {
@@ -87,7 +84,7 @@ export default function CommandPalette({ open, onClose }: Props) {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [open, onClose, navigateTo, hits])
+  }, [open, closePalette, navigateTo, hits])
 
   useEffect(() => {
     if (!open) return
@@ -96,7 +93,7 @@ export default function CommandPalette({ open, onClose }: Props) {
   }, [selected, open])
 
   return (
-    <div className={'kbar-scrim' + (open ? ' open' : '')} onClick={onClose} aria-hidden={!open}>
+    <div className={'kbar-scrim' + (open ? ' open' : '')} onClick={closePalette} aria-hidden={!open}>
       <div
         className="kbar"
         role="dialog"

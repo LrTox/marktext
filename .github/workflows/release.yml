@@ -2,8 +2,7 @@ name: Release MarkText
 
 on:
   push:
-    # Broad trigger so the validate job can reject malformed v-tags
-    # (e.g. `vbad.tag`) instead of them silently not triggering anything.
+    # 宽泛触发，使 validate 任务能拒绝畸形 v 标签（如 vbad.tag），而非静默不运行
     tags:
       - 'v*'
   workflow_dispatch:
@@ -30,7 +29,7 @@ jobs:
           RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version_tag || github.ref_name }}
         run: |
           tag="$RELEASE_TAG"
-          # SemVer 2.0.0 with leading "v"
+          # SemVer 2.0.0，带 leading "v"
           if ! [[ "$tag" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
             echo "::error::Tag '$tag' is not a valid semver (expected vX.Y.Z[-prerelease][+build])"
             exit 1
@@ -68,7 +67,7 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v4.3.1
+        uses: ./.github/actions/checkout
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version_tag || github.ref }}
 
@@ -82,7 +81,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y icnsutils graphicsmagick xz-utils libx11-dev libxkbfile-dev gnome-keyring libsecret-1-dev libfontconfig-dev rpm
 
       - name: Install Python 3.12
-        uses: actions/setup-python@v5.6.0
+        uses: ./.github/actions/setup-python
         with:
           python-version: '3.12'
 
@@ -91,9 +90,9 @@ jobs:
         with:
           node-version: '24.14.1'
 
-      # Cache Electron binary; key on package.json so it busts when Electron version changes.
+      # 缓存 Electron 二进制；key 含 package.json，Electron 版本变更时 bust 缓存
       - name: Cache Electron binary
-        uses: actions/cache@v4.3.0
+        uses: ./.github/actions/cache
         with:
           path: |
             ~/.cache/electron
@@ -103,14 +102,13 @@ jobs:
           restore-keys: |
             electron-${{ matrix.os }}-
 
-      # Must be set before postinstall runs electron-rebuild
+      # 须在 postinstall 运行 electron-rebuild 之前设置
       - name: Set C++20 for MacOS
         if: matrix.platform == 'macos'
         run: |
           echo "CXXFLAGS=-std=gnu++20 -stdlib=libc++" >> $GITHUB_ENV
 
-      # Run the full postinstall: Electron binary download, patch-package,
-      # electron-rebuild, and minify-locales.
+      # 完整 postinstall：Electron 下载、patch-package、electron-rebuild、minify-locales
       - name: Run postinstall
         run: pnpm tsx scripts/postinstall.ts
         env:
@@ -124,11 +122,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Mac builds are unsigned (no Developer ID); see release notes for the
-      # user-side xattr/codesign workaround. Per-arch script: electron-builder's
-      # --arm64/--x64 flags are additive over the config's arch list, so
-      # electron-builder.yml must not pin mac.target arches for the flag to
-      # actually restrict the build to a single arch.
+      # Mac 构建未签名（无 Developer ID）；见 release 说明中的 xattr/codesign 变通。
+      # 按架构脚本：electron-builder 的 --arm64/--x64 在配置 arch 列表上叠加，
+      # 故 electron-builder.yml 不得 pin mac.target arch，才能限制为单架构构建。
       - name: build-mac
         if: matrix.platform == 'macos'
         run: pnpm run build:mac:${{ matrix.arch }}
@@ -142,7 +138,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4.6.2
+        uses: ./.github/actions/upload-artifact
         with:
           name: marktext-${{ matrix.name }}
           retention-days: 7
@@ -163,19 +159,16 @@ jobs:
     name: Publish GitHub Release
     needs: build
     runs-on: ubuntu-latest
-    # Per-job permissions REPLACE workflow-level ones, so re-declare
-    # both: contents:write to publish the release, actions:read for
-    # download-artifact's Actions API calls.
+    # 按 job 的 permissions 会覆盖 workflow 级；需重新声明：
+    # contents:write 发布 release，actions:read 供 download-artifact 调用 Actions API
     permissions:
       contents: write
       actions: read
     steps:
-      # upload-artifact@v4 treats `dist/` as the common-ancestor root and
-      # stores files flat inside each artifact (no `dist/` prefix). Downloading
-      # with `path: dist` + `merge-multiple` recreates `./dist/<file>` across
-      # all platforms.
+      # upload-artifact@v4 将 dist/ 视为公共祖先根，各 artifact 内文件扁平存储（无 dist/ 前缀）。
+      # 以 path: dist + merge-multiple 下载时，跨平台合并为 ./dist/<file>。
       - name: Download all platform artifacts
-        uses: actions/download-artifact@v4.3.0
+        uses: ./.github/actions/download-artifact
         with:
           path: dist
           merge-multiple: true
@@ -183,7 +176,7 @@ jobs:
       - name: Generate SHA256SUMS.txt
         working-directory: dist
         run: |
-          # Deterministic ordering so identical inputs always produce identical output
+          # 确定性排序，相同输入始终产生相同 SHA256SUMS.txt
           find . -maxdepth 1 -type f ! -name 'SHA256SUMS.txt' -printf '%f\n' \
             | LC_ALL=C sort \
             | xargs -I{} sha256sum "{}" > SHA256SUMS.txt
@@ -215,7 +208,7 @@ jobs:
           } > release_body.md
 
       - name: Publish release
-        uses: softprops/action-gh-release@v2.6.2
+        uses: ./.github/actions/gh-release
         with:
           tag_name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version_tag || github.ref_name }}
           draft: false
@@ -225,5 +218,3 @@ jobs:
           body_path: release_body.md
           fail_on_unmatched_files: true
           files: dist/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

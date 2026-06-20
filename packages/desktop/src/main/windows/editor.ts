@@ -6,7 +6,7 @@ import windowStateKeeper from 'electron-window-state'
 import { isChildOfDirectory, isSamePathSync } from 'common/filesystem/paths'
 import BaseWindow, { WindowLifecycle, WindowType } from './base'
 import type Accessor from '../app/accessor'
-import { ensureWindowPosition, zoomIn, zoomOut } from './utils'
+import { ensureWindowPosition, bindWindowFocusEvents, zoomIn, zoomOut } from './utils'
 import { TITLE_BAR_HEIGHT, editorWinOptions, isLinux, isOsx } from '../config'
 import { showEditorContextMenu } from '../contextMenu/editor'
 import { loadMarkdownFile } from '../filesystem/markdown'
@@ -120,7 +120,7 @@ class EditorWindow extends BaseWindow {
     } = preferences.getAll()
     const resolvedSideBarVisibility = restoreLayoutState ? !!sideBarVisibility : false
 
-    // Enable native or custom/frameless window and titlebar
+    // Enable native or custom/frameless window and title bar
     if (!isOsx) {
       winOptions.titleBarStyle = 'default'
       if (titleBarStyle === 'native') {
@@ -232,15 +232,9 @@ class EditorWindow extends BaseWindow {
       }
     })
 
-    win.on('focus', () => {
-      this.emit('window-focus')
-      win!.webContents.send('mt::window-active-status', { status: true })
-    })
-
-    // Lost focus
-    win.on('blur', () => {
-      this.emit('window-blur')
-      win!.webContents.send('mt::window-active-status', { status: false })
+    bindWindowFocusEvents(win!, {
+      onFocus: () => this.emit('window-focus'),
+      onBlur: () => this.emit('window-blur')
     })
     ;(['maximize', 'unmaximize', 'enter-full-screen', 'leave-full-screen'] as const).forEach(
       (channel) => {
@@ -272,12 +266,16 @@ class EditorWindow extends BaseWindow {
     })
 
     this.lifecycle = WindowLifecycle.LOADING
-    win.loadURL(this._buildUrlString(this.id, env, preferences))
+    void win
+      .loadURL(this._buildUrlString(this.id, env, preferences))
+      .catch((error) => {
+        log.error('Failed to load editor window URL:', error)
+      })
     win.setSheetOffset(TITLE_BAR_HEIGHT)
 
     mainWindowState.manage(win)
 
-    // Disable application menu shortcuts because we want to handle key bindings ourself.
+    // Disable application menu shortcuts because we want to handle key bindings ourselves.
     win.webContents.setIgnoreMenuShortcuts(true)
 
     // Delay load files and directories after the current control flow.
@@ -330,7 +328,7 @@ class EditorWindow extends BaseWindow {
 
     for (const { filePath, options, selected } of fileList) {
       if (this._openedFiles!.includes(filePath)) {
-        // File is already opened - avoid opening it again so we dont have duplicate watchers
+        // File is already opened - avoid opening it again so we don't have duplicate watchers
         browserWindow!.webContents.send('mt::switch-tab-by-file_path', filePath)
         continue
       }
@@ -521,7 +519,7 @@ class EditorWindow extends BaseWindow {
   // --- private ---------------------------------
 
   /**
-   * Open a new new tab from the markdown document.
+   * Open a new tab from the markdown document.
    */
   private _doOpenTab(
     rawDocument: RawMarkdownDocument,
@@ -568,7 +566,8 @@ class EditorWindow extends BaseWindow {
         fs.readFileSync(bufferStoreInfo!.filePath!, 'utf-8')
       ) as RestoredBufferState
       if (!bufferState || !Array.isArray(bufferState.tabs)) {
-        throw new Error('Invalid editor buffer state.')
+        log.error('Invalid editor buffer state.')
+        return
       }
       if (!Array.isArray(bufferState.restoreWarnings)) {
         bufferState.restoreWarnings = []

@@ -15,9 +15,9 @@ import type Preference from '../../preferences'
 export { default as dockMenu } from './dock'
 
 /**
- * Create the setting window menu.
+ * 创建设置窗口菜单。
  *
- * @param keybindings The keybindings instance
+ * @param keybindings 快捷键实例
  */
 export const configSettingMenu = (keybindings: Keybindings): MenuItemConstructorOptions[] => {
   return [
@@ -28,11 +28,11 @@ export const configSettingMenu = (keybindings: Keybindings): MenuItemConstructor
 }
 
 /**
- * Create the application menu for the editor window.
+ * 创建编辑器窗口的应用菜单。
  *
- * @param keybindings The keybindings instance.
- * @param preferences The preference instance.
- * @param recentlyUsedFiles The recently used files.
+ * @param keybindings 快捷键实例
+ * @param preferences 偏好设置实例
+ * @param recentlyUsedFiles 最近打开的文件列表
  */
 export default function(
   keybindings: Keybindings,

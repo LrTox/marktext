@@ -24,7 +24,7 @@
     white-space: pre-wrap;
 }
 
-/* Auto layout — avoid `table-layout: fixed` which crushes columns in PDF. */
+/* 自动布局 — 避免 table-layout: fixed 在 PDF 中压扁列宽。 */
 .markdown-body table {
     display: table;
     width: max-content;
@@ -35,6 +35,8 @@
 }
 
 .markdown-body table.export-table-fit {
+    /* 默认 1；导出时 fitExportTables 按页宽写入 inline 值 */
+    --export-table-scale: 1;
     zoom: var(--export-table-scale, 1);
     transform-origin: top left;
 }
@@ -63,6 +65,7 @@
     }
 
     .markdown-body table.export-table-fit {
+        --export-table-scale: 1;
         zoom: var(--export-table-scale, 1);
         transform-origin: top left;
     }

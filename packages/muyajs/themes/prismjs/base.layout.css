@@ -1,0 +1,19 @@
+/*
+ * Prism.js 公共排版（缩进、换行、连字符）。
+ * 由 default.css 引入一次；各主题文件仅定义颜色与 token。
+ */
+
+code[class*="language-"],
+pre.ag-paragraph {
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  -moz-tab-size: 4;
+  tab-size: 4;
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}

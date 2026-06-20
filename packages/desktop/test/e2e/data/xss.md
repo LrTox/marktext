@@ -4,7 +4,7 @@
 
 <script>process.crash()</script>
 
-<img src="#" onerror="process.crash()">
+<img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%3E%3Cscript%3Eprocess.crash()%3C/script%3E%3C/svg%3E" alt="xss-test">
 
 <svg/onload="process.crash()">
 
@@ -23,7 +23,7 @@
 
 <embed src="data:image/svg+xml;base64,PHN2ZyB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjAiIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48c2NyaXB0PnRocm93IG5ldyBFcnJvcignWFNTIDgnKTwvc2NyaXB0Pjwvc3ZnPgo=" type="image/svg+xml" AllowScriptAccess="always"></embed>
 
-<script foo>process.crash()</script>
+<script defer>process.crash()</script>
 
 #### Markdown
 

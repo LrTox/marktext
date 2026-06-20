@@ -1,9 +1,18 @@
 import { isHTMLElement } from './index';
 
+function isEditorTableInner(value: Element | null): value is HTMLTableElement {
+    if (!value)
+        return false;
+    if (value instanceof HTMLTableElement)
+        return true;
+    // happy-dom / jsdom 可能无法通过 `instanceof HTMLTableElement`
+    return value.tagName === 'TABLE' && isHTMLElement(value);
+}
+
 const MEASURE_SANDBOX_CLASS = 'mt-export-measure-sandbox';
 
-/** Measure natural table width in an off-screen sandbox (detached / hidden ancestors). */
-const measureEditorTableNaturalWidth = (inner: HTMLTableElement): number => {
+/** 在离屏沙箱中测量表格自然宽度（祖先 detached 或 hidden 时仍可用）。 */
+function measureEditorTableNaturalWidth(inner: HTMLTableElement): number {
     const sandbox = document.createElement('div');
     sandbox.className = MEASURE_SANDBOX_CLASS;
     sandbox.style.cssText = 'position:fixed;left:-100000px;top:0;visibility:hidden;display:block;width:max-content;max-width:none;';
@@ -36,9 +45,9 @@ const measureEditorTableNaturalWidth = (inner: HTMLTableElement): number => {
     }
 
     return Math.ceil(naturalWidth);
-};
+}
 
-const resolveContainerWidth = (root: HTMLElement, targetWidthPx: number): number => {
+function resolveContainerWidth(root: HTMLElement, targetWidthPx: number): number {
     const container = root.querySelector('.export-editor-document .mu-container')
         ?? root.querySelector('.mu-container')
         ?? root;
@@ -52,10 +61,10 @@ const resolveContainerWidth = (root: HTMLElement, targetWidthPx: number): number
         return Math.min(targetWidthPx, measured);
 
     return targetWidthPx;
-};
+}
 
 /**
- * Recompute `--mu-table-scale` on cloned editor tables (mirrors live `Table#_fitToContainer`).
+ * 在克隆的编辑器表格上重算 `--mu-table-scale`（与实时 `Table#_fitToContainer` 一致）。
  */
 export function fitEditorTablesForExport(root: HTMLElement, targetWidthPx: number): void {
     if (targetWidthPx <= 0)
@@ -69,7 +78,7 @@ export function fitEditorTablesForExport(root: HTMLElement, targetWidthPx: numbe
             continue;
 
         const inner = figureEl.querySelector('table.mu-table-inner');
-        if (!isHTMLElement(inner))
+        if (!isEditorTableInner(inner))
             continue;
 
         inner.style.removeProperty('--mu-table-scale');
@@ -87,7 +96,7 @@ export function fitEditorTablesForExport(root: HTMLElement, targetWidthPx: numbe
         const scale = Math.min(1, availableWidth / naturalWidth);
         const scaleText = scale.toFixed(4);
         inner.style.setProperty('--mu-table-scale', scaleText);
-        // Inline zoom — printToPDF may ignore CSS-variable-based zoom on tables.
+        // 内联 zoom — printToPDF 可能忽略基于 CSS 变量的表格 zoom
         inner.style.zoom = scaleText;
     }
 }

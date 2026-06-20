@@ -2,7 +2,7 @@
 
 ## Main interface
 
-![](../assets/marktext-interface.png)
+![](https://raw.githubusercontent.com/marktext/marktext/develop/docs/assets/marktext-interface.png)
 
 - Green: titlebar
 - Orange: sidebar

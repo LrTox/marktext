@@ -4,7 +4,7 @@ import { delay } from '@/util'
 import { SpellChecker } from '@/spellchecker'
 import { getLanguageName } from '@/spellchecker/languageMap'
 import getCommandDescriptionById from './descriptions'
-import { t } from '../i18n'
+import { t } from '@/i18n'
 
 interface SpellcheckerSubcommand {
   id: string

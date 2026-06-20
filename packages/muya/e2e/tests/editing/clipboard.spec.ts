@@ -1,3 +1,4 @@
+import type { BrowserContext, Page } from '@playwright/test';
 import { expect, test } from '../fixtures/muya';
 import { getMarkdown } from '../helpers/api';
 import { metaKey } from '../helpers/keyboard';
@@ -8,14 +9,15 @@ import { editor } from '../helpers/selectors';
  * with `ClipboardItem` + a real OS-level paste keystroke. This is the
  * only approach that works on bundled Chromium-for-Testing (which CI
  * uses): synthetic `new ClipboardEvent('paste', { clipboardData: dt })`
- * leaves `event.clipboardData === null` on CfT (and Chrome's spec-
- * compliant path), so pasteHandler bails early. The earlier
+ * leaves `event.clipboardData === null` on CfT (and Chrome's spec compliant
+ * path), so pasteHandler bails early. The earlier
  * `dispatchEvent` approach passed locally (where Playwright was set
  * to use the system Chrome stable channel — lenient about synthetic
  * ClipboardEvent) but failed on CI.
  *
- * The grantPermissions + clipboard.write + keyboard paste path is
- * spec-compliant and exercises the same code path real users hit.
+ * We rely on grantPermissions, then a clipboard write, then a keyboard
+ * paste. That path is spec compliant and exercises the same code path real
+ * users hit.
  *
  * Firefox + WebKit are skipped per-test:
  *   - Firefox: `ClipboardItem` is gated behind a pref, and
@@ -45,14 +47,14 @@ test.describe('clipboard paste', () => {
         }).toMatch(/\*\*foo\*\*/);
     });
 
-    test('pasting <a href> converts to markdown link', async ({ browserName, context, page }) => {
+    test('pasting an HTML anchor converts to markdown link', async ({ browserName, context, page }) => {
         test.skip(browserName !== 'chromium', 'ClipboardItem text/html unreliable on Firefox/WebKit headless — BACKLOG Phase 3.');
         await grantClipboardPermissions(context);
         await pasteClipboard(page, '<a href="https://example.test/">click here</a>', 'click here');
         await expect.poll(async () => getMarkdown(page), {
             timeout: 5_000,
             intervals: [50, 100, 250, 500],
-        }).toMatch(/\[click here\]\(https:\/\/example\.test\/?\)/);
+        }).toMatch(/\[click here]\(https:\/\/example\.test\/?\)/);
     });
 
     test('pasting a basic <table> converts to a GFM table', async ({ browserName, context, page }) => {
@@ -81,7 +83,7 @@ test.describe('clipboard paste', () => {
         }).toContain('just plain text');
 
         const md = await getMarkdown(page);
-        expect(md).not.toMatch(/[*_`|[\]]/);
+        expect(['*', '_', '`', '|', '[', ']'].some(ch => md.includes(ch))).toBe(false);
     });
 });
 
@@ -89,15 +91,13 @@ test.describe('clipboard paste', () => {
  * Grant clipboard read/write to the current BrowserContext.
  *
  * Why per-test instead of `test.use({ permissions: [...] })` at describe
- * level: WebKit doesn't recognise the `'clipboard-write'` permission name
+ * level: WebKit doesn't recognize the `'clipboard-write'` permission name
  * and `browserContext.newPage` throws with `Unknown permission:
  * clipboard-write` before any `test.skip(browserName !== 'chromium')`
  * inside the test body runs. By calling `grantPermissions` *after* the
  * skip check, the call is reached only on chromium where it works.
  */
-async function grantClipboardPermissions(
-    context: Parameters<Parameters<typeof test>[1]>[0]['context'],
-): Promise<void> {
+async function grantClipboardPermissions(context: BrowserContext): Promise<void> {
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 }
 
@@ -108,14 +108,10 @@ async function grantClipboardPermissions(
  * `new ClipboardEvent('paste', { clipboardData })`, which leaves
  * `clipboardData === null` on Chromium-for-Testing).
  */
-async function pasteClipboard(
-    page: Parameters<Parameters<typeof test>[1]>[0]['page'],
-    html: string,
-    text: string,
-): Promise<void> {
+async function pasteClipboard(page: Page, html: string, text: string): Promise<void> {
     await page.evaluate(() => window.muya!.setContent(''));
 
-    await page.evaluate(async ({ html, text }) => {
+    await page.evaluate(async ({ html, text }: { html: string; text: string }) => {
         await navigator.clipboard.write([
             new ClipboardItem({
                 'text/html': new Blob([html], { type: 'text/html' }),
@@ -124,7 +120,7 @@ async function pasteClipboard(
         ]);
     }, { html, text });
 
-    // Focus via muya's API + DOM focus, so the trusted paste keystroke
+    // Focus via the public focus API and DOM focus, so the trusted paste keystroke
     // lands inside the editor's contenteditable.
     await page.evaluate(() => {
         window.muya!.focus();
@@ -136,16 +132,13 @@ async function pasteClipboard(
 /**
  * Same as pasteClipboard but writes only `text/plain`.
  */
-async function pastePlainClipboard(
-    page: Parameters<Parameters<typeof test>[1]>[0]['page'],
-    text: string,
-): Promise<void> {
+async function pastePlainClipboard(page: Page, text: string): Promise<void> {
     await page.evaluate(() => window.muya!.setContent(''));
 
-    await page.evaluate(async (text) => {
+    await page.evaluate(async (plainText: string) => {
         await navigator.clipboard.write([
             new ClipboardItem({
-                'text/plain': new Blob([text], { type: 'text/plain' }),
+                'text/plain': new Blob([plainText], { type: 'text/plain' }),
             }),
         ]);
     }, text);

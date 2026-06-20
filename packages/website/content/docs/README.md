@@ -2,7 +2,7 @@
 
 Welcome to the end-user documentation of MarkText.
 
-![](assets/marktext-interface-2.png)
+![](https://raw.githubusercontent.com/marktext/marktext/develop/docs/assets/marktext-interface-2.png)
 
 **Quick start:**
 
@@ -20,7 +20,7 @@ Welcome to the end-user documentation of MarkText.
 - [Export a document](end-user/EXPORT.md)
 - [Image handling](end-user/IMAGES.md)
 - [Image uploader configuration](end-user/IMAGE_UPLOADER_CONFIGRATION.md)
-- [Installation instructions](../README.md#download-and-installation)
+- [Installation instructions](https://marktext.me/docs/installation)
 - [Key bindings](end-user/KEYBINDINGS.md)
 - [Portable mode](end-user/PORTABLE.md)
 - [Preferences](end-user/PREFERENCES.md)

@@ -8,7 +8,7 @@
     >
       <div
         v-if="!showCustomTitleBar"
-        class="title-bar"
+        class="title-bar electron-drag"
       />
       <router-view class="pref-setting" />
     </div>
@@ -95,14 +95,6 @@ onMounted(() => {
     font-size: 15px;
   }
 
-  & .notes {
-    display: block;
-    margin: 8px 0 0;
-    font-style: italic;
-    font-size: 12px;
-    color: var(--editorColor80);
-  }
-
   & .pref-content {
     position: relative;
     flex: 1;
@@ -115,11 +107,9 @@ onMounted(() => {
       position: fixed;
       top: 0;
       right: 0;
-      -webkit-app-region: drag;
     }
     & .pref-setting {
-      padding: 50px 40px;
-      padding-top: var(--titleBarHeight);
+      padding: var(--titleBarHeight) 40px 50px;
       flex: 1;
       height: calc(100vh - var(--titleBarHeight));
       overflow: auto;
@@ -142,3 +132,5 @@ onMounted(() => {
   }
 }
 </style>
+
+<style src="../prefComponents/common/prefNotes.css"></style>

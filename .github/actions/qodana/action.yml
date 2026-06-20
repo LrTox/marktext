@@ -1,0 +1,35 @@
+name: Qodana Scan
+description: MarkText wrapper for JetBrains/qodana-action@v2026.1.3 (matches qodana.yaml linter 2026.1)
+
+inputs:
+  args:
+    description: Additional Qodana CLI arguments
+    required: false
+    default: ''
+  pr-mode:
+    description: Analyze only changed files in pull requests
+    required: false
+    default: 'true'
+  post-pr-comment:
+    description: Post Qodana summary comment on the pull request
+    required: false
+    default: 'true'
+  use-caches:
+    description: Use GitHub caches for Qodana runs
+    required: false
+    default: 'true'
+  artifact-name:
+    description: Artifact name for uploaded results
+    required: false
+    default: qodana-report
+
+runs:
+  using: composite
+  steps:
+    - uses: JetBrains/qodana-action@v2026.1.3
+      with:
+        args: ${{ inputs.args }}
+        pr-mode: ${{ inputs.pr-mode }}
+        post-pr-comment: ${{ inputs.post-pr-comment }}
+        use-caches: ${{ inputs.use-caches }}
+        artifact-name: ${{ inputs.artifact-name }}

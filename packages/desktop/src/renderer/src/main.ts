@@ -5,20 +5,21 @@ import axios from './axios'
 import pinia from './store'
 import './assets/symbolIcon'
 
-// Element Plus instead of Element UI for Vue 3
+// Vue 3 使用 Element Plus 替代 Element UI
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 
-// I18n translation system
+// i18n 翻译系统
 import i18nPlugin from './i18n'
 
-// something is wrong here! \/
+// 此处可能有问题！ \/
 import services from './services/index'
 import routes from './router'
 import Main from './Main.vue'
 
 import './assets/styles/index.css'
+import './assets/styles/electronAppRegion.css'
 import './assets/styles/printService.css'
 
 // -----------------------------------------------
@@ -27,12 +28,12 @@ window.marktext = {}
 bootstrapRenderer()
 
 // -----------------------------------------------
-// Be careful when changing code before this line!
+// 修改此行之前的代码请谨慎！
 
-// Create Vue app
+// 创建 Vue 应用
 const app: App<Element> = createApp(Main)
 
-// Configure Element Plus with locale
+// 配置 Element Plus 语言包
 app.use(ElementPlus, {
   locale: zhCn
 })
@@ -41,8 +42,8 @@ const envType = window.marktext?.env?.type as string | undefined
 
 const router = createRouter({
   history: createWebHashHistory(),
-  // it seems like something might have changed in vue-router? it uses the full "file path" instead of
-  // links like /editor if we use the old createWebHistory()
+  // vue-router 行为似乎有变：使用 createWebHistory() 时会用完整「文件路径」
+  // 而非 /editor 这类链接
   routes: routes(envType)
 })
 
@@ -50,13 +51,13 @@ app.use(router)
 app.use(pinia)
 app.use(i18nPlugin)
 
-// Configure axios globally
+// 全局配置 axios
 app.config.globalProperties.$http = axios
 
-// Register services globally
+// 全局注册 services
 ;(services as unknown as Array<Record<string, unknown> & { name: string }>).forEach((s) => {
   app.config.globalProperties['$' + s.name] = s[s.name]
 })
 
-// Mount the app
+// 挂载应用
 app.mount('#app')

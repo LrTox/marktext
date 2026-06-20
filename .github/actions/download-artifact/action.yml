@@ -1,0 +1,19 @@
+name: Download artifact
+description: MarkText wrapper for actions/download-artifact@v4.3.0
+
+inputs:
+  path:
+    description: Destination directory
+    required: true
+  merge-multiple:
+    description: Merge multiple artifacts into one directory
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/download-artifact@v4.3.0
+      with:
+        path: ${{ inputs.path }}
+        merge-multiple: ${{ inputs.merge-multiple }}

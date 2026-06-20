@@ -1,0 +1,27 @@
+name: Run GitHub script
+description: MarkText wrapper for actions/github-script@v7.0.1
+
+inputs:
+  github-token:
+    description: GitHub token
+    required: true
+  script:
+    description: JavaScript to run
+    required: true
+
+outputs:
+  result:
+    description: JSON stringified return value of the script
+    value: ${{ steps.script.outputs.result }}
+  body:
+    description: Value set via core.setOutput in the script
+    value: ${{ steps.script.outputs.body }}
+
+runs:
+  using: composite
+  steps:
+    - id: script
+      uses: actions/github-script@v7.0.1
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: ${{ inputs.script }}

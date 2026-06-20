@@ -9,7 +9,7 @@ body article.print-container {
   display: none;
 }
 
-/* Off-screen layout pass before printToPDF — `display:none` breaks table measurement. */
+/* printToPDF 前的离屏布局阶段 — display:none 会破坏表格测量。 */
 body article.print-container.mt-print-measure {
   display: block !important;
   position: fixed;
@@ -25,12 +25,12 @@ body .mt-export-measure-sandbox {
 }
 
 @media print {
-  /* Set all settings like margin with @page or Electron settings. */
+  /* 页边距等打印设置由 @page 或 Electron 配置决定。 */
 
   @page {
     /* 
-      Recent versions of chromemium will treat margins as "transparent" - but we should set it to white so it isn't so ugly.
-      This should not affect the actual printing.
+      新版 Chromium 将页边距区域视为「透明」— 设为白色以免打印预览难看，
+      不影响实际打印内容。
     */
     background: white;
     margin: 15mm 20mm 15mm 20mm;
@@ -40,7 +40,7 @@ body .mt-export-measure-sandbox {
     display: none !important;
   }
 
-  /* General rules for printing. */
+  /* 打印通用规则。 */
   html,
   body {
     position: relative !important;
@@ -82,6 +82,7 @@ body .mt-export-measure-sandbox {
     overflow: visible;
   }
   body article.print-container .export-editor-document .mu-table-inner {
+    --mu-table-scale: 1;
     zoom: var(--mu-table-scale, 1) !important;
     transform-origin: top left;
   }
@@ -106,6 +107,7 @@ body .mt-export-measure-sandbox {
     overflow: visible;
   }
   body article.markdown-body table.export-table-fit {
+    --export-table-scale: 1;
     zoom: var(--export-table-scale, 1);
     transform-origin: top left;
   }

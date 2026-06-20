@@ -1,7 +1,6 @@
-// Renderer-side global declarations: build-time defines (electron-vite
-// `define` block in electron.vite.config.ts), the contextBridge surface
-// exposed by src/preload/index.ts, and a handful of legacy globals that
-// survived the sandbox migration.
+// 渲染进程全局类型声明：electron-vite `define` 注入的构建时常量、
+// preload（src/preload/index.ts）经 contextBridge 暴露的 API，
+// 以及沙箱迁移后仍保留的少量 legacy 全局变量。
 
 import type {
   IpcInvokeChannels,
@@ -14,12 +13,12 @@ import type { MenuTemplate, MenuPopupPosition } from '@shared/types/menu'
 import type { SerializedStat } from '@shared/types/files'
 
 declare global {
-  // ---- Build-time defines (electron-vite `define`) ----
+  // ---- 构建时常量（electron-vite `define`）----
   const MARKTEXT_VERSION: string
   const MARKTEXT_VERSION_STRING: string
   const __static: string
 
-  // ---- contextBridge surface ----
+  // ---- contextBridge 暴露面 ----
 
   interface ElectronIpcRenderer {
     send<K extends keyof IpcSendChannels>(channel: K, ...args: IpcSendChannels[K]): void
@@ -188,7 +187,7 @@ declare global {
     fonts: FontsAPI
     process: ProcessShim
     rgPath: string
-    // Set by the legacy editor store at runtime; consumed by muya internals.
+    // 由 legacy editor store 在运行时设置；muya 内部读取。
     DIRNAME: string
     marktext?: {
       env?: { windowId: number; [key: string]: unknown }

@@ -115,7 +115,7 @@
   border-bottom-color: transparent;
   position: absolute;
   top: 5px;
-  right: 0px;
+  right: 0;
 }
 
 .ag-front-menu ul li.item.disabled {
@@ -152,5 +152,5 @@
 }
 
 .ag-front-menu .submenu::-webkit-scrollbar:vertical {
-  width: 0px;
+  width: 0;
 }

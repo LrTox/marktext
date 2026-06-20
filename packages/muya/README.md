@@ -1,6 +1,4 @@
-<p align="center"><img src="./docs/logo.jpg" alt="muya" height="150"></p>
-
-<p align="center"><b>Muya</b> — a standalone Markdown editor for the web, extracted from <a href="https://github.com/marktext/marktext">MarkText</a>.</p>
+<p style="text-align: center"><b>Muya</b> — a standalone Markdown editor for the web, extracted from <a href="https://github.com/marktext/marktext">MarkText</a>.</p>
 
 > Status: Muya is still under active development. APIs may change between minor versions and it is not yet recommended for production use.
 

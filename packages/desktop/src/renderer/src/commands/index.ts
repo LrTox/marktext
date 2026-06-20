@@ -3,7 +3,7 @@ import bus from '../bus'
 import { delay, isOsx } from '@/util'
 import { isUpdatable } from './utils'
 import getCommandDescriptionById from './descriptions'
-import { t } from '../i18n'
+import { t } from '@/i18n'
 
 export { default as FileEncodingCommand } from './fileEncoding'
 export { default as LineEndingCommand } from './lineEnding'

@@ -1,5 +1,5 @@
 import type { IFileState } from '@shared/types/files'
-import { getUniqueId, deepClone } from '../util'
+import { getUniqueId, deepClone } from '@/util'
 
 // Helper module (NOT a Pinia store): defaults and factories for the editor
 // document state objects.

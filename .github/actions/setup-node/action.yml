@@ -1,0 +1,20 @@
+name: Setup Node.js
+description: MarkText wrapper for actions/setup-node@v4.4.0
+
+inputs:
+  node-version:
+    description: Node.js version to install
+    required: false
+    default: '22.21.1'
+  cache:
+    description: Package manager cache to restore
+    required: false
+    default: pnpm
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4.4.0
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: ${{ inputs.cache }}

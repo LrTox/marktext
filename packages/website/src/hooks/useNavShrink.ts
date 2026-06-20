@@ -1,8 +1,11 @@
 'use client'
 
-import { useEffect, type RefObject } from 'react'
+import { useEffect, useRef, useState, type RefObject } from 'react'
 
-export function useNavShrink(navRef: RefObject<HTMLElement | null>) {
+export function useNavShrink(): [RefObject<HTMLElement | null>, boolean] {
+  const navRef = useRef<HTMLElement>(null)
+  const [shrunk, setShrunk] = useState(false)
+
   useEffect(() => {
     const nav = navRef.current
     if (!nav) return
@@ -11,10 +14,12 @@ export function useNavShrink(navRef: RefObject<HTMLElement | null>) {
       const y = window.scrollY > 20 ? 1 : 0
       if (y === last) return
       last = y
-      nav.classList.toggle('is-shrunk', y === 1)
+      setShrunk(y === 1)
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
-  }, [navRef])
+  }, [])
+
+  return [navRef, shrunk]
 }

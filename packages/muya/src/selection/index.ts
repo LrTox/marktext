@@ -24,9 +24,9 @@ class Selection {
         return getSelectionStart();
     }
 
-    private _text: TextSelection;
-    private _image: ImageSelection;
-    private _table: TableRectSelection;
+    private readonly _text: TextSelection;
+    private readonly _image: ImageSelection;
+    private readonly _table: TableRectSelection;
 
     constructor(private _muya: Muya) {
         this._text = new TextSelection(this._muya, this);

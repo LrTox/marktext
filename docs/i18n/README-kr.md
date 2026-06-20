@@ -1,21 +1,21 @@
-<p align="center"><img src="../assets/logo-small.png" alt="MarkText" width="100" height="100"></p>
+<p style="text-align: center"><img src="https://raw.githubusercontent.com/marktext/marktext/develop/docs/assets/logo-small.png" alt="MarkText" width="100"></p>
 
-<h1 align="center">MarkText</h1>
+<h1 style="text-align: center">MarkText</h1>
 
-<div align="center">
+<div style="text-align: center">
   <a href="https://twitter.com/intent/tweet?via=marktextme&url=https://github.com/marktext/marktext/&text=What%20do%20you%20want%20to%20say%20to%20app?&hashtags=happyMarkText">
     <img src="https://img.shields.io/twitter/url/https/github.com/marktext/marktext.svg?style=for-the-badge" alt="twitter">
   </a>
 </div>
-<div align="center">
-  <strong>:high_brightness: 차세대 마크다운 에디터 :crescent_moon:</strong><br>
+<div style="text-align: center">
+  <strong>🌞 차세대 마크다운 에디터 🌙</strong><br>
   속도와 사용성에 초점을 맞춘 단순하고 우아한 오픈 소스 마크다운 에디터.<br>
   <sub>Linux, macOS 및 Windows에서 사용 가능합니다.</sub>
 </div>
 
 <br>
 
-<div align="center">
+<div style="text-align: center">
   <!-- License -->
   <a href="../../LICENSE">
     <img src="https://img.shields.io/github/license/marktext/marktext.svg" alt="LICENSE">
@@ -26,7 +26,7 @@
   </a>
   <!-- Downloads latest release -->
   <a href="https://github.com/marktext/marktext/releases/latest">
-    <img src="https://img.shields.io/github/downloads/marktext/marktext/v0.17.1/total.svg" alt="latest download">
+    <img src="https://img.shields.io/github/downloads/marktext/marktext/latest/total.svg" alt="latest download">
   </a>
   <!-- sponsors -->
   <a href="https://opencollective.com/marktext">
@@ -34,7 +34,7 @@
   </a>
 </div>
 
-<div align="center">
+<div style="text-align: center">
   <h3>
     <a href="https://github.com/marktext/marktext">
       Website
@@ -58,41 +58,41 @@
   </h3>
 </div>
 
-<div align="center">
+<div style="text-align: center">
   <sub>번역:</sub>
   <a href="../../README.md">
     <span>:uk:</span>
   </a>
-  <a href="README-zh_cn.md#readme">
+  <a href="README-zh_cn.md">
     <span>:cn:</span>
   </a>
-  <a href="README-zh_tw.md#readme">
+  <a href="README-zh_tw.md">
     <span>:taiwan:</span>
   </a>
-  <a href="README-de.md#readme">
+  <a href="README-de.md">
     <span>:de:</span>
   </a>
-  <a href="README-jp.md#readme">
+  <a href="README-jp.md">
     <span>:jp:</span>
   </a>
-  <a href="README-fr.md#readme">
+  <a href="README-fr.md">
     <span>:fr:</span>
   </a>
-  <a href="README-tr.md#readme">
+  <a href="README-tr.md">
     <span>:tr:</span>
   </a>
-  <a href="README-es.md#readme">
+  <a href="README-es.md">
     <span>:es:</span>
   </a>
-  <a href="README-pt.md#readme">
+  <a href="README-pt.md">
     <span>:portugal:</span>
   </a>
-  <a href="README-ar.md#readme">
+  <a href="README-ar.md">
     <span>:saudi_arabia:</span>
   </a>
 </div>
 
-<div align="center">
+<div style="text-align: center">
   <sub>이 마크다운 에디터는
     <a href="https://github.com/Jocs">Jocs</a> 와
     <a href="https://github.com/marktext/marktext/graphs/contributors">
@@ -103,18 +103,19 @@
 
 <br />
 
-<h2 align="center">MarkText 지원</h2>
+<h2 style="text-align: center">MarkText 지원</h2>
 
 MarkText는 커뮤니티의 지원으로 운영되는 오픈소스 Markdown 편집기입니다. MarkText가 작업 흐름을 개선한다면 [프로젝트 후원](https://github.com/sponsors/marktext)을 고려해 주세요. 모든 후원자 여러분께 감사드립니다 ❤️
 
 **특별 후원사**
 
-| [<img src="../assets/sponsors/serpapi.png" width="150">](https://serpapi.com/?utm_source=marktext) | [빠르고 쉬우며 완전한 API로 Google 및 기타 검색 엔진에서 데이터를 수집하세요.](https://serpapi.com/?utm_source=marktext) |
-| ------------- |:-------------|
+| | |
+| --- | --- |
+| [<img src="https://raw.githubusercontent.com/marktext/marktext/develop/docs/assets/sponsors/serpapi.png" width="150" alt="SerpApi">](https://serpapi.com/?utm_source=marktext) | [빠르고 쉬우며 완전한 API로 Google 및 기타 검색 엔진에서 데이터를 수집하세요.](https://serpapi.com/?utm_source=marktext) |
 
 ## 스크린샷
 
-![](../assets/marktext.png?raw=true)
+![](https://raw.githubusercontent.com/marktext/marktext/develop/docs/assets/marktext.png)
 
 ## 기능
 
@@ -123,19 +124,20 @@ MarkText는 커뮤니티의 지원으로 운영되는 오픈소스 Markdown 편�
 - 수식(KaTeX), 프론트 매터, 이모지 등 마크다운 확장 기능.
 - 단락 및 인라인 스타일 단축키로 작성 효율을 높여 줍니다.
 - **HTML** 및 **PDF** 파일 출력.
-- 다양한 [테마](../end-user/THEMES.md): **Cadmium Light**, **Material Dark** 등.
+- 다양한 [테마](https://marktext.me/docs/themes): **Cadmium Light**, **Material Dark** 등.
 - 다양한 편집 모드: **소스 코드 모드**, **타자기 모드**, **포커스 모드**.
 - 클립보드에서 직접 이미지를 붙여넣기.
 
 ## 다운로드 및 설치
 
-![플랫폼](https://img.shields.io/static/v1.svg?label=Platform&message=Linux-64%20|%20macOS-64%20|%20Win-32%20|%20Win-64&style=for-the-badge)
+![플랫폼](https://img.shields.io/static/v1.svg?label=Platform&message=Linux%20x64%20|%20macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
 
-| ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)                                                                                                  | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)                                                                                                          | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png)                                                                                                                        |
-|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| [![latest version](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-x64.dmg.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-x64.dmg) | [![latest version](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-setup.exe.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-setup.exe) | [![latest version](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-x86_64.AppImage.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-x86_64.AppImage) |
+| ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png) | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png) | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png) |
+| --- | --- | --- |
+| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Linux](https://img.shields.io/badge/Linux-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
 
-최신 버전의 새 기능을 확인하고 싶으신가요? [CHANGELOG](../CHANGELOG.md)를 참조하세요.
+
+최신 버전의 새 기능을 확인하고 싶으신가요? [CHANGELOG](https://marktext.me/docs/changelog)를 참조하세요.
 
 #### macOS
 
@@ -163,7 +165,7 @@ winget install marktext
 
 #### Linux
 
-[Linux 설치 지침](../end-user/LINUX.md)을 따르세요.
+[Linux 설치 지침](https://marktext.me/docs/installation)을 따르세요.
 
 #### 기타
 
@@ -171,10 +173,10 @@ Linux, macOS 및 Windows용 모든 바이너리는 [릴리스 페이지](https:/
 
 ## 개발
 
-MarkText를 직접 빌드하려면 [빌드 지침](../dev/BUILD.md)을 확인하세요.
+MarkText를 직접 빌드하려면 [빌드 지침](https://marktext.me/docs/dev/build)을 확인하세요.
 
-- [사용자 문서](../README.md)
-- [개발자 문서](../dev/README.md)
+- [사용자 문서](https://marktext.me/docs/introduction)
+- [개발자 문서](https://marktext.me/docs/dev/overview)
 
 MarkText에 관한 질문이 있으면 issue를 작성하세요. 그럴 때는 issue를 열 때 나오는 기본 형식을 사용해 주세요. 물론, PR을 직접 제출하시면 매우 감사하겠습니다.
 
@@ -187,7 +189,7 @@ MarkText는 개발 중입니다. pull request를 하기 전에 반드시 [기여
 
 이미 MarkText에 기여해 주신 모든 분들께 감사드립니다[[기여자](https://github.com/marktext/marktext/graphs/contributors)].
 
-<a href="https://github.com/marktext/marktext/graphs/contributors"><img src="https://opencollective.com/marktext/contributors.svg?width=890" /></a>
+<a href="https://github.com/marktext/marktext/graphs/contributors"><img src="https://opencollective.com/marktext/contributors.svg?width=890" alt="Contributors" /></a>
 
 ## 라이선스
 

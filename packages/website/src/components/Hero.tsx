@@ -7,6 +7,7 @@ import { revealClass } from '@/lib/sections'
 import { useTilt } from '@/hooks/useTilt'
 import MockWindow from './MockWindow'
 import { CheckIcon, DownloadIcon, GitHubIcon } from './Icons'
+import styles from './Hero.module.css'
 
 export default function Hero() {
   const stageRef = useRef<HTMLDivElement>(null)
@@ -19,10 +20,10 @@ export default function Hero() {
         <div className={revealClass(undefined, 'eyebrow')}>
           <span className="tag">v0.19.0</span> Free &amp; open source forever
         </div>
-        <h1 className={revealClass('d1', 'hero-title')}>
+        <h1 className={revealClass('d1', styles.heroTitle)}>
           Write in Markdown. <span className="grad-text">Stay in flow.</span>
         </h1>
-        <p className={revealClass('d2', 'hero-sub')}>
+        <p className={revealClass('d2', styles.heroSub)}>
           Realtime preview, beautiful typography, and zero distractions.
         </p>
         <div className={revealClass('d3', 'hero-cta')}>

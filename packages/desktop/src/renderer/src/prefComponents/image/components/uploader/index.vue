@@ -231,12 +231,12 @@
           <el-input
             v-model="cliScript"
             :placeholder="t('preferences.image.uploader.scriptPath')"
-            size="mini"
+            size="small"
           />
         </div>
         <div class="form-group">
           <el-button
-            size="mini"
+            size="small"
             :disabled="cliScriptDisable"
             @click="save()"
           >
@@ -790,6 +790,12 @@ const testPicgo = async (): Promise<void> => {
 
 <style scoped>
 .pref-image-uploader {
+  --successBgColor: #f0f9ff;
+  --successColor: #059669;
+  --warningBgColor: #fffbeb;
+  --warningColor: #d97706;
+  --editorColor70: rgba(0, 0, 0, 0.7);
+  --editorColor20: rgba(0, 0, 0, 0.2);
   color: var(--editorColor);
   font-size: 14px;
 }

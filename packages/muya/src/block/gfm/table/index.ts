@@ -100,7 +100,7 @@ class Table extends Parent {
     private _listenDomEvent() {
         const { domNode } = this;
 
-        // Fix: prevent cursor present at the end of table.
+        // 修复：防止光标停在表格末尾
         const mousedownHandler = (event: Event) => {
             if (event.target === domNode) {
                 event.preventDefault();
@@ -158,8 +158,7 @@ class Table extends Parent {
     }
 
     queryBlock(path: TBlockPath) {
-        // Table's only child at runtime is `TableInner` (the body wrapper),
-        // which extends the queryBlock mixin and is always present.
+        // 运行时唯一子节点为 `TableInner`（body 包装），继承 queryBlock mixin，始终存在
         return (this.firstChild as Parent & { queryBlock: (p: TBlockPath) => Parent | Content | undefined }).queryBlock(path);
     }
 
@@ -240,16 +239,12 @@ class Table extends Parent {
         if (row == null)
             return;
 
-        // Capture a surviving neighbour
-        // BEFORE the detach so the caller can place the caret on a cell that
-        // is still attached to the DOM. Prefer the next row, fall back to the
-        // previous; if no rows remain after this delete, capture a content
-        // block OUTSIDE the table so the caret never lands inside the
-        // about-to-be-detached table itself.
+        // 在 detach 前捕获仍附着的相邻行，供调用方放置 caret。
+        // 优先下一行，否则上一行；若删除后无行，则捕获表格外 content，
+        // 避免 caret 落在即将 detach 的表内。
         const survivor = (row.next as TableRow | null) ?? (row.prev as TableRow | null);
-        // Always grab the outside-of-table fallback as well, in case the
-        // whole table is going away. `nextContentInContext` / `prev` walk
-        // out of the table by design.
+        // 同时抓取表格外 fallback，整表删除时使用。
+        // `nextContentInContext` / `prev` 会走出表格。
         const outsideContent
             = this.nextContentInContext() ?? this.previousContentInContext();
 
@@ -274,19 +269,15 @@ class Table extends Parent {
 
         const table = this.firstChild as TableInner;
         if (this.columnCount === 1) {
-            // Same outside-of-table fallback as removeRow when the whole
-            // table is removed — never leave the caret inside a detached
-            // subtree.
+            // 整表删除时与 removeRow 相同：表格外 fallback，勿将 caret 留在 detach 子树内
             const outsideContent
                 = this.nextContentInContext() ?? this.previousContentInContext();
             this.remove();
             return outsideContent ?? null;
         }
 
-        // Capture the first row's surviving neighbour cell before mutation so
-        // the caller can setCursor on a still-attached cell after the column
-        // detach. Applied per column since the new architecture removes one
-        // cell per row in a loop.
+        // 变异前捕获首行相邻单元格，供删除列后 setCursor 到仍附着的 cell。
+        // 新架构按列循环删除，每列一次。
         const firstRow = table.firstChild as TableRow;
         const targetCellInFirstRow = firstRow.find(offset) as TableBodyCell | null;
         const neighbourCell
@@ -317,7 +308,7 @@ class Table extends Parent {
             if (cell) {
                 const { align: oldValue } = cell;
                 cell.align = oldValue === value ? 'none' : value;
-                // dispatch change to modify json state
+                // 派发变更以更新 json state
                 const diffs = diff(oldValue, cell.align);
                 const { path } = cell;
                 path.push('meta', 'align');
@@ -330,9 +321,8 @@ class Table extends Parent {
     }
 
     /**
-     * Resolve a body cell by its (row, column) offsets, both zero-based. Returns
-     * `null` when either index is out of range. Used by the cross-cell selection
-     * controller to walk the rectangle between an anchor and focus cell.
+     * 按（row, column）零基偏移解析 body 单元格；越界返回 `null`。
+     * 供跨单元格选区控制器在 anchor 与 focus 单元格间遍历矩形使用。
      */
     cellAt(row: number, column: number): Nullable<TableBodyCell> {
         const rowBlock = (this.firstChild as TableInner).find(row) as TableRow | undefined;
@@ -343,13 +333,9 @@ class Table extends Parent {
     }
 
     /**
-     * Build an `ITableState` for the rectangular block of cells bounded by
-     * (`startRow`, `startColumn`) and (`endRow`, `endColumn`) inclusive. The
-     * bounds may be passed in any order — they are normalised — and are clamped
-     * to the table's dimensions, so a copied cell rectangle round-trips to GFM
-     * table markdown via `StateToMarkdown`. The first selected row becomes the
-     * header
-     * row of the resulting sub-table, preserving each cell's alignment.
+     * 构建由 (`startRow`, `startColumn`) 与 (`endRow`, `endColumn`) Inclusive 界定的矩形单元格块的 `ITableState`。
+     * 边界可任意顺序传入（会归一化）并钳制到表尺寸，复制的矩形经 `StateToMarkdown` 可往返为 GFM 表格 markdown。
+     * 首行选中行成为结果子表的表头行，保留各单元格对齐。
      */
     getSubTableState(
         startRow: number,

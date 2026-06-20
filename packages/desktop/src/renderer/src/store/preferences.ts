@@ -1,10 +1,9 @@
 import { defineStore } from 'pinia'
 import bus from '../bus'
-import { setLanguage } from '../i18n'
+import { setLanguage } from '@/i18n'
 
-// Finite-value unions where the runtime currently constrains the field.
-// We keep these as plain strings everywhere else to avoid forcing prematurely
-// narrow casts on consumers that read raw values from disk.
+// 有限值联合类型 —— 运行时约束字段取值，其余处以 plain string 保留，
+// 避免对从磁盘读取原始值的消费者过早收窄类型。
 export type EndOfLine = 'default' | 'lf' | 'crlf'
 export type TitleBarStyle = 'custom' | 'native'
 export type StartUpAction = 'restoreAll' | 'lastSession' | 'blank'
@@ -20,7 +19,7 @@ export type FileSortBy = 'created' | 'modified' | 'title'
 export type FileSortOrder = 'asc' | 'desc'
 
 export interface PreferencesState {
-  // ----- General -----
+  // ----- 通用 -----
   autoSave: boolean
   autoSaveDelay: number
   titleBarStyle: TitleBarStyle | string
@@ -38,7 +37,7 @@ export interface PreferencesState {
   treePathExcludePatterns: string[]
   language: string
 
-  // ----- Editor / typography -----
+  // ----- 编辑器 / 排版 -----
   editorFontFamily: string
   fontSize: number
   lineHeight: number
@@ -49,7 +48,7 @@ export interface PreferencesState {
   wrapCodeBlocks: boolean
   editorLineWidth: string
 
-  // ----- Markdown editing -----
+  // ----- Markdown 编辑 -----
   autoPairBracket: boolean
   autoPairMarkdownSyntax: boolean
   autoPairQuote: boolean
@@ -82,25 +81,25 @@ export interface PreferencesState {
   sequenceTheme: SequenceTheme | string
   plantumlServer: string
 
-  // ----- Theme -----
+  // ----- 主题 -----
   theme: string
   followSystemTheme: boolean
   lightModeTheme: string
   darkModeTheme: string
   customCss: string
 
-  // ----- Spellchecker -----
+  // ----- 拼写检查 -----
   spellcheckerEnabled: boolean
   spellcheckerNoUnderline: boolean
   spellcheckerLanguage: string
 
-  // ----- Side bar / tab bar visibility (persisted) -----
+  // ----- 侧边栏 / 标签栏可见性（持久化） -----
   sideBarVisibility: boolean
   tabBarVisibility: boolean
   sourceCodeModeEnabled: boolean
   openedFilesInSidebar: boolean
 
-  // ----- Search -----
+  // ----- 搜索 -----
   searchExclusions: string[]
   searchMaxFileSize: string
   searchIncludeHidden: boolean
@@ -109,12 +108,12 @@ export interface PreferencesState {
 
   watcherUsePolling: boolean
 
-  // ----- Edit modes (per-window, not persisted) -----
+  // ----- 编辑模式（每窗口，不持久化） -----
   typewriter: boolean
   focus: boolean
   sourceCode: boolean
 
-  // ----- User config -----
+  // ----- 用户配置 -----
   imageFolderPath: string
   webImages: unknown[]
   cloudImages: unknown[]
@@ -208,7 +207,7 @@ export const usePreferencesStore = defineStore('preferences', {
     spellcheckerNoUnderline: false,
     spellcheckerLanguage: 'en-US',
 
-    // Default values that are overwritten with the entries below.
+    // 以下默认值会被启动时覆盖
     sideBarVisibility: false,
     tabBarVisibility: false,
     sourceCodeModeEnabled: false,
@@ -224,12 +223,12 @@ export const usePreferencesStore = defineStore('preferences', {
 
     // --------------------------------------------------------------------------
 
-    // Edit modes of the current window (not part of persistent settings)
-    typewriter: false, // typewriter mode
-    focus: false, // focus mode
-    sourceCode: false, // source code mode
+    // 当前窗口的编辑模式（不属于持久化设置）
+    typewriter: false, // 打字机模式
+    focus: false, // 焦点模式
+    sourceCode: false, // 源码模式
 
-    // user configration
+    // 用户配置
     imageFolderPath: '',
     webImages: [],
     cloudImages: [],
@@ -255,7 +254,7 @@ export const usePreferencesStore = defineStore('preferences', {
         }
       })
 
-      // Update i18n language if language preference changed
+      // 语言偏好变更时更新 i18n
       const lang = (preference as { language?: string }).language
       if (lang && lang !== oldLanguage) {
         setLanguage(lang)
@@ -281,15 +280,15 @@ export const usePreferencesStore = defineStore('preferences', {
     },
 
     SET_SINGLE_PREFERENCE({ type, value }: SingleSetPreferencePayload): void {
-      // Update local state
+      // 更新本地状态
       ;(this as unknown as Record<string, unknown>)[type as string] = value
 
-      // Update i18n language if language preference changed
+      // 语言变更时更新 i18n
       if (type === 'language' && typeof value === 'string') {
         setLanguage(value)
       }
 
-      // save to electron-store
+      // 写入 electron-store
       window.electron.ipcRenderer.send('mt::set-user-preference', { [type as string]: value })
     },
 
@@ -316,7 +315,7 @@ export const usePreferencesStore = defineStore('preferences', {
       })
     },
 
-    // Toggle a view option and notify main process to toggle menu item.
+    // 切换视图选项并通知主进程更新菜单项
     LISTEN_TOGGLE_VIEW(): void {
       bus.on('view:toggle-view-entry', (entryName) => {
         const name = entryName as string

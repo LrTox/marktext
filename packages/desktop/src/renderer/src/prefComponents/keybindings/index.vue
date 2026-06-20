@@ -73,13 +73,13 @@
     <section class="footer">
       <separator />
       <el-button
-        size="medium"
+        size="default"
         @click="saveKeybindings"
       >
         {{ t('preferences.keybindings.save') }}
       </el-button>
       <el-button
-        size="medium"
+        size="default"
         @click="restoreDefaults"
       >
         {{ t('preferences.keybindings.restoreDefaults') }}
@@ -94,7 +94,7 @@
         <strong>{{ t('preferences.keybindings.debugOptions') }}:</strong>
       </div>
       <el-button
-        size="medium"
+        size="default"
         @click="dumpKeyboardInformation"
       >
         {{ t('preferences.keybindings.dumpKeyboardInfo') }}
@@ -276,7 +276,7 @@ const dumpKeyboardInformation = (): void => {
       color: var(--themeColor);
     }
   }
-  & button.el-button {
+  & .el-button {
     font-size: 13px;
   }
 }
@@ -284,18 +284,18 @@ const dumpKeyboardInformation = (): void => {
 .el-table__expanded-cell {
   background: var(--editorBgColor);
 }
-.el-table button {
+.el-table .el-button {
   padding: 2px 2px;
-  margin: 4px 0px;
+  margin: 4px 0;
   color: var(--themeColor);
   background: none;
   border: none;
 }
-.el-table button:not(:last-child) {
+.el-table .el-button:not(:last-child) {
   margin-right: 4px;
 }
-.el-table button:hover,
-.el-table button:active {
+.el-table .el-button:hover,
+.el-table .el-button:active {
   opacity: 0.9;
   background: none;
 }

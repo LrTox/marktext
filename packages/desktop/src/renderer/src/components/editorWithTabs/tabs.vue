@@ -100,8 +100,7 @@ const handleTabScroll = (event: WheelEvent) => {
 
   const tabsEl = tabContainer.value
   if (!tabsEl) return
-  const newLeft = Math.max(0, Math.min(tabsEl.scrollLeft + delta, tabsEl.scrollWidth))
-  tabsEl.scrollLeft = newLeft
+  tabsEl.scrollLeft = Math.max(0, Math.min(tabsEl.scrollLeft + delta, tabsEl.scrollWidth))
 }
 
 const closeTab = (tabId: unknown) => {
@@ -250,7 +249,7 @@ onBeforeUnmount(() => {
   flex-direction: row;
   height: 28px;
   user-select: none;
-  box-shadow: 0px 0px 9px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 9px 2px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   &:hover > .new-file {
     opacity: 1 !important;

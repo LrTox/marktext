@@ -53,16 +53,12 @@ const getModeFromName = (name: string): MatchedMode | null => {
     const { name, mode, mime } = lang
     const matched = modes.filter((m) => {
       if (m.mime) {
-        if (Array.isArray(m.mime) && m.mime.indexOf(mime) > -1 && m.mode === mode) {
+        if (Array.isArray(m.mime) && m.mime.indexOf(mime) > -1 && m.mode === mode)
           return true
-        } else if (typeof m.mime === 'string' && m.mime === mime && m.mode === mode) {
+        if (typeof m.mime === 'string' && m.mime === mime && m.mode === mode)
           return true
-        }
       }
-      if (Array.isArray(m.mimes) && m.mimes.indexOf(mime) > -1 && m.mode === mode) {
-        return true
-      }
-      return false
+      return Array.isArray(m.mimes) && m.mimes.indexOf(mime) > -1 && m.mode === mode
     })
     if (matched.length && typeof matched[0] === 'object') {
       result = {

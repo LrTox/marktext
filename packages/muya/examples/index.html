@@ -2,7 +2,6 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <link rel="icon" type="image/svg+xml" href="/logo.jpg" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Muya Playground</title>
     </head>
@@ -37,11 +36,13 @@
 
             <details open>
                 <summary>Find &amp; Replace</summary>
+                <label for="search">Search (regexp):</label>
                 <input id="search" type="text" placeholder="Search (regexp)…" />
                 <div class="sidebar-row">
                     <button id="previous">Previous</button>
                     <button id="next">Next</button>
                 </div>
+                <label for="replace">Replacement text:</label>
                 <input id="replace" type="text" placeholder="Replacement text…" />
                 <div class="sidebar-row">
                     <button id="single">Replace</button>
@@ -66,6 +67,7 @@
                     <button id="show-toc">Show TOC</button>
                     <button id="export-html">Export HTML</button>
                 </div>
+                <label for="debug-out">Output:</label>
                 <textarea id="debug-out" readonly placeholder="Output appears here…"></textarea>
             </details>
 
@@ -181,7 +183,7 @@
                     <li>Click the language label of a code block → language selector.</li>
                     <li>Hover a link → link tools (edit / open / unlink).</li>
                     <li>Hover a footnote reference → footnote editor.</li>
-                    <li>Hover a diagram / math / html block → preview toolbar (source ↔ preview).</li>
+                    <li>Hover a diagram / math / HTML block → preview toolbar (source ↔ preview).</li>
                 </ul>
             </details>
         </aside>
@@ -190,6 +192,6 @@
             <div id="editor"></div>
         </main>
 
-        <script type="module" src="/src/main.ts"></script>
+        <script type="module" src="./src/main.ts"></script>
     </body>
 </html>

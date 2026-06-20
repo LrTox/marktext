@@ -162,15 +162,11 @@ export async function checkImageContentType(url: string) {
         const res = await fetch(url, { method: 'HEAD' });
         const contentType = res.headers.get('content-type');
 
-        if (
-            contentType
+        return (
+            contentType !== null
             && res.status === 200
             && /^image\/(?:jpeg|png|gif|svg\+xml|webp)$/.test(contentType)
-        ) {
-            return true;
-        }
-
-        return false;
+        );
     }
     catch {
         return false;

@@ -1,6 +1,5 @@
 'use client'
 
-import { useRef } from 'react'
 import Link from 'next/link'
 import { DOWNLOAD } from '@/lib/downloads'
 import { EXT_LINK } from '@/lib/links'
@@ -9,14 +8,18 @@ import { useToggleTheme } from '@/hooks/useTheme'
 import { useNavShrink } from '@/hooks/useNavShrink'
 import Brand from './Brand'
 import { GitHubIcon, MoonIcon, SunIcon } from './Icons'
+import './Nav.module.css'
 
 export default function Nav() {
-  const navRef = useRef<HTMLElement>(null)
+  const [navRef, shrunk] = useNavShrink()
   const toggle = useToggleTheme()
-  useNavShrink(navRef)
 
   return (
-    <nav className="nav" id="nav" ref={navRef}>
+    <nav
+      className={shrunk ? 'nav is-shrunk' : 'nav'}
+      id="nav"
+      ref={navRef}
+    >
       <Brand />
       <div className="nav-links">
         <a href={hash(SECTIONS.preview)}>Features</a>

@@ -532,7 +532,7 @@ li.mu-task-list-item > span.mu-checkbox-checked::before {
     box-shadow: 0 3px 12px 0 var(--selection-color);
 }
 
-/* table */
+/* 表格 */
 .mu-table {
     box-sizing: border-box;
     max-width: 100%;
@@ -545,6 +545,7 @@ li.mu-task-list-item > span.mu-checkbox-checked::before {
     padding: 0;
 
     word-break: initial;
+    --mu-table-scale: 1;
     zoom: var(--mu-table-scale, 1);
 
     border-collapse: collapse;
@@ -603,11 +604,9 @@ li.mu-task-list-item > span.mu-checkbox-checked::before {
     margin-bottom: 0;
 }
 
-/* Cross-cell drag selection (port of marktext's `.ag-cell-selected`): the
-   rectangle of cells the user dragged across is tinted via the per-cell
-   `::before` overlay so it reads as one contiguous selection. Every cell
-   (header included) renders as a `td`, and the overlay already paints the cell
-   border, so a translucent accent fill is enough. */
+/* 跨单元格拖拽选区（移植 marktext `.ag-cell-selected`）：用户拖过的单元格矩形
+   通过每格 `::before`  overlay 着色，呈现连续选区。各格（含表头）均为 `td`，
+   overlay 已绘制边框，半透明 accent 填充即可。 */
 .mu-table-inner tr td.mu-table-cell-selected::before {
     z-index: 1;
 
@@ -918,22 +917,17 @@ pre.mu-active.mu-fenced-code::after {
     min-width: 10em;
 }
 
-/* Footnote definition block — port of marktext's `figure[data-role='FOOTNOTE']`
-   styling (src/muya/lib/assets/styles/index.css:194-246) with class prefix
-   `ag-` → `mu-` and CSS-var names rebound to the new repo's kebab-case set.
-   Layout: tinted figure with the `[^id]:` label absolutely positioned at the
-   top-left corner of the padding area, so the body text starts below it and
-   doesn't collide. */
+/* 脚注定义块 —— 移植 marktext `figure[data-role='FOOTNOTE']` 样式
+   （src/muya/lib/assets/styles/index.css:194-246），class 前缀 `ag-` → `mu-`，
+   CSS 变量名对齐本仓库 kebab-case。布局：浅色 figure，`[^id]:` 标签绝对定位于
+   padding 区左上角，正文从其下方开始避免重叠。 */
 
-/* The top-of-file `.mu-container figure:not(.mu-table)` rule sets `padding:
-   0.5em 0; margin: 0` at specificity 0,2,1 and would otherwise win over a
-   plain `figure.mu-footnote`. Use `.mu-container figure.mu-footnote` to
-   match the same specificity, then source order wins. */
+/* 文件顶部 `.mu-container figure:not(.mu-table)` 在特异性 0,2,1 设 `padding: 0.5em 0; margin: 0`，
+   会压过 plain `figure.mu-footnote`。用 `.mu-container figure.mu-footnote` 匹配同等特异性，靠源顺序覆盖。 */
 .mu-container figure.mu-footnote {
     position: relative;
 
-    /* Vertical separation between consecutive footnotes; 0 horizontal so the
-       block sits flush with the surrounding paragraphs. */
+    /* 相邻脚注之间的垂直间距；水平 0 与周围段落对齐 */
     margin: 1.4em 0;
     padding: 1.2em 2em 0.05em 1em;
 
@@ -979,9 +973,8 @@ pre.mu-active.mu-fenced-code::after {
     content: ']:';
 }
 
-/* The lowercase "footnote" badge in the top-right corner, only when the
-   block is active (focus inside its body) — same hint marktext shows via
-   `figure[data-role='FOOTNOTE'].ag-active::before`. */
+/* 右上角小写 "footnote" 角标，仅块 active（焦点在正文内）时显示 ——
+   同 marktext `figure[data-role='FOOTNOTE'].ag-active::before` */
 .mu-container figure.mu-footnote.mu-active::before {
     position: absolute;
     top: 0.2em;
@@ -994,9 +987,8 @@ pre.mu-active.mu-fenced-code::after {
     content: 'footnote';
 }
 
-/* Bottom-right ↩︎ backlink — clicking it jumps to the first
-   `<sup id="noteref-{id}">` reference. The `<i>` is appended to the figure
-   by `Footnote.create` and carries its own click listener. */
+/* 右下角 ↩︎ 回链 —— 点击跳转到首个 `<sup id="noteref-{id}">` 引用。
+   `<i>` 由 `Footnote.create` 追加到 figure 并自带 click 监听。 */
 .mu-container figure.mu-footnote > i.mu-footnote-backlink {
     position: absolute;
     right: 0.5em;

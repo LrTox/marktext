@@ -62,7 +62,7 @@
     >
       <el-button
         type="primary"
-        size="mini"
+        size="small"
         @click="cancelSearcher"
       >
         {{ t('sideBar.search.cancel') }} <VideoPause />

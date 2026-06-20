@@ -16,7 +16,7 @@ function compatibleTaskList(tokens: (Token | ListToken | ListItemToken)[] = []) 
 
     for (const token of tokens) {
         if (isListToken(token)) {
-            if (token.ordered === true) {
+            if (token.ordered) {
                 token.listType = 'order';
                 for (const item of token.items) {
                     item.tokens = compatibleTaskList(item.tokens);

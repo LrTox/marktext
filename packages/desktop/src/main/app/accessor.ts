@@ -5,7 +5,7 @@ import DataCenter from '../dataCenter'
 import Keybindings from '../keyboard/shortcutHandler'
 import AppMenu from '../menu'
 import { loadMenuCommands } from '../menu/actions'
-import { CommandManager, loadDefaultCommands } from '../commands'
+import { commandManager, loadDefaultCommands, type CommandManager } from '../commands'
 import type { AppEnvironment } from './env'
 import type AppPaths from './paths'
 
@@ -33,7 +33,7 @@ class Accessor {
     this.dataCenter = new DataCenter(this.paths)
     this.editorBufferStore = new EditorBufferStore(this.paths)
 
-    this.commandManager = CommandManager
+    this.commandManager = commandManager
     this._loadCommands()
 
     this.keybindings = new Keybindings(this.commandManager, appEnvironment)

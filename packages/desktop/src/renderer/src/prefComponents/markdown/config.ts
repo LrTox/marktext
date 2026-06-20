@@ -1,4 +1,4 @@
-import { t } from '../../i18n'
+import { t } from '@/i18n'
 import type { PrefSelectOption } from '../common/types'
 
 export const bulletListMarkerOptions: PrefSelectOption<string>[] = [
@@ -38,7 +38,7 @@ export const getPreferHeadingStyleOptions = (): PrefSelectOption<string>[] => [
   }
 ]
 
-export const getListIndentationOptions = (): PrefSelectOption<string | number>[] => [
+export const getListIndentationOptions = (): PrefSelectOption[] => [
   {
     label: t('preferences.markdown.lists.listIndentation.dfm'),
     value: 'dfm'

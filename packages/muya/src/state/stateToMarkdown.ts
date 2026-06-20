@@ -48,15 +48,15 @@ export default class ExportMarkdown {
     // descent into bullet/order/task list, pop on ascent). The serializer
     // reads `loose` / `marker` / `delimiter` / `start` from the top entry
     // to render the correct bullet, indentation, and tightness.
-    private _listType: (
+    private readonly _listType: (
         | IBulletListState['meta']
         | IOrderListState['meta']
         | ITaskListState['meta']
     )[];
 
+    private readonly _listIndentation: string;
+    private readonly _listIndentationCount: number;
     private _isLooseParentList: boolean;
-    private _listIndentation: string;
-    private _listIndentationCount: number;
 
     constructor(
         {

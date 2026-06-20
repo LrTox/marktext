@@ -1,26 +1,44 @@
 name: Setup pnpm and Node.js
-description: Install pnpm, Node.js, and project dependencies (skips postinstall scripts)
+description: Install pnpm, Node.js, and optionally project dependencies
 
 inputs:
   node-version:
     description: Node.js version to install
     required: false
     default: '22.21.1'
+  pnpm-version:
+    description: pnpm version (matches root packageManager)
+    required: false
+    default: '10.33.4'
+  run-install:
+    description: Run pnpm install after toolchain setup
+    required: false
+    default: 'true'
+  ignore-scripts:
+    description: Pass --ignore-scripts to pnpm install
+    required: false
+    default: 'true'
 
 runs:
   using: composite
   steps:
-    - name: Install pnpm
-      uses: pnpm/action-setup@v4.4.0
+    - uses: pnpm/action-setup@v4.4.0
+      with:
+        version: ${{ inputs.pnpm-version }}
 
-    - name: Install Node.js
-      uses: actions/setup-node@v4.4.0
+    - uses: ./.github/actions/setup-node
       with:
         node-version: ${{ inputs.node-version }}
-        cache: 'pnpm'
+        cache: pnpm
 
-    - name: Install Dependencies
+    - name: Install dependencies
+      if: inputs.run-install == 'true'
       shell: bash
-      run: pnpm install --frozen-lockfile --ignore-scripts
+      run: |
+        if [ "${{ inputs.ignore-scripts }}" = "true" ]; then
+          pnpm install --frozen-lockfile --ignore-scripts
+        else
+          pnpm install --frozen-lockfile
+        fi
       env:
         GITHUB_TOKEN: ${{ github.token }}

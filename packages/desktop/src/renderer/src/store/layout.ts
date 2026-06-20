@@ -70,20 +70,20 @@ export const useLayoutStore = defineStore('layout', () => {
       window.electron.ipcRenderer.send(
         'mt::update-sidebar-menu',
         Number(windowId),
-        !!layout.showSideBar
+        layout.showSideBar
       )
       const preferencesStore = usePreferencesStore()
       preferencesStore.SET_SINGLE_PREFERENCE({
         type: 'sideBarVisibility',
-        value: !!layout.showSideBar
+        value: layout.showSideBar
       })
     }
     // Match the pre-migration `Object.assign(this, layout)` semantics: assign
     // each known field as-is (no normalization here; SET_SIDE_BAR_WIDTH owns
     // sideBarWidth's normalization), and skip unknown keys silently.
     if (layout.rightColumn !== undefined) rightColumn.value = layout.rightColumn
-    if (layout.showSideBar !== undefined) showSideBar.value = !!layout.showSideBar
-    if (layout.showTabBar !== undefined) showTabBar.value = !!layout.showTabBar
+    if (layout.showSideBar !== undefined) showSideBar.value = layout.showSideBar
+    if (layout.showTabBar !== undefined) showTabBar.value = layout.showTabBar
     if (layout.sideBarWidth !== undefined) sideBarWidth.value = layout.sideBarWidth as number
     if (scheduleBufferUpdate) {
       debouncedSendBufferedState()
@@ -121,7 +121,7 @@ export const useLayoutStore = defineStore('layout', () => {
       const preferencesStore = usePreferencesStore()
       preferencesStore.SET_SINGLE_PREFERENCE({
         type: 'sideBarVisibility',
-        value: !!showSideBar.value
+        value: showSideBar.value
       })
     } else if (entryName === 'showTabBar') {
       showTabBar.value = !showTabBar.value

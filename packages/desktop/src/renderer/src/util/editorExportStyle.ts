@@ -1,4 +1,5 @@
-import { DEFAULT_CODE_FONT_FAMILY, DEFAULT_EDITOR_FONT_FAMILY } from '../config'
+/** 导出/PDF 外观 CSS：将编辑器主题、字体、行宽映射到 .markdown-body。 */
+import { DEFAULT_CODE_FONT_FAMILY, DEFAULT_EDITOR_FONT_FAMILY } from '@/config'
 import { getThemeStylesheet } from './getThemeStylesheet'
 
 export interface EditorExportAppearance {
@@ -11,7 +12,7 @@ export interface EditorExportAppearance {
   codeFontSize: number
   customCss?: string
   wrapCodeBlocks?: boolean
-  /** Cap `.markdown-body` width for PDF/print (printable page width in px). */
+  /** 限制 PDF/打印时 .markdown-body 宽度（可打印页面宽度，单位 px）。 */
   maxContentWidthPx?: number
 }
 
@@ -86,7 +87,7 @@ body {
 .markdown-body table tr {
   border-top: none;
 }
-/* Editor parity: measure natural table width, then zoom-scale when needed. */
+/* 与编辑器一致：先测量表格自然宽度，必要时用 zoom 缩放。 */
 .markdown-body table {
   display: table;
   width: max-content;
@@ -96,6 +97,7 @@ body {
   border-collapse: collapse;
 }
 .markdown-body table.export-table-fit {
+  --export-table-scale: 1;
   zoom: var(--export-table-scale, 1);
   transform-origin: top left;
 }
@@ -118,6 +120,7 @@ body {
     background: var(--editorBgColor) !important;
   }
   .markdown-body table.export-table-fit {
+    --export-table-scale: 1;
     zoom: var(--export-table-scale, 1) !important;
     transform-origin: top left !important;
   }
@@ -166,7 +169,7 @@ const getCodeWrapCss = (wrapCodeBlocks: boolean): string => {
   return ''
 }
 
-/** Build CSS that maps the active editor theme onto exported `.markdown-body`. */
+/** 构建 CSS，将当前编辑器主题映射到导出的 .markdown-body。 */
 export const getEditorExportAppearanceCss = (appearance: EditorExportAppearance): string => {
   let css = getThemeStylesheet(appearance.editorTheme)
   css += MARKDOWN_BODY_THEME_MAP
@@ -188,7 +191,7 @@ const PAGE_SIZES_MM: Record<string, { w: number; h: number }> = {
   Tabloid: { w: 279.4, h: 431.8 }
 }
 
-/** Editor content column width in px (matches `--editorAreaWidth` / line-width pref). */
+/** 编辑器内容列宽度（px），对应 --editorAreaWidth / 行宽偏好。 */
 export const resolveExportContentWidthPx = (editorLineWidth: string): number => {
   if (editorLineWidth && /^([0-9]+)(px|ch|%)$/.test(editorLineWidth)) {
     const match = /^([0-9]+)(px|ch|%)$/.exec(editorLineWidth)!
@@ -201,7 +204,7 @@ export const resolveExportContentWidthPx = (editorLineWidth: string): number => 
 
 const mmToPx = (mm: number): number => (mm / 25.4) * 96
 
-/** Printable page width in px for PDF/print exports. */
+/** PDF/打印导出时可打印页面宽度（px）。 */
 export const resolvePrintableWidthPx = (exportOptions: {
   pageSize?: string
   pageSizeWidth?: number
@@ -211,17 +214,13 @@ export const resolvePrintableWidthPx = (exportOptions: {
   pageMarginRight?: number
 }): number => {
   let pageWidthMm: number
-  let pageHeightMm: number
   if (exportOptions.pageSize === 'custom') {
-    pageWidthMm = exportOptions.pageSizeWidth ?? 210
-    pageHeightMm = exportOptions.pageSizeHeight ?? 297
+    const widthMm = exportOptions.pageSizeWidth ?? 210
+    const heightMm = exportOptions.pageSizeHeight ?? 297
+    pageWidthMm = exportOptions.isLandscape ? heightMm : widthMm
   } else {
     const size = PAGE_SIZES_MM[exportOptions.pageSize ?? 'A4'] ?? PAGE_SIZES_MM.A4
-    pageWidthMm = size.w
-    pageHeightMm = size.h
-  }
-  if (exportOptions.isLandscape) {
-    ;[pageWidthMm, pageHeightMm] = [pageHeightMm, pageWidthMm]
+    pageWidthMm = exportOptions.isLandscape ? size.h : size.w
   }
   const marginLeft = exportOptions.pageMarginLeft ?? 15
   const marginRight = exportOptions.pageMarginRight ?? 15

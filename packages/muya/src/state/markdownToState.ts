@@ -26,7 +26,7 @@ interface IMarkdownToStateOptions {
     isGitlabCompatibilityEnabled: boolean;
     trimUnnecessaryCodeBlockEmptyLines: boolean;
     frontMatter: boolean;
-};
+}
 
 const DEFAULT_OPTIONS = {
     footnote: false,

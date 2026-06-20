@@ -259,7 +259,6 @@ const startTextSearch = (
     let bufferError = ''
     let pendingEvent: { filePath: string; matches: RgMatch[] } | null = null
     let pendingLeadingContext: unknown[] = []
-    let pendingTrailingContexts: Set<unknown[]> = new Set()
 
     child.on('close', (code) => {
       if (code !== null && code > 1 && bufferError) {
@@ -296,10 +295,8 @@ const startTextSearch = (
           if (message.type === 'begin') {
             pendingEvent = { filePath: getText(message.data.path), matches: [] }
             pendingLeadingContext = []
-            pendingTrailingContexts = new Set()
           } else if (message.type === 'match') {
             const trailingContextLines: unknown[] = []
-            pendingTrailingContexts.add(trailingContextLines)
             processUnicodeMatch(message.data)
             for (const submatch of message.data.submatches) {
               const { lineText, range } = processSubmatch(

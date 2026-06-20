@@ -1,0 +1,19 @@
+name: Sticky pull request comment
+description: MarkText wrapper for marocchino/sticky-pull-request-comment@v2.9.4
+
+inputs:
+  header:
+    description: Comment header key for updates
+    required: false
+    default: ''
+  message:
+    description: Comment body
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: marocchino/sticky-pull-request-comment@v2.9.4
+      with:
+        header: ${{ inputs.header }}
+        message: ${{ inputs.message }}

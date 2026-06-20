@@ -5,10 +5,9 @@
 // must stay verbatim so test reports line up with spec line items.
 
 import type { ISpecExample } from './runner';
-// @ts-expect-error commonmark-spec is plain CommonJS w/o types
 import cms from 'commonmark-spec';
 import { describe, expect, it } from 'vitest';
-import { renderToStaticHTML } from '../../src/state/renderToStaticHTML';
+import { renderToStaticHTML } from '../../src';
 import {
     compareHtml,
     formatFailureMessage,

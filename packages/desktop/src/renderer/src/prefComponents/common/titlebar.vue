@@ -1,7 +1,7 @@
 <template>
-  <div class="title-bar">
+  <div class="title-bar electron-drag">
     <div
-      class="frameless-titlebar-button frameless-titlebar-close"
+      class="frameless-title-bar-button frameless-title-bar-close electron-no-drag"
       @click.stop="handleCloseClick"
     >
       <div>
@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { closePath as windowIconClose } from '../../assets/window-controls'
+import { closePath as windowIconClose } from '@/assets/window-controls.js'
 
 const handleCloseClick = () => {
   window.electron.windowControl.close()
@@ -26,7 +26,6 @@ const handleCloseClick = () => {
 
 <style scoped>
 .title-bar {
-  -webkit-app-region: drag;
   user-select: none;
   background: transparent;
   height: var(--titleBarHeight);
@@ -41,17 +40,16 @@ const handleCloseClick = () => {
   cursor: default;
 }
 
-.frameless-titlebar-button {
+.frameless-title-bar-button {
   position: absolute;
   display: block;
   top: 0;
   right: 0;
   width: 46px;
   height: var(--titleBarHeight);
-  -webkit-app-region: no-drag;
 }
 
-.frameless-titlebar-button > div {
+.frameless-title-bar-button > div {
   position: absolute;
   display: inline-flex;
   top: 50%;
@@ -59,15 +57,15 @@ const handleCloseClick = () => {
   transform: translateX(-50%) translateY(-50%);
 }
 
-.frameless-titlebar-close:hover {
+.frameless-title-bar-close:hover {
   background-color: rgb(228, 79, 79);
 }
 
-.frameless-titlebar-button svg {
+.frameless-title-bar-button svg {
   fill: #000000;
 }
 
-.frameless-titlebar-close:hover svg {
+.frameless-title-bar-close:hover svg {
   fill: #ffffff;
 }
 </style>

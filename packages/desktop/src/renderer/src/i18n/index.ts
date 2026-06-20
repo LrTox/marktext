@@ -1,56 +1,54 @@
 import { createI18n } from 'vue-i18n'
 import bus from '../bus'
 
-// Directly import translation files
+// 直接导入翻译文件
 import zhCNTranslations from '../../../../static/locales/zh-CN.json'
 import enTranslations from '../../../../static/locales/en.json'
 
-// Create the Vue i18n instance.
-// vue-i18n's options type intersection between Composition + Legacy modes is
-// notoriously difficult to satisfy with mixed shapes; we cast the options once
-// at the call site rather than spreading `any` further.
+// 创建 Vue i18n 实例。
+// vue-i18n 在 Composition + Legacy 模式下的 options 类型交集难以用混合形态满足；
+// 在调用处一次性 cast，避免进一步扩散 `any`。
 const i18n = createI18n({
   legacy: false,
   locale: 'zh-CN',
   fallbackLocale: 'en',
   messages: { 'zh-CN': zhCNTranslations, en: enTranslations },
-  // Disable linking to avoid '@' symbols being misinterpreted
+  // 禁用 linking，避免 '@' 被误解析
   modifiers: {
     '@': () => '@'
   },
-  // Disable plural parsing
+  // 禁用复数解析
   pluralRules: {},
-  // Custom message compiler to handle '|' characters
+  // 自定义 message compiler，处理含 '|' 的字符串
   messageCompiler: {
     compile: (message: unknown) => {
-      // If the message contains '|', return the raw string without plural parsing
+      // 含 '|' 时返回原始字符串，不做复数解析
       if (typeof message === 'string' && message.includes('|')) {
         return () => message
       }
-      // For other messages, use the default compiler
+      // 其他消息使用默认 compiler
       return null
     }
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 } as any)
 
-// Export the translation function - Fix: correctly handle the Vue i18n v9+ global getter
+// 导出翻译函数 —— 正确处理 Vue i18n v9+ 的 global getter
 export const t = (key: string, ...args: unknown[]): string => {
-  // Check if the i18n instance is available
+  // 检查 i18n 实例是否可用
   if (!i18n) {
     console.warn('⚠️ i18n实例不可用，使用英文fallback')
     return key
   }
 
   try {
-    // Correctly access the global property
+    // 正确访问 global 属性
     if (!i18n.global) {
       console.warn('⚠️ i18n.global not ready yet, falling back to EN')
       return key
     }
 
-    // vue-i18n's `t` is heavily overloaded; the variadic call signature here
-    // intentionally bypasses the strict overload set.
+    // vue-i18n 的 `t` 重载较多；此处有意绕过严格 overload 集
     return (i18n.global.t as (key: string, ...args: unknown[]) => string)(key, ...args)
   } catch (error) {
     console.error('❌ 翻译函数执行错误:', error)
@@ -58,11 +56,10 @@ export const t = (key: string, ...args: unknown[]): string => {
   }
 }
 
-// Cache in-flight translation loads so that concurrent setLanguage() calls
-// don't fire duplicate IPCs for the same locale.
+// 缓存进行中的翻译加载，避免并发 setLanguage() 对同一 locale 重复 IPC
 const inflightLoads = new Map<string, Promise<Record<string, unknown> | undefined>>()
 
-// Export language setter function
+// 导出语言切换函数
 export const setLanguage = async(locale: string): Promise<void> => {
   if (!locale) return
   const globalI18n = i18n.global
@@ -75,7 +72,7 @@ export const setLanguage = async(locale: string): Promise<void> => {
       inflightLoads.set(locale, pending)
     }
     const translation = await pending
-    if (!translation) return // Failed to load locale file
+    if (!translation) return // locale 文件加载失败
 
     if (!globalI18n.availableLocales.includes(locale)) {
       globalI18n.setLocaleMessage(locale, translation)
@@ -85,23 +82,23 @@ export const setLanguage = async(locale: string): Promise<void> => {
   globalI18n.locale.value = locale
 }
 
-// Export the current language getter function
+// 导出当前语言 getter
 export const getCurrentLanguage = (): string => {
   return i18n.global.locale.value
 }
 
-// Export the i18n instance (named and default export)
+// 导出 i18n 实例（命名与默认导出）
 export { i18n }
 export default i18n
 
-// Listen for language changes
+// 监听语言变更
 if (window.electron && window.electron.ipcRenderer) {
   window.electron.ipcRenderer.on('language-changed', (_event, newLocale) => {
     setLanguage(newLocale)
     bus.emit('language-changed', newLocale)
   })
 
-  // Request the current language setting at startup
+  // 启动时请求当前语言设置
   window.electron.ipcRenderer.send('mt::get-current-language')
   window.electron.ipcRenderer.on('mt::current-language', (_event, language) => {
     setLanguage(language)

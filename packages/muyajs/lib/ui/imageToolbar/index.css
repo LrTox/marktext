@@ -34,7 +34,6 @@
   box-sizing: border-box;
   height: 30px;
   text-align: center;
-  display: block;
   position: absolute;
   top: -38px;
   background: var(--floatBgColor);
@@ -71,12 +70,12 @@
 
 .ag-image-toolbar li.item.open.enable {
   margin-right: 21px;
-  margin-left: 0px;
+  margin-left: 0;
 }
 
 .ag-image-toolbar li.item.open.disable {
   margin-right: 21px;
-  margin-left: 0px;
+  margin-left: 0;
   opacity: 0.4;
 }
 
@@ -128,7 +127,7 @@
   display: inline-block;
   width: 100%;
   height: 100%;
-  filter: drop-shadow(16px 0 currentColor); 
+  filter: drop-shadow(16px 0 currentColor);
   position: relative;
   left: -16px;
 }

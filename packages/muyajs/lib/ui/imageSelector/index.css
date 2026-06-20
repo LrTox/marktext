@@ -10,10 +10,9 @@
 .ag-image-selector ul.header {
   flex-shrink: 0;
   margin: 0;
-  padding: 0;
   height: 40px;
   border-bottom: 1px solid var(--editorColor10);
-  padding-left: 40px;
+  padding: 0 0 0 40px;
   display: flex;
 }
 
@@ -94,8 +93,7 @@
   font-size: 14px;
   text-align: center;
   cursor: pointer;
-  margin: 0 auto;
-  margin-bottom: 16px;
+  margin: 0 auto 16px;
   box-sizing: border-box;
   user-select: none;
 }
@@ -207,7 +205,7 @@
   color: var(--editorColor70);
 }
 
-.ag-image-selector .des a::hover {
+.ag-image-selector .des a:hover {
   color: var(--themeColor);
 }
 

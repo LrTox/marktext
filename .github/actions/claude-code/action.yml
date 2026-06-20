@@ -1,0 +1,14 @@
+name: Run Claude Code
+description: MarkText wrapper for anthropics/claude-code-action@v1
+
+inputs:
+  claude_code_oauth_token:
+    description: OAuth token for Claude Code
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: anthropics/claude-code-action@v1
+      with:
+        claude_code_oauth_token: ${{ inputs.claude_code_oauth_token }}

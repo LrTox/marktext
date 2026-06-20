@@ -1,3 +1,27 @@
+/* i18n 占位符由 JS 在运行时覆盖；声明须在使用前以便静态分析解析 */
+:root {
+  --i18n-highlight-start: ' [highlight start] ';
+  --i18n-highlight-end: ' [highlight end] ';
+  --i18n-type-at-to-insert: 'Type @ to insert';
+  --i18n-input-footnote-definition: 'Input the footnote definition...';
+  --i18n-input-yaml-front-matter: 'Input YAML Front Matter...';
+  --i18n-input-language-identifier: 'Input Language Identifier...';
+  --i18n-input-mathematical-formula: 'Input Mathematical Formula...';
+  --i18n-fence: 'fence';
+  --i18n-indent: 'indent';
+  --i18n-front-matter-delimiter: '---';
+  --i18n-math-delimiter: '$$';
+  --i18n-mermaid-start: '``` mermaid';
+  --i18n-flowchart-start: '``` flowchart';
+  --i18n-sequence-start: '``` sequence';
+  --i18n-plantuml-start: '``` plantuml';
+  --i18n-vega-lite-start: '``` vega-lite';
+  --i18n-click-to-add-image: 'Click to add an image';
+  --i18n-load-image-failed: 'Load image failed';
+  --code-copy-size: 20px;
+  --code-copy-inset: 0.5em;
+}
+
 @keyframes loading {
   0% {
     -webkit-transform: rotate(0deg);
@@ -22,11 +46,11 @@
 }
 
 html {
-  -webkit-font-smoothing: auto;
+  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 pre {
-  -webkit-font-smoothing: auto;
+  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 mark {
@@ -46,11 +70,11 @@ mark::after {
 }
 
 mark::before {
-  content: var(--i18n-highlight-start, ' [highlight start] ');
+  content: var(--i18n-highlight-start);
 }
 
 mark::after {
-  content: var(--i18n-highlight-end, ' [highlight end] ');
+  content: var(--i18n-highlight-end);
 }
 
 #ag-editor-id summary {
@@ -63,10 +87,10 @@ mark::after {
   background: var(--highlightColor);
 }
 
-div.ag-show-quick-insert-hint
-  p.ag-paragraph.ag-active
+div.ag-show-quick-insert-hint,
+  p.ag-paragraph.ag-active,
   > span.ag-paragraph-content:first-of-type:empty::after {
-  content: var(--i18n-type-at-to-insert, 'Type @ to insert');
+  content: var(--i18n-type-at-to-insert);
   color: var(--editorColor10);
 }
 
@@ -200,7 +224,7 @@ figure[data-role='FOOTNOTE'] {
 }
 
 figure[data-role='FOOTNOTE'] > p:first-of-type .ag-paragraph-content:empty::after {
-  content: var(--i18n-input-footnote-definition, 'Input the footnote definition...');
+  content: var(--i18n-input-footnote-definition);
   color: var(--editorColor30);
 }
 
@@ -314,7 +338,7 @@ span.ag-math > .ag-math-render.ag-math-error {
   font-family: monospace;
 }
 
-/* Preview math block underneth when typing */
+/* Preview math block underneath when typing */
 .ag-container-preview > .katex-display {
   margin: 0;
   padding-bottom: 6px;
@@ -385,7 +409,6 @@ span.ag-math > .ag-math-render.ag-math-error {
 
 figure {
   padding: 0;
-  margin: 0;
   margin: 1.4em 0;
   position: relative;
 }
@@ -430,7 +453,7 @@ figure {
 
 .ag-container-icon {
   position: absolute;
-  top: 0px;
+  top: 0;
   right: 10px;
   width: 20px;
   height: 20px;
@@ -612,17 +635,17 @@ pre.ag-front-matter {
 }
 
 pre.ag-front-matter span.ag-code-content:first-of-type:empty::after {
-  content: var(--i18n-input-yaml-front-matter, 'Input YAML Front Matter...');
+  content: var(--i18n-input-yaml-front-matter);
   color: var(--editorColor10);
 }
 
 pre[data-role$='code'] span.ag-language-input:empty::after {
-  content: var(--i18n-input-language-identifier, 'Input Language Identifier...');
+  content: var(--i18n-input-language-identifier);
   color: var(--editorColor10);
 }
 
 pre.ag-multiple-math span.ag-code-content:first-of-type:empty::after {
-  content: var(--i18n-input-mathematical-formula, 'Input Mathematical Formula...');
+  content: var(--i18n-input-mathematical-formula);
   color: var(--editorColor10);
 }
 
@@ -663,11 +686,11 @@ pre.ag-fence-code > code::before {
 }
 
 pre.ag-active.ag-fence-code > code::before {
-  content: var(--i18n-fence, 'fence');
+  content: var(--i18n-fence);
 }
 
 pre.ag-active.ag-indent-code > code::before {
-  content: var(--i18n-indent, 'indent');
+  content: var(--i18n-indent);
 }
 
 pre > code {
@@ -677,32 +700,32 @@ pre > code {
 
 pre.ag-active.ag-front-matter::before,
 pre.ag-active.ag-front-matter::after {
-  content: var(--i18n-front-matter-delimiter, '---');
+  content: var(--i18n-front-matter-delimiter);
 }
 
 pre.ag-active.ag-multiple-math::before,
 pre.ag-active.ag-multiple-math::after {
-  content: var(--i18n-math-delimiter, '$$');
+  content: var(--i18n-math-delimiter);
 }
 
 pre.ag-active[data-role='mermaid']::before {
-  content: var(--i18n-mermaid-start, '``` mermaid');
+  content: var(--i18n-mermaid-start);
 }
 
 pre.ag-active[data-role='flowchart']::before {
-  content: var(--i18n-flowchart-start, '``` flowchart');
+  content: var(--i18n-flowchart-start);
 }
 
 pre.ag-active[data-role='sequence']::before {
-  content: var(--i18n-sequence-start, '``` sequence');
+  content: var(--i18n-sequence-start);
 }
 
 pre.ag-active[data-role='plantuml']::before {
-  content: var(--i18n-plantuml-start, '``` plantuml');
+  content: var(--i18n-plantuml-start);
 }
 
 pre.ag-active[data-role='vega-lite']::before {
-  content: var(--i18n-vega-lite-start, '``` vega-lite');
+  content: var(--i18n-vega-lite-start);
 }
 
 pre.ag-active.ag-fence-code::before,
@@ -1031,11 +1054,11 @@ span.ag-warn.ag-emoji-marked-text {
 }
 
 .ag-inline-image.ag-empty-image::before {
-  content: var(--i18n-click-to-add-image, 'Click to add an image');
+  content: var(--i18n-click-to-add-image);
 }
 
 .ag-inline-image.ag-image-fail::before {
-  content: var(--i18n-load-image-failed, 'Load image failed');
+  content: var(--i18n-load-image-failed);
 }
 
 .ag-inline-image.ag-image-loading span.ag-image-icon-success,
@@ -1196,10 +1219,10 @@ span.ag-reference-link {
 
 .ag-code-copy {
   position: absolute;
-  top: 0.5em;
-  right: 0.5em;
-  width: 20px;
-  height: 20px;
+  inset-block-start: var(--code-copy-inset);
+  inset-inline-end: var(--code-copy-inset);
+  width: var(--code-copy-size);
+  height: var(--code-copy-size);
   border-radius: 4px;
   cursor: pointer;
   opacity: 0;

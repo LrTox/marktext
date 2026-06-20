@@ -46,7 +46,7 @@ abstract class BaseFloat {
     init() {
         const floatBox = document.createElement('div');
         const container = document.createElement('div');
-        // Use to remember which float container is shown.
+        // 用于记住当前显示的 float 容器
         container.classList.add(this.name);
         container.classList.add('mu-float-container');
         floatBox.classList.add('mu-float-wrapper');
@@ -57,10 +57,9 @@ abstract class BaseFloat {
         this.floatBox = floatBox;
         this.container = container;
 
-        // Since the size of the container is not fixed and changes according to the change of content,
-        // the floatBox needs to set the size according to the container size
+        // 容器尺寸随内容变化，floatBox 需跟随 container 尺寸
         const resizeObserver = (this._resizeObserver = new ResizeObserver(() => {
-            // Use requestAnimationFrame to avoid "ResizeObserver loop completed" warning
+            // 使用 requestAnimationFrame 避免 "ResizeObserver loop completed" 警告
             requestAnimationFrame(() => {
                 const { offsetWidth, offsetHeight } = container;
 
@@ -84,9 +83,7 @@ abstract class BaseFloat {
         };
 
         /**
-         * After the editor scrolls vertically beyond a certain range,
-         * it means that the user's focus is no longer on the float box,
-         * so the float box needs to be hidden.
+         * 编辑器垂直滚动超过一定范围后，用户焦点已离开 float，需隐藏 float
          */
         const scrollHandler = (event: Event) => {
             if (!isHTMLElement(event.target))
@@ -97,7 +94,7 @@ abstract class BaseFloat {
                 return;
             }
 
-            // only when scroll distance great than 50px, then hide the float box.
+            // 滚动距离大于 50px 时隐藏 float
             if (
                 this.status
                 && Math.abs(event.target.scrollTop - this._lastScrollTop) > 50
@@ -144,10 +141,8 @@ abstract class BaseFloat {
         else eventCenter.emit('muya-float', this, false);
     }
 
-    // `cb` is a generic "selection made" callback. Concrete floats invoke it
-    // with their own argument tuple (e.g. emojiSelector → `(item)`,
-    // tableChessboard → `(row, column)`). `never[]` in the contravariant
-    // arg position accepts any concrete callback shape.
+    // `cb` 为通用「已选择」回调。各 float 以自有参数调用（如 emojiSelector → `(item)`，
+    // tableChessboard → `(row, column)`）。参数位 `never[]` 可接受任意具体回调形态。
     show(reference: ReferenceElement, cb: (...args: never[]) => void = noop) {
         const { floatBox } = this;
         const { eventCenter } = this.muya;
@@ -160,9 +155,7 @@ abstract class BaseFloat {
             this._cleanup = null;
         }
 
-        // `cb` is declared with `never[]` args at the parameter so any
-        // concrete callback shape is accepted; the field stores it as
-        // `unknown[]` so internal call sites can forward arbitrary args.
+        // 参数声明为 `never[]` 以接受任意回调形态；字段存为 `unknown[]` 供内部转发
         this.cb = cb as (...args: unknown[]) => void;
 
         const cleanup = autoUpdate(reference, floatBox, () => {
@@ -170,11 +163,9 @@ abstract class BaseFloat {
                 placement,
                 middleware: [offset(offsetOptions), flip()],
             }).then(({ x, y }) => {
-                // `computePosition` is async: a `hide()` (or a newer `show()`)
-                // can land before this resolves. Applying it then would set
-                // `opacity: 1` on an already-hidden float without restoring
-                // `status`, so the next `hide()` early-returns and the float is
-                // stuck visible. Bail unless this pass is still the active one.
+                // `computePosition` 异步：resolve 前可能已 hide() 或更新的 show()。
+                // 此时仍应用会设 `opacity: 1` 但 status 未恢复，下次 hide() 早退导致 float 卡住可见。
+                // 除非本 pass 仍为 active，否则放弃应用。
                 if (this._cleanup !== cleanup)
                     return;
                 Object.assign(floatBox.style, {

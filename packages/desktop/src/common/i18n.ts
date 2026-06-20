@@ -33,7 +33,11 @@ function loadTranslations(language: string): Translations | null {
     }
 
     if (!fs.existsSync(localePath)) {
-      throw new Error(`Translation file not found for language: ${language}`)
+      console.error(`Translation file not found for language: ${language}`)
+      if (language !== 'en') {
+        return loadTranslations('en')
+      }
+      return null
     }
 
     const content = fs.readFileSync(localePath, 'utf8')
@@ -89,11 +93,11 @@ function getTranslation(
   return result
 }
 
-function getSupportedLanguages(): string[] {
+function getSupportedLanguages(): SupportedLanguage[] {
   return [...SUPPORTED_LANGUAGES]
 }
 
-function isLanguageSupported(language: string): boolean {
+function isLanguageSupported(language: string): language is SupportedLanguage {
   return (SUPPORTED_LANGUAGES as readonly string[]).includes(language)
 }
 
@@ -101,15 +105,10 @@ function clearCache(): void {
   translationsCache = {}
 }
 
-function getAllTranslations(language: string): Translations | null {
-  return loadTranslations(language)
-}
-
 export {
   getTranslation,
   getSupportedLanguages,
   isLanguageSupported,
   clearCache,
-  getAllTranslations,
   loadTranslations
 }

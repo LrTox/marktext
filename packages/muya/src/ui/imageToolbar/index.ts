@@ -1,3 +1,4 @@
+/** 图片浮动工具栏：复制、预览、下载、对齐与编辑。 */
 import type { ReferenceElement } from '@floating-ui/dom';
 import type { VNode } from 'snabbdom';
 import type Format from '../../block/base/format';
@@ -6,8 +7,8 @@ import type { Muya } from '../../index';
 import type { ImageToken } from '../../inlineRenderer/types';
 import type { Icon } from './config';
 import { CLASS_NAMES } from '../../config';
-import { h, patch } from '../../utils/snabbdom';
 import { getImageSrc } from '../../utils/image';
+import { h, patch } from '../../utils/snabbdom';
 import BaseFloat from '../baseFloat';
 import icons from './config';
 import './index.css';
@@ -90,9 +91,11 @@ export class ImageToolBar extends BaseFloat {
             return null;
 
         return {
-            getBoundingClientRect: () => imageContainer.getBoundingClientRect(),
-            width: wrapper.offsetWidth,
-            height: wrapper.offsetHeight,
+            getBoundingClientRect: (): DOMRect => {
+                const rect = imageContainer.getBoundingClientRect();
+                // 位置取图片容器，宽高取外层 wrapper（与旧版 VirtualElement width/height 行为一致）
+                return new DOMRect(rect.x, rect.y, wrapper.offsetWidth, wrapper.offsetHeight);
+            },
         };
     }
 
@@ -172,7 +175,7 @@ export class ImageToolBar extends BaseFloat {
         const { _imageInfo: imageInfo } = this;
 
         switch (item.type) {
-            // Delete image.
+            // 复制图片到剪贴板
             case 'copy': {
                 const src = this._getImageSrc();
                 if (imageInfo && src) {
@@ -209,14 +212,14 @@ export class ImageToolBar extends BaseFloat {
 
             case 'delete':
                 this._block!.deleteImage(imageInfo!);
-                // Hide image transformer
+                // 隐藏图片变换控件
                 this.muya.eventCenter.emit('muya-transformer', {
                     reference: null,
                 });
 
                 return this.hide();
 
-                // Edit image, for example: editor alt and title, replace image.
+                // 编辑图片（alt、title、替换等）
             case 'edit': {
                 const rect = this._reference!.getBoundingClientRect();
                 const reference = {
@@ -226,7 +229,7 @@ export class ImageToolBar extends BaseFloat {
                         return rect;
                     },
                 };
-                // Hide image resize bar
+                // 隐藏图片缩放条
                 this.muya.eventCenter.emit('muya-transformer', {
                     reference: null,
                 });

@@ -1,3 +1,7 @@
+/**
+ * 主进程 IPC：文件系统操作（读写、stat、图片另存为等）。
+ * 对应契约见 `@shared/types/ipc.ts` 中 `mt::fs::*` invoke 通道。
+ */
 import fs from 'fs-extra'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -54,7 +58,11 @@ const IMAGE_CONTENT_TYPE_EXTENSIONS: Record<string, string> = {
 
 const sanitizeFilename = (filename?: string): string => {
   const trimmed = filename?.trim() || 'image'
-  const basename = path.basename(trimmed).replace(/[<>:"/\\|?*\u0000-\u001f]/g, '_')
+  const basename = path.basename(trimmed).replace(
+    // eslint-disable-next-line no-control-regex -- 清理文件名中的非法控制字符
+    /[<>:"/\\|?*\u0000-\u001f]/g,
+    '_'
+  )
   return basename || 'image'
 }
 
@@ -139,13 +147,13 @@ export const registerFsHandlers = (): void => {
     const defaultPath = ensureExtension(sanitizeFilename(filename), src, contentType)
     const { canceled, filePath } = win
       ? await dialog.showSaveDialog(win, {
-          defaultPath,
-          filters: IMAGE_FILTERS
-        })
+        defaultPath,
+        filters: IMAGE_FILTERS
+      })
       : await dialog.showSaveDialog({
-          defaultPath,
-          filters: IMAGE_FILTERS
-        })
+        defaultPath,
+        filters: IMAGE_FILTERS
+      })
 
     if (canceled || !filePath) return { canceled: true }
 

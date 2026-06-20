@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { useEditorStore } from '@/store/editor'
-import { t } from '../../i18n'
+import { t } from '@/i18n'
 
 const editorStore = useEditorStore()
 

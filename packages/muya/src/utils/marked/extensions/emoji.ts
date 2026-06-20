@@ -12,7 +12,7 @@ interface IEmojiToken {
 
 interface IOptions {
     isRenderEmoji?: boolean;
-};
+}
 
 const DEFAULT_OPTIONS = {
     isRenderEmoji: true,

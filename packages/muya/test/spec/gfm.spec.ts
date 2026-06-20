@@ -6,7 +6,7 @@
 
 import type { ISpecExample } from './runner';
 import { describe, expect, it } from 'vitest';
-import { renderToStaticHTML } from '../../src/state/renderToStaticHTML';
+import { renderToStaticHTML } from '../../src';
 import gfmExamples from './fixtures/gfm-spec-0.29-gfm.json';
 import {
     compareHtml,

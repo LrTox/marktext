@@ -6,7 +6,7 @@
   max-width: 350px;
   min-width: 280px;
   transition: all 0.2s ease;
-  box-shadow: 0px 12px 0px 0px rgba(0, 0, 0, 0);
+  box-shadow: 0 12px 0 0 rgba(0, 0, 0, 0);
   backface-visibility: hidden;
   right: 15px;
   bottom: 15px;
@@ -89,8 +89,8 @@
     position: absolute;
     z-index: 40;
     display: block;
-    top: 0px;
-    left: 0px;
+    top: 0;
+    left: 0;
   }
   & .fluent {
     position: absolute;

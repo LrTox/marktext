@@ -412,11 +412,10 @@ class Format extends Content {
     // inline/left/center/right
         const { start, end } = token.range;
         const oldText = this.text;
-        let imageText = '';
         const attrs = Object.assign({}, token.attrs);
         attrs[attrName] = attrValue;
 
-        imageText = '<img ';
+        let imageText = '<img ';
 
         for (const attr of Object.keys(attrs)) {
             let value = attrs[attr];
@@ -1467,8 +1466,7 @@ class Format extends Content {
 
         event.preventDefault();
 
-        const paragraphBlock = nextBlock.parent;
-        let needRemovedBlock = paragraphBlock;
+        let needRemovedBlock = nextBlock.parent;
 
         while (
             needRemovedBlock

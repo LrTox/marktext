@@ -4,12 +4,9 @@ import {
   DEFAULT_CODE_FONT_FAMILY,
   oneDarkThemes,
   railscastsThemes
-} from '../config'
+} from '@/config'
 import { getThemeStylesheet } from './getThemeStylesheet'
 import { isLinux } from './index'
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ORIGINAL_THEME = '#409EFF'
 
 const patchTheme = (css: string): string => {
   return `@media not print {\n${css}\n}`
@@ -34,13 +31,13 @@ export const addThemeStyle = (theme: string): void => {
 
   themeStyleEle.innerHTML = patchTheme(getThemeStylesheet(theme))
 
-  // workaround: use dark icons
+  // workaround：暗色主题使用 dark 图标
   document.body.classList.remove('dark')
   if (isDarkTheme) {
     document.body.classList.add('dark')
   }
 
-  // change CodeMirror theme
+  // 切换 CodeMirror 主题
   const cm = document.querySelector('.CodeMirror')
   if (cm) {
     cm.classList.remove('cm-s-default')
@@ -58,14 +55,9 @@ export const addThemeStyle = (theme: string): void => {
 
 export const setWrapCodeBlocks = (value: boolean): void => {
   const CODE_WRAP_STYLE_ID = 'ag-code-wrap'
-  let result = ''
-  if (value) {
-    result =
-      '.mu-code-block .mu-code { display: block; white-space: pre-wrap; word-break: break-word; overflow: hidden; }'
-  } else {
-    result =
-      '.mu-code-block .mu-code { display: block; white-space: pre; word-break: break-word; overflow: auto; }'
-  }
+  const result = value
+    ? '.mu-code-block .mu-code { display: block; white-space: pre-wrap; word-break: break-word; overflow: hidden; }'
+    : '.mu-code-block .mu-code { display: block; white-space: pre; word-break: break-word; overflow: auto; }'
   let styleEle = document.querySelector(`#${CODE_WRAP_STYLE_ID}`) as HTMLStyleElement | null
   if (!styleEle) {
     styleEle = document.createElement('style')
@@ -80,7 +72,7 @@ export const setEditorWidth = (value: string): void => {
   const EDITOR_WIDTH_STYLE_ID = 'editor-width'
   let result = ''
   if (value && /^[0-9]+(?:ch|px|%)$/.test(value)) {
-    // Overwrite the theme value and add 100px for padding.
+    // 覆盖主题值并额外加 100px 内边距
     result = `:root { --editorAreaWidth: calc(100px + ${value}); }`
   }
   let styleEle = document.querySelector(`#${EDITOR_WIDTH_STYLE_ID}`) as HTMLStyleElement | null
@@ -152,7 +144,7 @@ export interface AddStylesOptions extends CommonStyleOptions {
   theme: string
 }
 
-// Append common sheet and theme at the end of head - order is important.
+// 在 head 末尾追加通用样式表与主题 —— 顺序很重要。
 export const addStyles = (options: AddStylesOptions): void => {
   const { theme } = options
   addThemeStyle(theme)

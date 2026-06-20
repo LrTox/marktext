@@ -13,11 +13,10 @@ import schema from './schema.json'
 
 const PREFERENCES_FILE_NAME = 'preferences'
 
-// The Preference class extends EventEmitter but does not currently emit any
-// events itself — keep the event map empty until concrete events are added.
+// Preference 继承 TypedEmitter 但自身暂不 emit 事件 —— 待具体事件定义后再扩展 event map
 type PreferenceEvents = Record<string, unknown[]>
 
-// Structural subset of EnvPaths/AppPaths — only `preferencesPath` is read here.
+// EnvPaths/AppPaths 的结构性子集 —— 此处仅读取 `preferencesPath`
 interface AppPaths {
   readonly preferencesPath: string
 }
@@ -29,12 +28,12 @@ class Preference extends TypedEmitter<PreferenceEvents> {
   public readonly staticPath: string
 
   /**
-   * @param paths The path instance.
+   * @param paths 路径实例
    *
-   * NOTE: This throws an exception when validation fails.
+   * 注意：校验失败时会抛出异常
    */
   constructor(paths: AppPaths) {
-    // TODO: Preferences should not loaded if global.MARKTEXT_SAFE_MODE is set.
+    // TODO: 若 global.MARKTEXT_SAFE_MODE 已设置，则不应加载 Preferences
     super()
 
     const { preferencesPath } = paths
@@ -66,7 +65,7 @@ class Preference extends TypedEmitter<PreferenceEvents> {
     try {
       defaultSettings = JSON.parse(fs.readFileSync(this.staticPath, { encoding: 'utf8' }) || '{}')
 
-      // Set best theme on first application start.
+      // 首次启动时根据系统主题选择最佳主题
       if (nativeTheme.shouldUseDarkColors) {
         defaultSettings!.theme = 'dark'
       }
@@ -78,24 +77,24 @@ class Preference extends TypedEmitter<PreferenceEvents> {
       throw new Error('Can not load static preference.json file')
     }
 
-    // I don't know why `this.store.size` is 3 when first load, so I just check file existed.
+    // 首次加载时 `this.store.size` 为 3 的原因不明，故改为检查文件是否存在
     if (!this.hasPreferencesFile) {
       this.store.set(defaultSettings)
     } else {
-      // Because `this.getAll()` will return a plainObject, so we can not use `hasOwnProperty` method
+      // `this.getAll()` 返回 plainObject，无法使用 `hasOwnProperty`
       // const plainObject = () => Object.create(null)
       const userSetting = this.getAll() as Record<string, unknown>
-      // Update outdated settings
+      // 合并过时的设置项
       const requiresUpdate = !hasSameKeys(defaultSettings, userSetting)
       const userSettingKeys = Object.keys(userSetting)
       const defaultSettingKeys = Object.keys(defaultSettings)
 
       if (requiresUpdate) {
-        // TODO(fxha): For performance reasons, we should try to replace 'electron-store' because
-        //   it does multiple blocking I/O calls when changing entries. There is no transaction or
-        //   async I/O available. The core reason we changed to it was JSON scheme validation.
+        // TODO(fxha): 性能原因应考虑替换 electron-store ——
+        //   修改条目时会多次阻塞 I/O，且无事务或 async I/O。
+        //   改用它的核心原因是 JSON schema 校验。
 
-        // Remove outdated settings
+        // 移除过时设置项
         for (const key of userSettingKeys) {
           if (!defaultSettingKeys.includes(key)) {
             delete userSetting[key]
@@ -103,7 +102,7 @@ class Preference extends TypedEmitter<PreferenceEvents> {
           }
         }
 
-        // Add new setting options
+        // 添加新设置项
         let addedNewEntries = false
         for (const key in defaultSettings) {
           if (!userSettingKeys.includes(key)) {
@@ -134,9 +133,9 @@ class Preference extends TypedEmitter<PreferenceEvents> {
   }
 
   /**
-   * Change multiple setting entries.
+   * 批量修改设置项
    *
-   * @param settings A settings object or subset object with key/value entries.
+   * @param settings 含 key/value 的设置对象或子集
    */
   setItems(settings: Record<string, unknown> | null | undefined): void {
     if (!settings) {
@@ -185,25 +184,25 @@ class Preference extends TypedEmitter<PreferenceEvents> {
   }
 
   /**
-   * Gets the system language, or null if it's not in the supported list
-   * @returns Supported system language code or null
+   * 获取系统语言；若不在支持列表中则返回 null
+   * @returns 支持的系统语言代码或 null
    */
   _getSystemLanguage(): string | null {
     try {
-      // Get the system language
+      // 获取系统语言
       const systemLocale = app.getLocale()
       log.info(`System locale detected: ${systemLocale}`)
 
-      // Get the list of supported languages
+      // 获取支持的语言列表
       const supportedLanguages = getSupportedLanguages()
 
-      // Directly match the full language code (e.g. zh-CN)
+      // 直接匹配完整语言代码（如 zh-CN）
       if (isLanguageSupported(systemLocale)) {
         log.info(`Using system language: ${systemLocale}`)
         return systemLocale
       }
 
-      // Attempt to match the primary part of the language (e.g. zh)
+      // 尝试匹配主语言部分（如 zh）
       const primaryLanguage = systemLocale.split('-')[0]!
       const matchedLanguage = supportedLanguages.find((lang) => lang.startsWith(primaryLanguage))
 

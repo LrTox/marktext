@@ -1,21 +1,21 @@
-<p align="center"><img src="../assets/logo-small.png" alt="MarkText" width="100" height="100"></p>
+<p style="text-align: center"><img src="https://raw.githubusercontent.com/marktext/marktext/develop/docs/assets/logo-small.png" alt="MarkText" width="100"></p>
 
-<h1 dir="rtl" align="center">MarkText</h1>
+<h1 dir="rtl" style="text-align: center">MarkText</h1>
 
-<div dir="rtl" align="center">
+<div dir="rtl" style="text-align: center">
   <a href="https://twitter.com/intent/tweet?via=marktextme&url=https://github.com/marktext/marktext/&text=What%20do%20you%20want%20to%20say%20to%20app?&hashtags=happyMarkText">
     <img src="https://img.shields.io/twitter/url/https/github.com/marktext/marktext.svg?style=for-the-badge" alt="twitter">
   </a>
 </div>
-<div dir="rtl" align="center">
-  <strong>:high_brightness: محرر ماركداون من الجيل التالي :crescent_moon:</strong><br>
+<div dir="rtl" style="text-align: center">
+  <strong>🌞 محرر ماركداون من الجيل التالي 🌙</strong><br>
   محرر ماركداون مفتوح المصدر بسيط وأنيق يركز على السرعة وسهولة الاستخدام.<br>
   <sub>متاح لنظام Linux وmacOS وWindows.</sub>
 </div>
 
 <br>
 
-<div dir="rtl" align="center">
+<div dir="rtl" style="text-align: center">
   <!-- License -->
   <a href="../../LICENSE">
     <img src="https://img.shields.io/github/license/marktext/marktext.svg" alt="LICENSE">
@@ -26,7 +26,7 @@
   </a>
   <!-- Downloads latest release -->
   <a href="https://github.com/marktext/marktext/releases/latest">
-    <img src="https://img.shields.io/github/downloads/marktext/marktext/v0.17.1/total.svg" alt="latest download">
+    <img src="https://img.shields.io/github/downloads/marktext/marktext/latest/total.svg" alt="latest download">
   </a>
   <!-- sponsors -->
   <a href="https://opencollective.com/marktext">
@@ -34,7 +34,7 @@
   </a>
 </div>
 
-<div dir="rtl" align="center">
+<div dir="rtl" style="text-align: center">
   <h3>
     <a href="https://github.com/marktext/marktext">
       Website
@@ -58,41 +58,41 @@
   </h3>
 </div>
 
-<div dir="rtl" align="center">
+<div dir="rtl" style="text-align: center">
   <sub>الترجمات:</sub>
   <a href="../../README.md">
     <span>:uk:</span>
   </a>
-  <a href="README-zh_cn.md#readme">
+  <a href="README-zh_cn.md">
     <span>:cn:</span>
   </a>
-  <a href="README-zh_tw.md#readme">
+  <a href="README-zh_tw.md">
     <span>:taiwan:</span>
   </a>
-  <a href="README-de.md#readme">
+  <a href="README-de.md">
     <span>:de:</span>
   </a>
-  <a href="README-jp.md#readme">
+  <a href="README-jp.md">
     <span>:jp:</span>
   </a>
-  <a href="README-fr.md#readme">
+  <a href="README-fr.md">
     <span>:fr:</span>
   </a>
-  <a href="README-tr.md#readme">
+  <a href="README-tr.md">
     <span>:tr:</span>
   </a>
-  <a href="README-es.md#readme">
+  <a href="README-es.md">
     <span>:es:</span>
   </a>
-  <a href="README-pt.md#readme">
+  <a href="README-pt.md">
     <span>:portugal:</span>
   </a>
-  <a href="README-kr.md#readme">
+  <a href="README-kr.md">
     <span>:kr:</span>
   </a>
 </div>
 
-<div dir="rtl" align="center">
+<div dir="rtl" style="text-align: center">
   <sub>تم بناء محرر الماركداون هذا بـ ❤︎ بواسطة
     <a href="https://github.com/Jocs">Jocs</a> و
     <a href="https://github.com/marktext/marktext/graphs/contributors">
@@ -102,18 +102,19 @@
 
 <br />
 
-<h2 dir="rtl" align="center">دعم MarkText</h2>
+<h2 dir="rtl" style="text-align: center">دعم MarkText</h2>
 
 MarkText هو محرر Markdown مفتوح المصدر يعتمد على دعم مجتمعه. إذا كان MarkText يُحسّن سير عملك، يُرجى التفكير في [دعم المشروع](https://github.com/sponsors/marktext). شكراً لجميع الداعمين ❤️
 
 **الراعي المميز**
 
-| [<img src="../assets/sponsors/serpapi.png" width="150">](https://serpapi.com/?utm_source=marktext) | [استخرج نتائج Google ومحركات البحث الأخرى من خلال واجهة برمجية سريعة وسهلة وشاملة.](https://serpapi.com/?utm_source=marktext) |
-| ------------- |:-------------|
+| | |
+| --- | --- |
+| [<img src="https://raw.githubusercontent.com/marktext/marktext/develop/docs/assets/sponsors/serpapi.png" width="150" alt="SerpApi">](https://serpapi.com/?utm_source=marktext) | [استخرج نتائج Google ومحركات البحث الأخرى من خلال واجهة برمجية سريعة وسهلة وشاملة.](https://serpapi.com/?utm_source=marktext) |
 
 ## لقطة شاشة
 
-![](../assets/marktext.png?raw=true)
+![](https://raw.githubusercontent.com/marktext/marktext/develop/docs/assets/marktext.png)
 
 ## الميزات
 
@@ -122,19 +123,19 @@ MarkText هو محرر Markdown مفتوح المصدر يعتمد على دعم
 - امتدادات ماركداون مثل التعبيرات الرياضية (KaTeX) وfront matter والرموز التعبيرية.
 - دعم اختصارات الفقرات والأساليب المضمنة لتحسين كفاءة الكتابة.
 - إخراج ملفات **HTML** و**PDF**.
-- سمات متنوعة [themes](../end-user/THEMES.md): **Cadmium Light**، **Material Dark** وغيرها.
+- سمات متنوعة [themes](https://marktext.me/docs/themes): **Cadmium Light**، **Material Dark** وغيرها.
 - أوضاع تحرير متنوعة: **وضع الكود المصدري**، **وضع الآلة الكاتبة**، **وضع التركيز**.
 - لصق الصور مباشرة من الحافظة.
 
 ## التنزيل والتثبيت
 
-![المنصة](https://img.shields.io/static/v1.svg?label=Platform&message=Linux-64%20|%20macOS-64%20|%20Win-32%20|%20Win-64&style=for-the-badge)
+![المنصة](https://img.shields.io/static/v1.svg?label=Platform&message=Linux%20x64%20|%20macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
 
-| ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)                                                                                                  | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)                                                                                                          | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png)                                                                                                                        |
-|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| [![latest version](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-x64.dmg.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-x64.dmg) | [![latest version](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-setup.exe.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-setup.exe) | [![latest version](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-x86_64.AppImage.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-x86_64.AppImage) |
+| ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png) | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png) | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png) |
+| --- | --- | --- |
+| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Linux](https://img.shields.io/badge/Linux-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
 
-هل تريد الاطلاع على الميزات الجديدة لأحدث إصدار؟ يرجى الرجوع إلى [CHANGELOG](../CHANGELOG.md).
+هل تريد الاطلاع على الميزات الجديدة لأحدث إصدار؟ يرجى الرجوع إلى [CHANGELOG](https://marktext.me/docs/changelog).
 
 #### macOS
 
@@ -162,7 +163,7 @@ winget install marktext
 
 #### Linux
 
-يرجى اتباع [تعليمات تثبيت Linux](../end-user/LINUX.md).
+يرجى اتباع [تعليمات تثبيت Linux](https://marktext.me/docs/installation).
 
 #### أنظمة أخرى
 
@@ -170,10 +171,10 @@ winget install marktext
 
 ## التطوير
 
-إذا كنت ترغب في بناء MarkText بنفسك، يرجى الاطلاع على [تعليمات البناء](../dev/BUILD.md).
+إذا كنت ترغب في بناء MarkText بنفسك، يرجى الاطلاع على [تعليمات البناء](https://marktext.me/docs/dev/build).
 
-- [توثيق المستخدم](../README.md)
-- [توثيق المطور](../dev/README.md)
+- [توثيق المستخدم](https://marktext.me/docs/introduction)
+- [توثيق المطور](https://marktext.me/docs/dev/overview)
 
 إذا كانت لديك أي أسئلة بخصوص MarkText، فمرحبًا بك في كتابة مشكلة. عند القيام بذلك، يرجى استخدام التنسيق الافتراضي. بالطبع، إذا قدمت طلب دمج (PR) مباشرة، فسيتم تقديره كثيرًا.
 
@@ -184,9 +185,9 @@ MarkText قيد التطوير، يرجى التأكد من قراءة [دليل
 
 ## المساهمون
 
-شكراً لجميع الأشخاص الذين ساهموا بالفعل في MarkText[[المساهمون](https://github.com/marktext/marktext/graphs/contributors)].
+شكراً لجميع الأشخاص الذين ساهموا بالفعل في MarkText [[المساهمون](https://github.com/marktext/marktext/graphs/contributors)].
 
-<a href="https://github.com/marktext/marktext/graphs/contributors"><img src="https://opencollective.com/marktext/contributors.svg?width=890" /></a>
+<a href="https://github.com/marktext/marktext/graphs/contributors"><img src="https://opencollective.com/marktext/contributors.svg?width=890" alt="Contributors" /></a>
 
 ## الرخصة
 

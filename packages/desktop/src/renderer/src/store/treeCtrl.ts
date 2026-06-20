@@ -1,5 +1,5 @@
-import { getUniqueId } from '../util'
-import { PATH_SEPARATOR } from '../config'
+import { getUniqueId } from '@/util'
+import { PATH_SEPARATOR } from '@/config'
 
 // Helper module (NOT a Pinia store): file-tree mutation helpers.
 

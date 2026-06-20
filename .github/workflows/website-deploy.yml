@@ -29,14 +29,11 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: ./.github/actions/checkout
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup
         with:
-          node-version: '22.21.1'
-          cache: 'pnpm'
+          run-install: false
 
       # The root postinstall script rebuilds the desktop app's Electron-native
       # modules (native-keymap, keytar, ced). They need these system libraries
@@ -125,7 +122,7 @@ jobs:
 
       - name: Comment preview URL on PR
         if: github.event_name == 'pull_request' && steps.preview.outputs.result == 'ok'
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: ./.github/actions/sticky-pr-comment
         with:
           header: website-preview
           message: |
@@ -135,7 +132,7 @@ jobs:
 
       - name: Comment preview-disabled notice on PR
         if: github.event_name == 'pull_request' && steps.preview.outputs.result == 'preview-disabled'
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: ./.github/actions/sticky-pr-comment
         with:
           header: website-preview
           message: |
@@ -145,7 +142,7 @@ jobs:
 
       - name: Comment bootstrap notice on PR
         if: github.event_name == 'pull_request' && steps.preview.outputs.result == 'not-bootstrapped'
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: ./.github/actions/sticky-pr-comment
         with:
           header: website-preview
           message: |

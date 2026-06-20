@@ -3,7 +3,7 @@
 // in-renderer searcher (so call sites in search.vue and quickOpen don't need
 // to change).
 
-import { deepClone } from '../util'
+import { deepClone } from '@/util'
 
 export type RipgrepMode = 'text' | 'files'
 

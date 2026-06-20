@@ -72,7 +72,7 @@ export const registerWindowHandlers = (): void => {
   })
   ipcMain.on('mt::win::set-fullscreen', (event, flag: boolean) => {
     const win = windowFromEvent(event)
-    if (win) win.setFullScreen(!!flag)
+    if (win) win.setFullScreen(flag)
   })
   ipcMain.on('mt::win::toggle-fullscreen', (event) => {
     const win = windowFromEvent(event)

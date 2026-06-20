@@ -9,7 +9,7 @@
     >
       <div class="body">
         <div
-          class="drop-container"
+          class="drop-container electron-no-drag"
           :class="{ active: isOver }"
           @dragenter.prevent="dragOverHandler"
           @dragover.prevent="dragOverHandler"
@@ -98,8 +98,6 @@ onBeforeUnmount(() => {
   border-radius: 5px;
   color: var(--sideBarColor);
   border: 1px dashed var(--sideBarTextColor);
-  -webkit-app-region: no-drag;
-  app-region: no-drag;
   & div,
   & p {
     text-align: center;

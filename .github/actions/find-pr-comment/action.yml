@@ -1,0 +1,28 @@
+name: Find PR comment
+description: MarkText wrapper for peter-evans/find-comment@v4.0.0
+
+inputs:
+  token:
+    description: GitHub token
+    required: true
+  issue-number:
+    description: Pull request number
+    required: true
+  body-includes:
+    description: Text the comment body must include
+    required: true
+
+outputs:
+  comment-id:
+    description: ID of the matching comment, if any
+    value: ${{ steps.find.outputs.comment-id }}
+
+runs:
+  using: composite
+  steps:
+    - id: find
+      uses: peter-evans/find-comment@v4.0.0
+      with:
+        token: ${{ inputs.token }}
+        issue-number: ${{ inputs.issue-number }}
+        body-includes: ${{ inputs.body-includes }}

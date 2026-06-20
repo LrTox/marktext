@@ -187,8 +187,7 @@ const isRawKeyCode = (event: KeyboardEvent, keyCode: string): boolean => {
   left: 50%;
   transform: translateX(-50%);
   padding: 8px;
-  margin: 0 auto;
-  margin-top: 8px;
+  margin: 8px auto 0;
   box-sizing: border-box;
   color: var(--editorColor);
   background: var(--floatBgColor);

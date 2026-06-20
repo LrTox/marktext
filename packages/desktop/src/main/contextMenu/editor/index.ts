@@ -59,12 +59,12 @@ const getContextItems = (): MenuItemConstructorOptions[] => [
 const isInsideEditor = (params: ContextMenuParams): boolean => {
   const { isEditable, editFlags, inputFieldType } = params
   // WORKAROUND for Electron#32102: `params.spellcheckEnabled` is always false. Try to detect the editor container via other information.
-  return isEditable && !inputFieldType && !!editFlags.canEditRichly
+  return isEditable && !inputFieldType && editFlags.canEditRichly
 }
 
 export const showEditorContextMenu = (
   win: BrowserWindow,
-  event: ContextMenuEvent,
+  _event: ContextMenuEvent,
   params: ContextMenuParams,
   isSpellcheckerEnabled: boolean
 ): void => {
@@ -115,11 +115,6 @@ export const showEditorContextMenu = (
     // the options object. Cast to satisfy the typed overload.
     // The original JS passed an array literal — Electron tolerated it. The
     // typed overload wants an options object, so produce one explicitly.
-    // `event` is intentionally unused (params carries x/y); the function
-    // signature keeps it to mirror the webContents.on('context-menu', ...)
-    // (event, params) shape.
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    event
     menu.popup({ window: win, x: params.x, y: params.y })
   }
 }

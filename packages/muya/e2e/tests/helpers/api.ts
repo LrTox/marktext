@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 
-/** Pull the current markdown out of the editor's public API. */
+/** Pull the current Markdown out of the editor's public API. */
 export async function getMarkdown(page: Page): Promise<string> {
     return page.evaluate(() => window.muya!.getMarkdown());
 }

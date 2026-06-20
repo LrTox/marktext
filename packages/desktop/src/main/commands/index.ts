@@ -18,6 +18,8 @@ export const loadDefaultCommands = (commandManager: CommandManager): void => {
   loadTabCommands(commandManager)
 }
 
+// Mirror the JS module shape: `commandManager` is the singleton; `CommandManager`
+// is the instance type used by load*Commands helpers.
 class CommandManagerClass {
   private _commands: Map<string, CommandCallback>
 
@@ -60,8 +62,5 @@ class CommandManagerClass {
   }
 }
 
-// Mirror the JS module shape: `CommandManager` is a singleton instance at
-// the value level AND a type alias at the type level.
 export type CommandManager = CommandManagerClass
-const commandManagerInstance = new CommandManagerClass()
-export { commandManagerInstance as CommandManager }
+export const commandManager: CommandManager = new CommandManagerClass()

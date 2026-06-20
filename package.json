@@ -51,5 +51,10 @@
     "tsx": "^4.22.3",
     "typescript-eslint": "^8.59.3",
     "vue-eslint-parser": "^10.4.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "file-icons": "https://codeload.github.com/file-icons/atom/tar.gz/28520868aee66e576145a0b18aa2cde5444a897a"
+    }
   }
 }

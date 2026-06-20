@@ -1,21 +1,14 @@
-// Maps a sidebar TOC entry (its slug) onto the matching heading element in the
-// live editor DOM, so the caller can scroll it into view.
+// 将侧边栏 TOC 条目（slug）映射到编辑器 DOM 中对应的标题元素，供调用方滚动定位。
 //
-// `@muyajs/core` slugs are stable per-block ids that are NOT stamped onto the
-// heading DOM, so a `#slug` selector never matches. `getTOC` instead enumerates
-// the headings in document order, so we resolve the slug to its index in that
-// list and pick the heading at the same index in the DOM.
+// `@muyajs/core` 的 slug 是稳定的 per-block id，不会写入标题 DOM，因此 `#slug` 选择器无法匹配。
+// `getTOC` 按文档顺序枚举标题，故将 slug 解析为其在列表中的索引，再取 DOM 中同索引的标题。
 //
-// The DOM query MUST match the exact set `getTOC` enumerates. `getTOC` only
-// walks top-level `scrollPage` children (it does not recurse), and those blocks
-// are the DIRECT children of the scrollPage root element (`.mu-container`).
-// Note the scroll container we get from the host (`getScrollContainer()`,
-// i.e. muya's root `.mu-editor`) WRAPS `.mu-container` — the headings are one
-// level deeper — so we anchor on `.mu-container > hN` rather than the scroll
-// container's own direct children. Headings nested in blockquotes / list items,
-// or `<h1>`-`<h6>` inside raw-HTML blocks, are NOT direct children of
-// `.mu-container`; an unscoped `querySelectorAll('h1..h6')` would count them and
-// shift every later index, scrolling to the wrong heading.
+// DOM 查询必须与 `getTOC` 枚举的集合完全一致。`getTOC` 仅遍历顶层 `scrollPage` 子块（不递归），
+// 这些块是 scrollPage 根元素（`.mu-container`）的直接子节点。
+// 宿主传入的滚动容器（`getScrollContainer()`，即 muya 根 `.mu-editor`）包裹 `.mu-container` ——
+// 标题在其下一层 —— 因此锚点为 `.mu-container > hN`，而非滚动容器自身的直接子节点。
+// 嵌套在 blockquote / 列表项中的标题，或 raw-HTML 块内的 `<h1>`–`<h6>`，并非 `.mu-container` 的直接子节点；
+// 无范围的 `querySelectorAll('h1..h6')` 会把它们计入并导致后续索引偏移，滚动到错误标题。
 export const TOP_LEVEL_HEADINGS_SELECTOR =
   '.mu-container > h1, .mu-container > h2, .mu-container > h3, .mu-container > h4, .mu-container > h5, .mu-container > h6'
 

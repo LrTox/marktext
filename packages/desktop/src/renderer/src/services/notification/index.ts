@@ -1,5 +1,5 @@
 import template from './index.html?raw'
-import { getUniqueId } from '../../util'
+import { getUniqueId } from '@/util'
 import { sanitize, EXPORT_DOMPURIFY_CONFIG } from '../../util/dompurify'
 import './index.css'
 

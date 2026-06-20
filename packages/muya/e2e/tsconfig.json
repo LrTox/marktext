@@ -5,7 +5,7 @@
         "module": "ESNext",
         "moduleResolution": "bundler",
         "resolveJsonModule": true,
-        "types": ["node", "vite/client"],
+        "types": ["node", "@playwright/test", "vite/client"],
         "allowImportingTsExtensions": true,
         "strict": true,
         "noFallthroughCasesInSwitch": true,

@@ -1,15 +1,19 @@
+/**
+ * 克隆实时编辑器 DOM 并生成自包含 HTML，供 PDF/HTML 导出使用。
+ * 与 Markdown 重渲染路径（MarkdownToHtml）互补。
+ */
 import type { Muya } from '../muya';
+import katexCss from 'katex/dist/katex.css?inline';
 import blockSyntaxCss from '../assets/styles/blockSyntax.css?inline';
 import exportEditorCss from '../assets/styles/exportEditor.css?inline';
 import indexCss from '../assets/styles/index.css?inline';
 import inlineSyntaxCss from '../assets/styles/inlineSyntax.css?inline';
 import prismCss from '../assets/styles/prismjs/light.theme.css?inline';
-import katexCss from 'katex/dist/katex.css?inline';
 import { EXPORT_DOMPURIFY_CONFIG } from '../config';
+import { isHTMLElement, sanitize } from '../utils';
 import { cleanEditorExportDom } from '../utils/cleanEditorExportDom';
 import { fitEditorTablesForExport } from '../utils/fitEditorTablesForExport';
 import { injectExportHeadingIds } from '../utils/injectExportHeadingIds';
-import { isHTMLElement, sanitize } from '../utils';
 
 const EDITOR_EXPORT_STYLESHEETS = [
     indexCss,
@@ -29,8 +33,8 @@ export class EditorToHtml {
     }
 
     /**
-     * Clone the live editor DOM (`.mu-container`) for export.
-     * Preserves `.mu-table-inner { zoom: var(--mu-table-scale) }` scaling.
+     * 克隆实时编辑器 DOM（`.mu-container`）用于导出。
+     * 保留 `.mu-table-inner { zoom: var(--mu-table-scale) }` 表格缩放效果。
      */
     renderHtml(options: { contentWidth?: number; maxTableWidth?: number } = {}): string {
         const source = this._getScrollPageContainer();

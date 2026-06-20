@@ -12,13 +12,13 @@
     />
     <div>
       <el-button
-        size="mini"
+        size="small"
         @click="modifyImageFolderPath(undefined)"
       >
         {{ t('preferences.image.folderSetting.open') }}
       </el-button>
       <el-button
-        size="mini"
+        size="small"
         @click="openImageFolder"
       >
         {{ t('preferences.image.folderSetting.showInFolder') }}

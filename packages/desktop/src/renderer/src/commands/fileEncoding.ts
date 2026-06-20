@@ -2,7 +2,7 @@ import { ENCODING_NAME_MAP, getEncodingName, type Encoding } from 'common/encodi
 import { delay } from '@/util'
 import bus from '../bus'
 import getCommandDescriptionById from './descriptions'
-import { t } from '../i18n'
+import { t } from '@/i18n'
 import type { EditorState } from '@/store/editor'
 
 interface EncodingSubcommand {

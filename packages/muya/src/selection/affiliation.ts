@@ -2,7 +2,7 @@
 //
 // The payload carries an `affiliation` chain — the shared ancestor
 // PARAGRAPH-type blocks of the selection endpoints — plus per-endpoint `.type`
-// (the markdown block type, e.g. `span` for a content leaf) and `.functionType`
+// (the Markdown block type, e.g. `span` for a content leaf) and `.functionType`
 // (`codeContent`, `cellContent`, …). The desktop store
 // (`createApplicationMenuState`) consumes those to light up the Paragraph-menu
 // check marks, the Loose/Task-list toggles, table/code-fence detection, and to

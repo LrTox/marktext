@@ -1,21 +1,21 @@
-<p align="center"><img src="../assets/logo-small.png" alt="MarkText" width="100" height="100"></p>
+<p style="text-align: center"><img src="https://raw.githubusercontent.com/marktext/marktext/develop/docs/assets/logo-small.png" alt="MarkText" width="100"></p>
 
-<h1 align="center">MarkText</h1>
+<h1 style="text-align: center">MarkText</h1>
 
-<div align="center">
+<div style="text-align: center">
   <a href="https://twitter.com/intent/tweet?via=marktextme&url=https://github.com/marktext/marktext/&text=What%20do%20you%20want%20to%20say%20to%20app?&hashtags=happyMarkText">
     <img src="https://img.shields.io/twitter/url/https/github.com/marktext/marktext.svg?style=for-the-badge" alt="twitter">
   </a>
 </div>
-<div align="center">
-  <strong>:high_brightness: 下一代 Markdown 編輯器 :crescent_moon:</strong><br>
+<div style="text-align: center">
+  <strong>🌞 下一代 Markdown 編輯器 🌙</strong><br>
   一款專注於速度和易用性的簡潔優雅的開源 Markdown 編輯器。<br>
   <sub>支援 Linux、macOS 和 Windows。</sub>
 </div>
 
 <br>
 
-<div align="center">
+<div style="text-align: center">
   <!-- License -->
   <a href="../../LICENSE">
     <img src="https://img.shields.io/github/license/marktext/marktext.svg" alt="LICENSE">
@@ -26,7 +26,7 @@
   </a>
   <!-- Downloads latest release -->
   <a href="https://github.com/marktext/marktext/releases/latest">
-    <img src="https://img.shields.io/github/downloads/marktext/marktext/v0.17.1/total.svg" alt="latest download">
+    <img src="https://img.shields.io/github/downloads/marktext/marktext/latest/total.svg" alt="latest download">
   </a>
   <!-- sponsors -->
   <a href="https://opencollective.com/marktext">
@@ -34,7 +34,7 @@
   </a>
 </div>
 
-<div align="center">
+<div style="text-align: center">
   <h3>
     <a href="https://github.com/marktext/marktext">
       Website
@@ -58,41 +58,41 @@
   </h3>
 </div>
 
-<div align="center">
+<div style="text-align: center">
   <sub>其他語言翻譯：</sub>
   <a href="../../README.md">
     <span>:uk:</span>
   </a>
-  <a href="README-zh_cn.md#readme">
+  <a href="README-zh_cn.md">
     <span>:cn:</span>
   </a>
-  <a href="README-de.md#readme">
+  <a href="README-de.md">
     <span>:de:</span>
   </a>
-  <a href="README-jp.md#readme">
+  <a href="README-jp.md">
     <span>:jp:</span>
   </a>
-  <a href="README-fr.md#readme">
+  <a href="README-fr.md">
     <span>:fr:</span>
   </a>
-  <a href="README-tr.md#readme">
+  <a href="README-tr.md">
     <span>:tr:</span>
   </a>
-  <a href="README-es.md#readme">
+  <a href="README-es.md">
     <span>:es:</span>
   </a>
-  <a href="README-pt.md#readme">
+  <a href="README-pt.md">
     <span>:portugal:</span>
   </a>
-  <a href="README-kr.md#readme">
+  <a href="README-kr.md">
     <span>:kr:</span>
   </a>
-  <a href="README-ar.md#readme">
+  <a href="README-ar.md">
     <span>:saudi_arabia:</span>
   </a>
 </div>
 
-<div align="center">
+<div style="text-align: center">
   <sub>這款 Markdown 編輯器由
     <a href="https://github.com/Jocs">Jocs</a> 和
     <a href="https://github.com/marktext/marktext/graphs/contributors">
@@ -103,18 +103,19 @@
 
 <br />
 
-<h2 align="center">支持 MarkText</h2>
+<h2 style="text-align: center">支持 MarkText</h2>
 
 MarkText 是一款由社群支持驅動的開源 Markdown 編輯器。如果 MarkText 改善了您的工作流程，請考慮[贊助本專案](https://github.com/sponsors/marktext)。感謝所有贊助者 ❤️
 
 **特別贊助商**
 
-| [<img src="../assets/sponsors/serpapi.png" width="150">](https://serpapi.com/?utm_source=marktext) | [透過我們快速、便捷且完整的 API 抓取 Google 及其他搜尋引擎的資料。](https://serpapi.com/?utm_source=marktext) |
-| ------------- |:-------------|
+| | |
+| --- | --- |
+| [<img src="https://raw.githubusercontent.com/marktext/marktext/develop/docs/assets/sponsors/serpapi.png" width="150" alt="SerpApi">](https://serpapi.com/?utm_source=marktext) | [透過我們快速、便捷且完整的 API 抓取 Google 及其他搜尋引擎的資料。](https://serpapi.com/?utm_source=marktext) |
 
 ## 截圖
 
-![](../assets/marktext.png?raw=true)
+![](https://raw.githubusercontent.com/marktext/marktext/develop/docs/assets/marktext.png)
 
 ## 功能
 
@@ -123,19 +124,20 @@ MarkText 是一款由社群支持驅動的開源 Markdown 編輯器。如果 Mar
 - 支援數學表達式（KaTeX）、Front Matter 和表情符號等 Markdown 擴展。
 - 支援段落和內聯樣式快捷方式，提升寫作效率。
 - 可匯出 **HTML** 和 **PDF** 文件。
-- 多種[主題](../end-user/THEMES.md)：**Cadmium Light**、**Material Dark** 等。
+- 多種[主題](https://marktext.me/docs/themes)：**Cadmium Light**、**Material Dark** 等。
 - 多種編輯模式：**原始碼模式**、**打字機模式**、**專注模式**。
 - 支援直接從剪貼簿貼上圖片。
 
 ## 下載與安裝
 
-![平台](https://img.shields.io/static/v1.svg?label=Platform&message=Linux-64%20|%20macOS-64%20|%20Win-32%20|%20Win-64&style=for-the-badge)
+![平台](https://img.shields.io/static/v1.svg?label=Platform&message=Linux%20x64%20|%20macOS%20x64%2Farm64%20|%20Windows%20x64%2Farm64&style=for-the-badge)
 
-| ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png)                                                                                                  | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png)                                                                                                          | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png)                                                                                                                        |
-|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| [![latest version](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-x64.dmg.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-x64.dmg) | [![latest version](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-setup.exe.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-setup.exe) | [![latest version](https://img.shields.io/github/downloads/marktext/marktext/latest/marktext-x86_64.AppImage.svg)](https://github.com/marktext/marktext/releases/download/v0.17.1/marktext-x86_64.AppImage) |
+| ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/mac-pass-sm.png) | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/windows-pass-sm.png) | ![](https://raw.githubusercontent.com/wiki/ryanoasis/nerd-fonts/screenshots/v1.0.x/linux-pass-sm.png) |
+| --- | --- | --- |
+| [![Download for macOS](https://img.shields.io/badge/macOS-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Windows](https://img.shields.io/badge/Windows-Download-blue)](https://github.com/marktext/marktext/releases/latest) | [![Download for Linux](https://img.shields.io/badge/Linux-Download-blue)](https://github.com/marktext/marktext/releases/latest) |
 
-想瞭解最新版本的新功能？請參閱 [CHANGELOG](../CHANGELOG.md)。
+
+想瞭解最新版本的新功能？請參閱 [CHANGELOG](https://marktext.me/docs/changelog)。
 
 #### macOS
 
@@ -163,7 +165,7 @@ winget install marktext
 
 #### Linux
 
-請參閱 [Linux 安裝說明](../end-user/LINUX.md)。
+請參閱 [Linux 安裝說明](https://marktext.me/docs/installation)。
 
 #### 其他
 
@@ -171,10 +173,10 @@ winget install marktext
 
 ## 開發
 
-如果你希望自行構建 MarkText，請參閱我們的[構建說明](../dev/BUILD.md)。
+如果你希望自行構建 MarkText，請參閱我們的[構建說明](https://marktext.me/docs/dev/build)。
 
-- [使用者文件](../README.md)
-- [開發者文件](../dev/README.md)
+- [使用者文件](https://marktext.me/docs/introduction)
+- [開發者文件](https://marktext.me/docs/dev/overview)
 
 如果你對 MarkText 有任何疑問，歡迎提交 issue。提交時請使用開啟 issue 時的預設格式。當然，如果你直接提交 PR，將不勝感激。
 
@@ -187,7 +189,7 @@ MarkText 正在開發中，請在提交 pull request 之前確保閱讀[貢獻�
 
 感謝所有已經為 MarkText 做出貢獻的人[[貢獻者](https://github.com/marktext/marktext/graphs/contributors)]。
 
-<a href="https://github.com/marktext/marktext/graphs/contributors"><img src="https://opencollective.com/marktext/contributors.svg?width=890" /></a>
+<a href="https://github.com/marktext/marktext/graphs/contributors"><img src="https://opencollective.com/marktext/contributors.svg?width=890" alt="Contributors" /></a>
 
 ## 許可證
 

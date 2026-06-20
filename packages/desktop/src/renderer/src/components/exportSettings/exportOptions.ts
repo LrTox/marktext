@@ -1,3 +1,4 @@
+/** 导出对话框下拉选项（页面尺寸、页眉页脚类型、内置主题）。 */
 import { t } from '@/i18n'
 import type { PrefSelectOption } from '@/prefComponents/common/types'
 
@@ -77,7 +78,7 @@ export const getExportThemeList = (): PrefSelectOption<string>[] => [
   }
 ]
 
-// Retained for backward compatibility
+// 保留以兼容旧引用
 export const pageSizeList = getPageSizeList()
 export const headerFooterTypes = getHeaderFooterTypes()
 export const headerFooterStyles = getHeaderFooterStyles()

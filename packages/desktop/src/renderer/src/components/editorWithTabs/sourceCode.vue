@@ -12,7 +12,7 @@ import { usePreferencesStore } from '@/store/preferences'
 import { storeToRefs } from 'pinia'
 import codeMirror, { setCursorAtFirstLine, setTextDirection } from '../../codeMirror'
 import { wordCount as getWordCount } from '@muyajs/core'
-import { adjustCursor } from '../../util'
+import { adjustCursor } from '@/util'
 import bus from '../../bus'
 import { oneDarkThemes, railscastsThemes } from '@/config'
 

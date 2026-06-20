@@ -1,6 +1,6 @@
 import equal from 'deep-equal'
 import bus from '../bus'
-import { getUniqueId, deepClone } from '../util'
+import { getUniqueId, deepClone } from '@/util'
 import listToTree, { type ListItem, type TreeNode } from '../util/listToTree'
 import {
   createDocumentState,
@@ -20,7 +20,7 @@ import { usePreferencesStore } from './preferences'
 import { useProjectStore } from './project'
 import { useLayoutStore } from './layout'
 import { useMainStore } from '.'
-import { t } from '../i18n'
+import { t } from '@/i18n'
 import { debouncedSendBufferedState, sendBufferedState } from './bufferedState'
 import type {
   IFileState,
@@ -32,7 +32,7 @@ import type {
 } from '@shared/types/files'
 
 // ----------------------------------------------------------------------------
-// Local helper types
+// 本地辅助类型
 // ----------------------------------------------------------------------------
 
 interface TocItem extends ListItem {
@@ -131,7 +131,7 @@ interface ProjectStoreLike {
 }
 
 // ----------------------------------------------------------------------------
-// State shape
+// 状态结构
 // ----------------------------------------------------------------------------
 
 export interface EditorState {
@@ -167,7 +167,7 @@ export const useEditorStore = defineStore('editor', {
     currentFile: null,
     tabs: [],
     tabIdToIndex: {},
-    listToc: [], // Used for equal check and for searching for the correct github-slug to jump to
+    listToc: [], // 用于 equal 比较及查找跳转用的 github-slug
     toc: []
   }),
 
@@ -242,8 +242,8 @@ export const useEditorStore = defineStore('editor', {
     },
 
     /**
-     * Copies the specified heading's github-slug to the clipboard.
-     * @param key The heading-id to copy.
+     * 将指定标题的 github-slug 复制到剪贴板
+     * @param key 标题 id
      */
     copyGithubSlug(key: string): void {
       const item = this.listToc.find((i) => i.slug === key)
@@ -262,7 +262,7 @@ export const useEditorStore = defineStore('editor', {
     },
 
     /**
-     * Update scroll position for the currentFile
+     * 更新 currentFile 的滚动位置
      */
     updateScrollPosition(id: string, scrollTop: number): void {
       if (!(id in this.tabIdToIndex)) {
@@ -278,7 +278,7 @@ export const useEditorStore = defineStore('editor', {
     },
 
     /**
-     * Push a tab specific notification on stack that never disappears.
+     * 向标签页通知栈压入一条不会自动消失的通知
      */
     pushTabNotification(data: PushTabNotificationPayload): void {
       const defaultAction: FileNotification['action'] = () => {}
@@ -286,7 +286,7 @@ export const useEditorStore = defineStore('editor', {
       const action = data.action || defaultAction
       const showConfirm = data.showConfirm || false
       const style = data.style || 'info'
-      // Whether only one notification should exist.
+      // 是否只允许存在一条同类型通知
       const exclusiveType = data.exclusiveType || ''
 
       const tab = this.tabs.find((t) => t.id === tabId)
@@ -297,16 +297,16 @@ export const useEditorStore = defineStore('editor', {
 
       const { notifications } = tab
 
-      // Remove the old notification if only one should exist.
+      // 若只允许一条，则移除旧通知
       if (exclusiveType) {
         const index = notifications.findIndex((n) => n.exclusiveType === exclusiveType)
         if (index >= 0) {
-          // Reorder current notification
+          // 将当前通知移到栈顶
           notifications.splice(index, 1)
         }
       }
 
-      // Push new notification on stack.
+      // 压入新通知
       notifications.push({
         msg,
         showConfirm,
@@ -328,7 +328,7 @@ export const useEditorStore = defineStore('editor', {
         markdown,
         filename
       } = data
-      // Create a new document and update few entires later.
+      // 创建新文档，稍后更新部分字段
       const newFileState = createDocumentState({
         markdown,
         filename,
@@ -341,7 +341,7 @@ export const useEditorStore = defineStore('editor', {
 
       const tab = tabs.find((t) => window.fileUtils.isSamePathSync(t.pathname, pathname))
       if (!tab) {
-        // The tab may be closed in the meanwhile.
+        // 期间标签可能已被关闭
         console.error('loadChange: Cannot find tab in tab list.')
         notice.notify({
           title: t('store.editor.errorLoadingTabTitle'),
@@ -353,29 +353,29 @@ export const useEditorStore = defineStore('editor', {
         return
       }
 
-      // Backup few entries that we need to restore later.
+      // 备份稍后需要恢复的字段
       const oldId = tab.id
       const oldNotifications = tab.notifications
-      // Preserve scroll across external reload so the editor stays put.
+      // 外部重载时保留滚动位置，避免编辑器跳动
       const oldScrollTop = tab.scrollTop
       let oldHistory: IFileState['history'] | null = null
       const histIndex = tab.history.index
       if (histIndex >= 0 && tab.history.stack.length >= 1) {
         const entry = tab.history.stack[histIndex]
         if (entry) {
-          // Allow to restore the old document.
+          // 允许恢复旧文档
           oldHistory = {
             stack: [entry],
             index: 0
           }
         }
 
-        // Free reference from array
+        // 释放数组引用
         tab.history.index--
         tab.history.stack.pop()
       }
 
-      // Update file content and restore some entries.
+      // 更新文件内容并恢复部分字段
       Object.assign(tab, newFileState)
       tab.id = oldId
       tab.notifications = oldNotifications
@@ -397,11 +397,11 @@ export const useEditorStore = defineStore('editor', {
         })
       }
 
-      // Reload the editor if the tab is currently opened.
+      // 若当前打开该标签则重载编辑器
       if (currentFile && pathname === currentFile.pathname) {
-        // save current state first
+        // 先保存当前状态
         this.currentFile = tab
-        const { id, cursor, history, scrollTop, muyaIndexCursor } = tab // Should not use blocks history as this is loaded from disk
+        const { id, cursor, history, scrollTop, muyaIndexCursor } = tab // 不应使用 blocks history，内容来自磁盘
         bus.emit('file-changed', {
           id,
           markdown,
@@ -416,16 +416,15 @@ export const useEditorStore = defineStore('editor', {
     },
 
     FORMAT_LINK_CLICK({ data, dirname }: FormatLinkClickPayload): void {
-      // Check if the link starts with a #, that is a local anchor link.
-
+      // 链接以 # 开头则为本地锚点
       if (data.href.length > 0 && data.href[0] === '#') {
         const anchorSlug = data.href.substring(1)
         if (!anchorSlug) return
 
-        // Find the block with the anchor slug from the TOC
+        // 从 TOC 查找匹配 anchor slug 的块
         for (const item of this.listToc) {
           if (item.githubSlug === anchorSlug) {
-            // Scroll to the corresponding element that matches this github-slug
+            // 滚动到对应 github-slug 元素
             bus.emit('scroll-to-header', item.slug)
             return
           }
@@ -443,7 +442,7 @@ export const useEditorStore = defineStore('editor', {
       })
     },
 
-    // image path auto complement
+    // 图片路径自动补全
     ASK_FOR_IMAGE_AUTO_PATH(src: string): Promise<string[]> {
       if (!this.currentFile) return Promise.resolve([])
       const { pathname } = this.currentFile
@@ -453,7 +452,7 @@ export const useEditorStore = defineStore('editor', {
           rs = resolve
         })
         const id = getUniqueId()
-        // Dynamic IPC channel — not part of the static IpcMainEventChannels contract.
+        // 动态 IPC 通道 —— 不在静态 IpcMainEventChannels 契约中
         ;(
           window.electron.ipcRenderer.once as (
             channel: string,
@@ -476,7 +475,7 @@ export const useEditorStore = defineStore('editor', {
 
     SEARCH(value: IFileState['searchMatches']): void {
       if (!this.currentFile) return
-      this.currentFile.searchMatches = deepClone(value) // deep clone to trigger state changes
+      this.currentFile.searchMatches = deepClone(value) // 深拷贝以触发状态变更
     },
 
     SHOW_IMAGE_DELETION_URL(deletionUrl: string): void {
@@ -492,7 +491,7 @@ export const useEditorStore = defineStore('editor', {
         })
     },
 
-    // We need to update line endings menu when changing tabs.
+    // 切换标签时需更新行尾菜单
     UPDATE_LINE_ENDING_MENU(): void {
       if (!this.currentFile) return
       const { lineEnding } = this.currentFile
@@ -525,7 +524,7 @@ export const useEditorStore = defineStore('editor', {
       }
     },
 
-    // need pass some data to main process when `save` menu item clicked
+    // 点击「保存」菜单时需向主进程传递数据
     LISTEN_FOR_SAVE(): void {
       window.electron.ipcRenderer.on('mt::editor-ask-file-save', () => {
         this.FILE_SAVE()
@@ -555,7 +554,7 @@ export const useEditorStore = defineStore('editor', {
       }
     },
 
-    // need pass some data to main process when `save as` menu item clicked
+    // 点击「另存为」菜单时需向主进程传递数据
     LISTEN_FOR_SAVE_AS(): void {
       window.electron.ipcRenderer.on('mt::editor-ask-file-save-as', () => {
         this.FILE_SAVE_AS()
@@ -575,8 +574,7 @@ export const useEditorStore = defineStore('editor', {
           return
         }
 
-        // If a tab with the same file path already exists we need to close the tab.
-        // The existing tab is overwritten by this tab.
+        // 若已有同路径标签则关闭；当前标签将覆盖该标签
         const existingTab = tabs.find(
           (t) => t.id !== id && window.fileUtils.isSamePathSync(t.pathname, pathname)
         )
@@ -584,7 +582,7 @@ export const useEditorStore = defineStore('editor', {
           this.CLOSE_TAB(existingTab)
         }
 
-        // SET_PATHNAME
+        // 设置路径名
         const { filename } = fileInfo
         if (id === this.currentFile?.id && pathname) {
           window.DIRNAME = window.path.dirname(pathname)
@@ -662,7 +660,7 @@ export const useEditorStore = defineStore('editor', {
               })
 
             if (unsavedFiles.length && preferencesStore.startUpAction !== 'restoreAll') {
-              // Ignore unsaved files when user has chosen to restore all on startup, as they will be restored anyway.
+              // 启动操作为 restoreAll 时忽略未保存文件（启动时会恢复）
               window.electron.ipcRenderer.send('mt::close-window-confirm', deepClone(unsavedFiles))
             } else {
               window.electron.ipcRenderer.send('mt::close-window')
@@ -717,7 +715,7 @@ export const useEditorStore = defineStore('editor', {
       const defaultPath = getRootFolderFromState(projectStore)
       if (!id) return
       if (!pathname) {
-        // if current file is a newly created file, just save it!
+        // 新建未保存文件则直接保存
         window.electron.ipcRenderer.send(
           'mt::response-file-save',
           id,
@@ -728,7 +726,7 @@ export const useEditorStore = defineStore('editor', {
           defaultPath
         )
       } else {
-        // if not, move to a new(maybe) folder
+        // 否则移动到新（可能不同的）文件夹
         window.electron.ipcRenderer.send('mt::response-file-move-to', { id, pathname })
       }
     },
@@ -759,7 +757,7 @@ export const useEditorStore = defineStore('editor', {
       const defaultPath = getRootFolderFromState(projectStore)
       if (!id) return
       if (!pathname) {
-        // if current file is a newly created file, just save it!
+        // 新建未保存文件则直接保存
         window.electron.ipcRenderer.send(
           'mt::response-file-save',
           id,
@@ -774,7 +772,7 @@ export const useEditorStore = defineStore('editor', {
       }
     },
 
-    // ask for main process to rename this file to a new name `newFilename`
+    // 请求主进程将文件重命名为 newFilename
     RENAME(newFilename: string): void {
       if (!this.currentFile) return
       const { id, pathname, filename } = this.currentFile
@@ -790,8 +788,8 @@ export const useEditorStore = defineStore('editor', {
     },
 
     /**
-     * Update the pathname/filename of any tab whose pathname matches `src`.
-     * Invoked from the sidebar rename flow (project.ts:RENAME_IN_SIDEBAR).
+     * 更新 pathname 与 `src` 匹配的所有标签页路径/文件名。
+     * 由侧边栏重命名流程调用（project.ts:RENAME_IN_SIDEBAR）。
      */
     RENAME_IF_NEEDED({ src, dest }: { src: string; dest: string }): void {
       this.tabs.forEach((tab) => {
@@ -800,9 +798,7 @@ export const useEditorStore = defineStore('editor', {
           tab.filename = window.path.basename(dest)
         }
       })
-      // Keep DIRNAME in sync when the active tab is the one being renamed,
-      // so link resolution / dirname-based lookups don't keep using the old
-      // folder until the user switches tabs.
+      // 活动标签被重命名时同步 DIRNAME，避免链接解析仍用旧目录直至切换标签
       if (this.currentFile != null && this.currentFile.pathname === dest) {
         window.DIRNAME = window.path.dirname(dest)
       }
@@ -842,14 +838,14 @@ export const useEditorStore = defineStore('editor', {
       }
     },
 
-    // This events are only used during window creation.
+    // 仅在窗口创建期间使用这些事件
     LISTEN_FOR_BOOTSTRAP_WINDOW(): void {
       const preferencesStore = usePreferencesStore()
       const layoutStore = useLayoutStore()
       const projectStore = useProjectStore()
       const mainStore = useMainStore()
 
-      // Delay load runtime commands and initialize commands.
+      // 延迟加载运行时命令并注册
       setTimeout(() => {
         bus.emit('cmd::register-command', new FileEncodingCommand(this))
         bus.emit(
@@ -890,13 +886,13 @@ export const useEditorStore = defineStore('editor', {
         preferencesStore.SET_USER_PREFERENCE({ endOfLine: lineEnding })
         layoutStore.SET_LAYOUT({
           rightColumn: 'files',
-          showSideBar: !!sideBarVisibility,
-          showTabBar: !!tabBarVisibility
+          showSideBar: sideBarVisibility,
+          showTabBar: tabBarVisibility
         })
         layoutStore.DISPATCH_LAYOUT_MENU_ITEMS()
         preferencesStore.SET_MODE({
           type: 'sourceCode',
-          checked: !!sourceCodeModeEnabled
+          checked: sourceCodeModeEnabled
         })
 
         if (addBlankTab) {
@@ -914,16 +910,16 @@ export const useEditorStore = defineStore('editor', {
       })
     },
 
-    // Open a new tab, optionally with content.
+    // 打开新标签，可选带内容
     LISTEN_FOR_NEW_TAB(): void {
       window.electron.ipcRenderer.on(
         'mt::open-new-tab',
         (_, markdownDocument, options = {}, selected = true) => {
           if (markdownDocument) {
-            // Create tab with content.
+            // 带内容创建标签
             this.NEW_TAB_WITH_CONTENT({ markdownDocument, options, selected })
           } else {
-            // Fallback: create a blank tab and always select it
+            // 回退：创建空白标签并选中
             this.NEW_UNTITLED_TAB({})
           }
         }
@@ -932,7 +928,7 @@ export const useEditorStore = defineStore('editor', {
       window.electron.ipcRenderer.on(
         'mt::new-untitled-tab',
         (_, selected = true, markdown = '') => {
-          // Create a blank tab
+          // 创建空白标签
           this.NEW_UNTITLED_TAB({ markdown, selected })
         }
       )
@@ -1001,7 +997,7 @@ export const useEditorStore = defineStore('editor', {
         autoSaveTimers.delete(file.id)
       }
 
-      this.updateTabIdToIndex() // Update before sending it out to prevent stale mappings.
+      this.updateTabIdToIndex() // 发送前先更新，避免映射过期
 
       if (currentFile && file.id === currentFile.id) {
         const fileState: IFileState | null =
@@ -1093,7 +1089,7 @@ export const useEditorStore = defineStore('editor', {
         }
       })
 
-      this.updateTabIdToIndex() // Update before sending it out to prevent stale mappings.
+      this.updateTabIdToIndex() // 发送前先更新，避免映射过期
 
       if (this.currentFile == null && this.tabs.length > 0) {
         this.currentFile =
@@ -1155,7 +1151,7 @@ export const useEditorStore = defineStore('editor', {
       bus.emit('rename')
     },
 
-    // Direction is a boolean where false is left and true right.
+    // direction 为 boolean：false 向左，true 向右
     CYCLE_TABS(direction: boolean): void {
       const { tabs, currentFile } = this
       if (tabs.length <= 1) {
@@ -1170,10 +1166,10 @@ export const useEditorStore = defineStore('editor', {
 
       let nextTabIndex = 0
       if (!direction) {
-        // Switch tab to the left.
+        // 向左切换标签
         nextTabIndex = currentIndex === 0 ? tabs.length - 1 : currentIndex - 1
       } else {
-        // Switch tab to the right.
+        // 向右切换标签
         nextTabIndex = (currentIndex + 1) % tabs.length
       }
 
@@ -1225,7 +1221,7 @@ export const useEditorStore = defineStore('editor', {
     },
 
     /**
-     * Create a new untitled tab, optionally seeded with markdown content.
+     * 创建新的未命名标签，可选预填 markdown
      */
     NEW_UNTITLED_TAB({
       markdown: markdownString,
@@ -1258,7 +1254,7 @@ export const useEditorStore = defineStore('editor', {
     },
 
     /**
-     * Create a new tab from the given markdown document.
+     * 从给定 markdown 文档创建新标签
      */
     NEW_TAB_WITH_CONTENT({
       markdownDocument,
@@ -1358,23 +1354,21 @@ export const useEditorStore = defineStore('editor', {
     },
 
     /**
-     * Replaces the table of contents with a fresh snapshot from the engine.
+     * 用引擎最新快照替换目录（TOC）。
      *
-     * Used on file load and tab switch, where the engine fires no `json-change`
-     * event (so `LISTEN_FOR_CONTENT_CHANGE` never runs and the TOC would
-     * otherwise stay empty until the first edit). Assigns unconditionally: this
-     * is a re-seed on load/switch, so there is no `equal` guard to short-circuit
-     * — the incoming snapshot always wins, even if it happens to deep-equal the
-     * current TOC.
-     * @param toc Flat list of headings returned by `muya.getTOC()`.
+     * 用于文件加载与标签切换：此时引擎不触发 `json-change`，
+     * `LISTEN_FOR_CONTENT_CHANGE` 不会运行，TOC 会空至首次编辑。
+     * 无条件赋值 —— 这是加载/切换时的重播种，无 `equal` 短路；
+     *  incoming 快照始终生效，即使与当前 TOC 深相等。
+     * @param toc `muya.getTOC()` 返回的扁平标题列表
      */
     UPDATE_TOC(toc: TocItem[]): void {
       this.listToc = toc ?? []
       this.toc = listToTree<TocItem>(toc ?? [])
     },
 
-    // Content change from realtime preview editor and source code editor
-    // There is a chance that this event is fired AFTER the tab is switched.
+    // 实时预览与源码编辑器的 content change
+    // 可能在标签切换之后才触发
     LISTEN_FOR_CONTENT_CHANGE({
       id,
       markdown,
@@ -1392,8 +1386,7 @@ export const useEditorStore = defineStore('editor', {
       } else if (this.tabs.length === 0) {
         return
       } else if (!(id in this.tabIdToIndex)) {
-        // This only happens when the sourceCode tries to write a stale id via prepareTabSwitch() but the tab
-        // has already been closed. In this case we can safely ignore the update.
+        // 仅当 sourceCode 通过 prepareTabSwitch() 写入过期 id 但标签已关闭时发生，可安全忽略
         return
       }
 
@@ -1416,7 +1409,7 @@ export const useEditorStore = defineStore('editor', {
       if (history) tab.history = history
       if (blocks) tab.blocks = blocks
 
-      // Only update TOC if it's the current file
+      // 仅当前文件时更新 TOC
       if (id === this.currentFile?.id && toc && !equal(toc, this.listToc)) {
         this.listToc = toc
         this.toc = listToTree<TocItem>(toc)
@@ -1434,7 +1427,7 @@ export const useEditorStore = defineStore('editor', {
           editEntry.id !== tab.lastSavedHistoryId) ||
         (lastEditIndex === -1 &&
           tab.lastSavedHistoryId !== -1 &&
-          tab.lastSavedHistoryId !== tab.history.lastInitIndex) // Edge Case: Undo to original content (lastEditIndex === -1) after saving means we cant use the lastEditIndex. Compare it against the lastInitIndex instead.
+          tab.lastSavedHistoryId !== tab.history.lastInitIndex) // 边界：撤销到原始内容（lastEditIndex === -1）保存后无法用 lastEditIndex，改与 lastInitIndex 比较
       ) {
         tab.isSaved = false
         if (pathname && autoSave) {
@@ -1448,8 +1441,8 @@ export const useEditorStore = defineStore('editor', {
           })
         }
       } else if (tab.lastSavedHistoryId !== -1) {
-        // Check here is to prevent it from overriding a restored .isSaved state
-        tab.isSaved = true // An undo can trigger this
+        // 防止覆盖已恢复的 .isSaved 状态
+        tab.isSaved = true // 撤销可能触发此分支
       }
       debouncedSendBufferedState()
     },
@@ -1508,13 +1501,11 @@ export const useEditorStore = defineStore('editor', {
       )
     },
 
-    // Persist the caret for a tab without the heavy content-change pipeline. A
-    // pure caret move (click / arrow key) fires `selection-change` but NOT
-    // `json-change`, so `tab.cursor` — the position replayed when the tab is
-    // re-activated — would otherwise only ever track the last EDIT, losing a
-    // click-moved caret across an in-session tab switch. Lightweight by design:
-    // it only stores the serialized caret, skipping markdown/blocks/TOC re-derivation
-    // and the save/dirty bookkeeping LISTEN_FOR_CONTENT_CHANGE performs.
+    // 持久化标签 caret，不走重量级 content-change 流水线。
+    // 纯 caret 移动（点击/方向键）触发 `selection-change` 而非 `json-change`，
+    // `tab.cursor`（标签再激活时回放的位置）否则只跟踪最后一次编辑，
+    // 会话内切换标签会丢失点击移动的光标。设计上仅存储序列化 caret，
+    // 跳过 markdown/blocks/TOC 重算及 LISTEN_FOR_CONTENT_CHANGE 的脏标记逻辑。
     PERSIST_CURSOR(id: string, cursor: unknown): void {
       if (!id || !cursor) return
       const index = this.tabIdToIndex[id]
@@ -1714,7 +1705,7 @@ export const useEditorStore = defineStore('editor', {
     },
 
     LISTEN_FOR_CONTEXT_MENU(): void {
-      // General context menu
+      // 通用上下文菜单
       window.electron.ipcRenderer.on('mt::cm-copy-as-rich', () => {
         bus.emit('copyAsRich', 'copyAsRich')
       })
@@ -1728,7 +1719,7 @@ export const useEditorStore = defineStore('editor', {
         bus.emit('insertParagraph', location)
       })
 
-      // Spelling
+      // 拼写检查
       window.electron.ipcRenderer.on('mt::spelling-replace-misspelling', (_, info) => {
         bus.emit('replace-misspelling', info)
       })
@@ -1748,9 +1739,9 @@ export const useEditorStore = defineStore('editor', {
 // ----------------------------------------------------------------------------
 
 /**
- * Return the opened root folder or an empty string.
+ * 返回已打开的根文件夹路径，无则空字符串
  *
- * @param {object} projectStore The project store instance.
+ * @param projectStore project store 实例
  */
 const getRootFolderFromState = (projectStore: ProjectStoreLike): string => {
   const openedFolder = projectStore.projectTree
@@ -1761,10 +1752,10 @@ const getRootFolderFromState = (projectStore: ProjectStoreLike): string => {
 }
 
 /**
- * Trim the final newlines according `trimTrailingNewlineOption`.
+ * 按 `trimTrailingNewlineOption` 修剪末尾换行
  *
- * @param markdown The text to trim.
- * @param trimTrailingNewlineOption The option how we should trim the final newlines.
+ * @param markdown 待修剪文本
+ * @param trimTrailingNewlineOption 末尾换行处理方式
  */
 const adjustTrailingNewlines = (
   markdown: string,
@@ -1775,42 +1766,41 @@ const adjustTrailingNewlines = (
   }
 
   switch (trimTrailingNewlineOption) {
-    // Trim trailing newlines.
+    // 修剪末尾换行
     case 0: {
       return trimTrailingNewlines(markdown)
     }
-    // Ensure single trailing newline.
+    // 保证单个末尾换行
     case 1: {
-      // Muya will always add a final new line to the markdown text. Check first whether
-      // only one newline exist to prevent copying the string.
+      // Muya 总会给 markdown 加末尾换行；若仅有一个换行则避免复制字符串
       const lastIndex = markdown.length - 1
       if (markdown[lastIndex] === '\n') {
         if (markdown.length === 1) {
-          // Just return nothing because adding a final new line makes no sense.
+          // 仅一个换行时返回空（再加末尾换行无意义）
           return ''
         } else if (markdown[lastIndex - 1] !== '\n') {
           return markdown
         }
       }
 
-      // Otherwise trim trailing newlines and add one.
+      // 否则先 trim 再加一个
       markdown = trimTrailingNewlines(markdown)
       if (markdown.length === 0) {
-        // Just return nothing because adding a final new line makes no sense.
+        // 空内容时不加末尾换行
         return ''
       }
       return markdown + '\n'
     }
-    // Disabled, use text as it is.
+    // 禁用，保持原文
     default:
       return markdown
   }
 }
 
 /**
- * Trim trailing newlines from `text`.
+ * 从 `text` 修剪末尾换行
  *
- * @param {string} text The text to trim.
+ * @param text 待修剪文本
  */
 const trimTrailingNewlines = (text: string): string => {
   return text.replace(/[\r?\n]+$/, '')
@@ -1829,10 +1819,10 @@ interface ApplicationMenuState {
 }
 
 /**
- * Creates a object that contains the application menu state.
+ * 构建应用菜单状态对象
  *
- * @param {*} selection The selection.
- * @returns A object that represents the application menu state.
+ * @param selection 选区信息
+ * @returns 表示应用菜单状态的对象
  */
 const createApplicationMenuState = ({
   start,
@@ -1842,19 +1832,19 @@ const createApplicationMenuState = ({
 }: SelectionChange): ApplicationMenuState => {
   const state: ApplicationMenuState = {
     isDisabled: false,
-    // Whether multiple lines are selected.
+    // 是否选中多行
     isMultiline: start.key !== end.key,
-    // List information - a list must be selected.
+    // 列表信息 —— 须选中列表
     isLooseListItem: false,
     isTaskList: false,
-    // Whether the selection is code block like (math, html or code block).
+    // 选区是否为代码块类（math、html、code block）
     isCodeFences: false,
-    // Whether a code block line is selected.
+    // 是否选中代码块内一行
     isCodeContent: false,
-    // Whether the selection contains a table.
+    // 选区是否含表格
     isTable: false,
     hasFrontMatter: !!hasFrontMatter,
-    // Contains keys about the selection type(s) (string, boolean) like "ul: true".
+    // 选区类型键（string/boolean），如 "ul: true"
     affiliation: {}
   }
   const { isMultiline } = state
@@ -1862,42 +1852,39 @@ const createApplicationMenuState = ({
   const startBlock: { text?: string; functionType?: string } = start.block ?? {}
   const endBlock: { functionType?: string } = end.block ?? {}
 
-  // Get code block information from selection.
+  // 从选区获取代码块信息
   if (
     (startBlock.functionType === 'cellContent' && endBlock.functionType === 'cellContent') ||
     (start.type === 'span' && startBlock.functionType === 'codeContent') ||
     (end.type === 'span' && endBlock.functionType === 'codeContent')
   ) {
-    // A code block like block is selected (code, math, ...).
+    // 选中的是代码块类块（code、math 等）
     state.isCodeFences = true
 
-    // A code block line is selected.
+    // 选中代码块内一行
     if (startBlock.functionType === 'codeContent' || endBlock.functionType === 'codeContent') {
       state.isCodeContent = true
     }
   }
 
-  // Check every list level in the affiliation chain — nested lists show all
-  // levels (e.g. a ul wrapping an ol checks both). Scanning the full chain (not
-  // just the depth-3 loop below) keeps a deeply nested inner list checked. The
-  // loose/task flags come from the INNERMOST list (the one the cursor is in);
-  // the chain is outermost-first, so that is the last ul/ol entry.
+  // 检查 affiliation 链上每一层列表 —— 嵌套列表会暴露全部层级
+  // （如 ul 包 ol 则两者都勾选）。扫描完整链（非仅下方 depth-3 循环）
+  // 以保证深层内层列表仍被勾选。loose/task 标志来自最内层列表（光标所在）；
+  // 链为外→内顺序，故取最后一个 ul/ol 条目。
   const listEntries = aff.filter((b) => b.type === 'ul' || b.type === 'ol')
   for (const entry of listEntries) {
-    // Task and bullet lists are both `type: 'ul'`; distinguish by listType so a
-    // chain with several kinds (e.g. ol > task > ul) checks each list menu item.
+    // task 与 bullet 均为 `type: 'ul'`，用 listType 区分，以便 ol > task > ul 链各自勾选菜单
     const kind = entry.type === 'ol' ? 'ol' : entry.listType === 'task' ? 'task' : 'ul'
     state.affiliation[kind] = true
   }
   const innerList = listEntries[listEntries.length - 1]
   if (innerList) {
-    // The engine's affiliation entry carries the loose flag on the list block
-    // itself (derived from `meta.loose`), not via a `children` chain.
+    // 引擎 affiliation 条目的 loose 标志在列表块本身（来自 `meta.loose`），非 children 链
     state.isLooseListItem = !!innerList.isLooseListItem
     state.isTaskList = innerList.listType === 'task'
   }
 
-  // Search with block depth 3 (e.g. "ul -> li -> p" where p is the actually paragraph inside the list (item)).
+  // 在 block 深度 3 内搜索（如 "ul -> li -> p"，p 为列表项内实际段落）
   for (const b of aff.slice(0, 3)) {
     if (b.type === 'pre' && b.functionType) {
       if (/frontmatter|html|multiplemath|code$/.test(b.functionType)) {
@@ -1911,26 +1898,24 @@ const createApplicationMenuState = ({
         state.isDisabled = true
         state.affiliation[b.type] = true
       } else if (b.functionType === 'diagram') {
-        // Diagrams are atomic, non-formattable blocks: disable the whole
-        // paragraph + format menus like a code fence, but they are not tables.
+        // 图表为原子不可格式化块：整段禁用格式菜单，类似 code fence，但不是表格
         state.isCodeFences = true
         state.affiliation[b.functionType] = true
       }
       break
     } else if (isMultiline && /^h{1,6}$/.test(b.type)) {
-      // Multiple block elements are selected.
+      // 选中多个块元素
       state.affiliation = {}
       break
     } else if (b.type !== 'ul' && b.type !== 'ol') {
-      // Lists are handled above (innermost only); the depth-limited scan must
-      // not re-add an outer list type and check two list kinds at once.
+      // 列表已在上方处理（仅最内层）；深度受限扫描不得再添加外层列表类型
       if (!state.affiliation[b.type]) {
         state.affiliation[b.type] = true
       }
     }
   }
 
-  // Clean up
+  // 清理
   if (Object.getOwnPropertyNames(state.affiliation).length >= 2 && state.affiliation.p) {
     delete state.affiliation.p
   }
@@ -1941,16 +1926,15 @@ const createApplicationMenuState = ({
 }
 
 /**
- * Creates a object that contains the formats selection state.
+ * 构建格式选区状态对象
  */
 export const createSelectionFormatState = (
   formats: SelectionFormat[]
 ): Record<string, boolean> => {
   const state: Record<string, boolean> = {}
   for (const item of formats) {
-    // Underline/superscript/subscript/highlight are carried as `html_tag`
-    // tokens whose `tag` (u/sup/sub/mark) is the real format key the menu
-    // map keys off — the bare `type` would only ever yield `html_tag`.
+    // underline/superscript/subscript/highlight 以 `html_tag` token 携带，
+    // 真实格式键在 `tag`（u/sup/sub/mark），菜单 map 据此匹配 —— 裸 `type` 只会得到 `html_tag`
     const key = item.type === 'html_tag' ? (item.tag as string) : item.type
     if (key) state[key] = true
   }
@@ -1958,7 +1942,7 @@ export const createSelectionFormatState = (
 }
 
 /*
- * Convert a Pinia Proxy Object to a serializable value by applying JSON stringify and parse.
+ * 通过 JSON 序列化/反序列化将 Pinia Proxy 转为可序列化值
  */
 function toSerializableValue<T>(value: T | null | undefined, fallback: T): T
 function toSerializableValue<T>(value: T | null | undefined, fallback: null): T | null

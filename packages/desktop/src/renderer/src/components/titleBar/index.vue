@@ -5,17 +5,17 @@
       :class="{ 'tabs-visible': showTabBar }"
     />
     <div
-      class="title-bar"
+      class="title-bar electron-drag"
+      :data-active="active"
       :class="[
-        { active: active },
         { 'tabs-visible': showTabBar },
         { frameless: titleBarStyle === 'custom' },
         { isOsx: isOsx }
       ]"
     >
       <div
-        class="title"
-        @dblclick.stop="toggleMaxmizeOnMacOS"
+        class="title electron-no-drag"
+        @dblclick.stop="toggleMaximizeOnMacOS"
       >
         <span v-if="!filename">MarkText</span>
         <span v-else>
@@ -33,21 +33,22 @@
           </span>
           <span
             class="filename"
-            :class="{ isOsx: platform === 'darwin' }"
+            :class="{ isOsx }"
             @click="rename"
           >
             {{ filename }}
           </span>
           <span
+            v-if="active"
             class="save-dot"
-            :class="{ show: !isSaved }"
+            :class="{ 'save-dot--visible': !isSaved }"
           />
         </span>
       </div>
-      <div :class="showCustomTitleBar ? 'left-toolbar title-no-drag' : 'right-toolbar'">
+      <div :class="showCustomTitleBar ? 'left-toolbar title-no-drag electron-no-drag' : 'right-toolbar'">
         <div
           v-if="showCustomTitleBar"
-          class="frameless-titlebar-menu title-no-drag"
+          class="frameless-title-bar-menu title-no-drag electron-no-drag"
           @click.stop="handleMenuClick"
         >
           <span class="text-center-vertical">&#9776;</span>
@@ -71,7 +72,7 @@
           </template>
           <div
             v-if="wordCount"
-            class="word-count"
+            class="word-count title-no-drag electron-no-drag"
             @click.stop="handleWordClick"
           >
             <span class="text-center-vertical">{{ `${HASH[show].short} ${wordCount[show]}` }}</span>
@@ -81,10 +82,10 @@
       <div
         v-if="titleBarStyle === 'custom' && !isFullScreen && !isOsx"
         class="right-toolbar"
-        :class="[{ 'title-no-drag': titleBarStyle === 'custom' }]"
+        :class="[{ 'title-no-drag electron-no-drag': titleBarStyle === 'custom' }]"
       >
         <div
-          class="frameless-titlebar-button frameless-titlebar-close"
+          class="frameless-title-bar-button frameless-title-bar-close"
           @click.stop="handleCloseClick"
         >
           <div>
@@ -97,7 +98,7 @@
           </div>
         </div>
         <div
-          class="frameless-titlebar-button frameless-titlebar-toggle"
+          class="frameless-title-bar-button frameless-title-bar-toggle"
           @click.stop="handleMaximizeClick"
         >
           <div>
@@ -117,7 +118,7 @@
           </div>
         </div>
         <div
-          class="frameless-titlebar-button frameless-titlebar-minimize"
+          class="frameless-title-bar-button frameless-title-bar-minimize"
           @click.stop="handleMinimizeClick"
         >
           <div>
@@ -139,8 +140,8 @@ import { usePreferencesStore } from '@/store/preferences.js'
 import { useLayoutStore } from '@/store/layout.js'
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { storeToRefs } from 'pinia'
-import { minimizePath, restorePath, maximizePath, closePath } from '../../assets/window-controls.js'
-import { PATH_SEPARATOR } from '../../config'
+import { minimizePath, restorePath, maximizePath, closePath } from '@/assets/window-controls.js'
+import { PATH_SEPARATOR } from '@/config'
 import { isOsx as isOsxPlatform } from '@/util'
 import { useEditorStore } from '@/store/editor'
 import { useI18n } from 'vue-i18n'
@@ -201,8 +202,8 @@ onMounted(async () => {
       window.electron.windowControl.isFullScreen(),
       window.electron.windowControl.isMaximized()
     ])
-    isFullScreen.value = !!fs
-    isMaximized.value = !!max
+    isFullScreen.value = fs
+    isMaximized.value = max
   } catch {}
 })
 
@@ -225,7 +226,7 @@ watch(
     // Set filename when hover on dock
     const hasOpenFolder = !!(props.project && props.project.name)
     const projectName = props.project?.name ?? ''
-    let title = ''
+    let title: string
     if (value) {
       title = hasOpenFolder ? `${value} - ${projectName}` : `${value}`
     } else {
@@ -258,7 +259,7 @@ const handleMaximizeClick = async () => {
   else window.electron.windowControl.maximize()
 }
 
-const toggleMaxmizeOnMacOS = () => {
+const toggleMaximizeOnMacOS = () => {
   if (isOsx) {
     handleMaximizeClick()
   }
@@ -273,7 +274,7 @@ const handleMenuClick = () => {
 }
 
 const rename = () => {
-  if (props.platform === 'darwin') {
+  if (isOsx) {
     editorStore.RESPONSE_FOR_RENAME()
   }
 }
@@ -320,7 +321,6 @@ onBeforeUnmount(() => {
   right: 0;
 }
 .title-bar {
-  -webkit-app-region: drag;
   user-select: none;
   background: transparent;
   height: var(--titleBarHeight);
@@ -334,7 +334,7 @@ onBeforeUnmount(() => {
   transition: color 0.4s ease-in-out;
   cursor: default;
 }
-.active {
+.title-bar[data-active] {
   color: var(--editorColor);
 }
 img {
@@ -359,7 +359,6 @@ img {
     height: 1px;
     width: 100%;
     z-index: 1;
-    -webkit-app-region: no-drag;
   }
 }
 div.title > span {
@@ -375,7 +374,7 @@ div.title > span {
   color: var(--themeColor);
 }
 
-.active .save-dot {
+.save-dot {
   margin-right: 0.25rem;
   width: 8px;
   height: 8px;
@@ -385,11 +384,11 @@ div.title > span {
   opacity: 0.7;
   visibility: hidden;
 }
-.active .save-dot.show {
+.save-dot--visible {
   visibility: visible;
 }
 .title:hover {
-  color: var(sideBarTitleColor);
+  color: var(--sideBarTitleColor);
 }
 
 .left-toolbar {
@@ -417,7 +416,6 @@ div.title > span {
 }
 
 .word-count {
-  -webkit-app-region: no-drag;
   cursor: pointer;
   font-size: 14px;
   color: var(--editorColor30);
@@ -436,37 +434,34 @@ div.title > span {
   }
 }
 
-.title-no-drag {
-  -webkit-app-region: no-drag;
-}
 /* frameless window controls */
-.frameless-titlebar-button {
+.frameless-title-bar-button {
   position: relative;
   display: block;
   width: 46px;
   height: var(--titleBarHeight);
 }
-.frameless-titlebar-button > div {
+.frameless-title-bar-button > div {
   position: absolute;
   display: inline-flex;
   top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
 }
-.frameless-titlebar-menu {
+.frameless-title-bar-menu {
   color: var(--sideBarColor);
 }
-.frameless-titlebar-close:hover {
+.frameless-title-bar-close:hover {
   background-color: rgb(228, 79, 79);
 }
-.frameless-titlebar-minimize:hover,
-.frameless-titlebar-toggle:hover {
+.frameless-title-bar-minimize:hover,
+.frameless-title-bar-toggle:hover {
   background-color: rgba(0, 0, 0, 0.1);
 }
-.frameless-titlebar-button svg {
+.frameless-title-bar-button svg {
   fill: #000000;
 }
-.frameless-titlebar-close:hover svg {
+.frameless-title-bar-close:hover svg {
   fill: #ffffff;
 }
 

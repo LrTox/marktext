@@ -7,6 +7,7 @@ import DocsTabs from './DocsTabs'
 import CommandPalette from './CommandPalette'
 import CopyButton from './CopyButton'
 import { SidebarContext } from './sidebar-context'
+import { PaletteContext } from './palette-context'
 import { findPageBySlug, type DocTabId } from '@/lib/docs-nav'
 
 type Props = {
@@ -54,16 +55,22 @@ export default function DocsChrome({ children }: Props) {
   const closePalette = useCallback(() => setPaletteOpen(false), [])
   const openPalette = useCallback(() => setPaletteOpen(true), [])
   const sidebar = useMemo(() => ({ open: sidebarOpen, setOpen: setSidebarOpen }), [sidebarOpen])
+  const palette = useMemo(
+    () => ({ open: paletteOpen, openPalette, closePalette }),
+    [paletteOpen, openPalette, closePalette]
+  )
 
   return (
     <SidebarContext.Provider value={sidebar}>
-      <div className="docs">
-        <DocsHeader onSearchOpen={openPalette} />
-        <DocsTabs activeTab={activeTab} />
-        {children}
-        <CommandPalette open={paletteOpen} onClose={closePalette} />
-        <CopyButton />
-      </div>
+      <PaletteContext.Provider value={palette}>
+        <div className="docs">
+          <DocsHeader />
+          <DocsTabs activeTab={activeTab} />
+          {children}
+          <CommandPalette />
+          <CopyButton />
+        </div>
+      </PaletteContext.Provider>
     </SidebarContext.Provider>
   )
 }

@@ -11,7 +11,7 @@ const writeLine = (s: string): boolean => write(s + '\n')
 const cli = (): ParsedArgs => {
   let argv = process.argv.slice(1)
   if (process.env.NODE_ENV === 'development') {
-    // Don't pass electron development arguments to MarkText and change user data path.
+    // 不向 MarkText 传递 Electron 开发参数，并修改 user data 路径
     argv = [
       '--user-data-dir',
       process.env.MARKTEXT_DEV_USER_DATA_DIR || path.join(getPath('appData'), 'marktext-dev')
@@ -49,8 +49,7 @@ const cli = (): ParsedArgs => {
     process.exit(0)
   }
 
-  // Check for portable mode and ensure the user data path is absolute. We assume
-  // that the path is writable if not this lead to an application crash.
+  // 检测便携模式并确保 user data 路径为绝对路径；不可写时会导致应用崩溃
   if (!args['--user-data-dir']) {
     const portablePath = path.join(app.getAppPath(), '..', '..', 'marktext-user-data')
     if (isDirectory(portablePath)) {

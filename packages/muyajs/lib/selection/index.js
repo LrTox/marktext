@@ -42,21 +42,6 @@ class Selection {
     this.doc = doc // document
   }
 
-  findMatchingSelectionParent(testElementFunction, contentWindow) {
-    const selection = contentWindow.getSelection()
-    let range
-    let current
-
-    if (selection.rangeCount === 0) {
-      return false
-    }
-
-    range = selection.getRangeAt(0)
-    current = range.commonAncestorContainer
-
-    return traverseUp(current, testElementFunction)
-  }
-
   // https://stackoverflow.com/questions/17678843/cant-restore-selection-after-html-modify-even-if-its-the-same-html
   // Tim Down
   //
@@ -349,11 +334,11 @@ class Selection {
   }
 
   /**
-   *  Find the caret position within an element irrespective of any inline tags it may contain.
+   * Find the caret position within an element irrespective of any inline tags it may contain.
    *
-   *  @param {DOMElement} An element containing the cursor to find offsets relative to.
-   *  @param {Range} A Range representing cursor position. Will window.getSelection if none is passed.
-   *  @return {Object} 'left' and 'right' attributes contain offsets from beginning and end of Element
+   * @param {Element} element Element containing the cursor to find offsets relative to.
+   * @param {Range} [range] Range representing cursor position. Uses window.getSelection if omitted.
+   * @return {{left: number, right: number}} 'left' and 'right' contain offsets from beginning and end of element
    */
   getCaretOffsets(element, range) {
     let preCaretRange
@@ -417,24 +402,6 @@ class Selection {
     }
   }
 
-  /**
-   * Move cursor to the given node with the given offset.
-   *
-   * @param  {DomElement}  node    Element where to jump
-   * @param  {integer}     offset  Where in the element should we jump, 0 by default
-   */
-  moveCursor(node, offset) {
-    this.select(node, offset)
-  }
-
-  getSelectionRange() {
-    const selection = this.doc.getSelection()
-    if (selection.rangeCount === 0) {
-      return null
-    }
-    return selection.getRangeAt(0)
-  }
-
   selectRange(range) {
     const selection = this.doc.getSelection()
 
@@ -447,9 +414,7 @@ class Selection {
   // by You
   getSelectionStart() {
     const node = this.doc.getSelection().anchorNode
-    const startNode = node && node.nodeType === 3 ? node.parentNode : node
-
-    return startNode
+    return node && node.nodeType === 3 ? node.parentNode : node
   }
 
   setCursorRange(cursorRange) {
@@ -720,13 +685,6 @@ class Selection {
     }
 
     return { x, y, width }
-  }
-
-  getSelectionEnd() {
-    const node = this.doc.getSelection().focusNode
-    const endNode = node && node.nodeType === 3 ? node.parentNode : node
-
-    return endNode
   }
 }
 

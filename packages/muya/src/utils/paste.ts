@@ -4,7 +4,7 @@ import { sanitize } from '../utils';
 
 const TIMEOUT = 1500;
 
-export const isOnline = () => navigator.onLine === true;
+export const isOnline = () => navigator.onLine;
 
 export async function getPageTitle(url: string) {
     // No need to request the title when it's not url.

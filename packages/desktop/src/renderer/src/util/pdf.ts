@@ -1,14 +1,8 @@
-// `escapeHTML`/`unescapeHTML` are migrated to @muyajs/core (identical impl).
-// The TOC anchors produced here (`#${slug}`) must match the heading `id`
-// attributes in the exported document. Now that editor.vue exports via
-// @muyajs/core (#4406) and the engine injects github-compatible heading ids
-// (#4412), this module derives its slugs from the SAME `generateGithubSlug`
-// algorithm, with the SAME `-N` document-order dedup the engine uses, so the
-// in-document TOC links resolve.
+/** PDF/HTML 导出 CSS 与 TOC 生成：合并导出选项、编辑器外观与 GitHub 兼容 slug。 */
 import { escapeHTML, unescapeHTML, generateGithubSlug } from '@muyajs/core'
 import academicTheme from '@/assets/themes/export/academic.theme.css?inline'
 import liberTheme from '@/assets/themes/export/liber.theme.css?inline'
-import { deepClone } from '../util'
+import { deepClone } from '@/util'
 import { sanitize, EXPORT_DOMPURIFY_CONFIG } from '../util/dompurify'
 import {
   getEditorExportAppearanceCss,
@@ -30,7 +24,7 @@ export interface PdfCssOptions {
   showFrontMatter?: boolean
   theme?: string | null
   headerFooterFontSize?: number
-  /** When set and `theme` is empty, export inherits editor theme/fonts/line width. */
+  /** 已设置且 theme 为空时，导出继承编辑器主题/字体/行宽。 */
   editorAppearance?: EditorExportAppearance
   [key: string]: unknown
 }
@@ -63,7 +57,7 @@ export const getCssForOptions = async(options: PdfCssOptions): Promise<string> =
   if (useEditorAppearance) {
     output += getEditorExportAppearanceCss(editorAppearance)
   } else {
-    // Font options (export theme or legacy GitHub defaults)
+    // 字体选项（导出主题或旧版 GitHub 默认值）
     output += '.markdown-body{'
     if (fontFamily) {
       output += `font-family:"${fontFamily}",${FALLBACK_FONT_FAMILIES};`
@@ -78,12 +72,12 @@ export const getCssForOptions = async(options: PdfCssOptions): Promise<string> =
     output += '}'
   }
 
-  // Auto numbering headings via CSS
+  // 通过 CSS 自动为标题编号
   if (autoNumberingHeadings) {
     output += autoNumberingHeadingsCss
   }
 
-  // Hide front matter
+  // 隐藏 front matter
   if (!showFrontMatter) {
     output += 'pre.front-matter{display:none!important;}'
   }
@@ -94,7 +88,7 @@ export const getCssForOptions = async(options: PdfCssOptions): Promise<string> =
     } else if (theme === 'liber') {
       output += liberTheme
     } else {
-      // Read theme from disk
+      // 从磁盘读取主题
       const { userDataPath } = window.marktext!.paths as { userDataPath: string }
       const themePath = window.path.join(userDataPath, 'themes/export', theme)
       if (await window.fileUtils.isFile(themePath)) {
@@ -104,7 +98,7 @@ export const getCssForOptions = async(options: PdfCssOptions): Promise<string> =
             buf instanceof Uint8Array ? new TextDecoder('utf-8').decode(buf) : String(buf)
           output += themeCSS
         } catch (_) {
-          // No-op
+          // 忽略错误
         }
       }
     }
@@ -121,7 +115,7 @@ export const getCssForOptions = async(options: PdfCssOptions): Promise<string> =
   return unescapeHTML(sanitize(escapeHTML(output), EXPORT_DOMPURIFY_CONFIG))
 }
 
-/** Merge export-dialog options with live editor preferences for CSS generation. */
+/** 合并导出对话框选项与当前编辑器偏好，用于生成 CSS。 */
 export const buildExportCssOptions = (
   exportOptions: Record<string, unknown>,
   preferences: PreferencesState
@@ -187,13 +181,10 @@ export interface HtmlTocOptions {
   [key: string]: unknown
 }
 
-// Replicate @muyajs/core's `MarkdownToHtml#_injectHeadingIds` slugging so the
-// TOC `href="#slug"` anchors target the exact ids the engine writes onto the
-// exported `<h1>..<h6>`: github-compatible base slug (falling back to
-// `heading` when the text slugs to empty), deduplicated in document order with
-// an incrementing `-N` suffix. Computed over the FULL heading list in order
-// (before the render-time filtering below) to keep the dedup sequence aligned
-// with the engine's whole-document pass.
+// 复刻 @muyajs/core 的 MarkdownToHtml#_injectHeadingIds slug 逻辑，
+// 使 TOC 的 href="#slug" 与引擎写入 <h1>..<h6> 的 id 完全一致：
+// GitHub 兼容 base slug（空文本时回退为 heading），按文档顺序用递增 -N 后缀去重。
+// 在完整标题列表上计算（早于下方渲染过滤），以保持与引擎全文档扫描一致的去重序列。
 const assignHeadingSlugs = (tocList: TocEntry[]): void => {
   const seen = new Set<string>()
   for (const entry of tocList) {
@@ -230,7 +221,7 @@ const generateHtmlToc = (
 
   let html = `<li><span><a class="toc-h${lvl}" href="#${slug}">${content}</a><span class="dots"></span></span>`
 
-  // Generate sub-items
+  // 生成子项
   if (tocList.length !== 0 && tocList[0].lvl > lvl) {
     html += '<ul>' + generateHtmlToc(tocList, lvl, options) + '</ul>'
   }
@@ -252,7 +243,7 @@ export const getHtmlToc = (toc: TocEntry[], options: HtmlTocOptions = {}): strin
   return sanitize(html, EXPORT_DOMPURIFY_CONFIG)
 }
 
-// Don't use "Noto Color Emoji" because it will result in PDF files with multiple MB and weird looking emojis.
+// 勿用 "Noto Color Emoji"：会导致 PDF 体积达数 MB 且 emoji 显示异常。
 const FALLBACK_FONT_FAMILIES =
   '"Open Sans","Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"'
 

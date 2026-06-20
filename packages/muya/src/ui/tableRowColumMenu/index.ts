@@ -104,7 +104,7 @@ export class TableRowColumMenu extends BaseFloat {
         const { location, action, target } = item;
 
         if (action === 'insert') {
-            let cursorBlock = null;
+            let cursorBlock: ReturnType<typeof table.insertRow>;
 
             if (target === 'row') {
                 const offset = location === 'previous' ? rowCount : rowCount + 1;

@@ -1,0 +1,13 @@
+/* Electron frameless window drag regions (-webkit-app-region). */
+/* noinspection CssUnknownProperty */
+.electron-drag {
+  -webkit-app-region: drag;
+}
+
+.electron-no-drag {
+  -webkit-app-region: no-drag;
+}
+
+.title.electron-no-drag::after {
+  -webkit-app-region: no-drag;
+}

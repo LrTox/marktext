@@ -52,4 +52,6 @@ coverage/
 
 # Project-specific
 doc/
+qodana-report/
+styles.css
 *.min.json

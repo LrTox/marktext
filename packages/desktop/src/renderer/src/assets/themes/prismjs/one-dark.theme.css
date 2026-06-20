@@ -29,21 +29,6 @@ SOFTWARE.
 code[class*='language-'],
 pre.ag-paragraph {
   color: #abb2bf;
-  /*font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;*/
-  text-align: left;
-  white-space: pre;
-  word-spacing: normal;
-  word-break: normal;
-  word-wrap: normal;
-  -moz-tab-size: 4;
-  -o-tab-size: 4;
-  tab-size: 4;
-
-  -webkit-hyphens: none;
-  -moz-hyphens: none;
-  -ms-hyphens: none;
-  hyphens: none;
-  overflow: visible;
 }
 
 /* Code Fence */

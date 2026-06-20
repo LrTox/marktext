@@ -44,8 +44,8 @@ class App {
   private _themeListenerRegistered: boolean
 
   /**
-   * @param accessor The application accessor for application instances.
-   * @param args Parsed application arguments.
+   * @param accessor 应用 accessor，提供各子系统实例
+   * @param args 解析后的应用命令行参数
    */
   constructor(accessor: Accessor, args: Partial<CliArgs>) {
     this._accessor = accessor
@@ -53,21 +53,21 @@ class App {
     this._openFilesCache = []
     this._openFilesTimer = null
     this._windowManager = this._accessor.windowManager
-    // this.launchScreenshotWin = null // The window which call the screenshot.
+    // this.launchScreenshotWin = null // 发起截图的窗口
     // this.shortcutCapture = null
 
-    // Initialize main process language
+    // 初始化主进程语言
     this._initializeLanguage()
     this._listenForIpcMain()
-    // Initialize theme listener
+    // 初始化主题监听
     this._themeListenerRegistered = false
   }
 
   /**
-   * The entry point into the application.
+   * 应用入口
    */
   init(): void {
-    // Enable these features to use `backdrop-filter` css rules!
+    // 启用实验性 Web 平台特性以使用 `backdrop-filter` CSS
     if (isOsx) {
       app.commandLine.appendSwitch('enable-experimental-web-platform-features', 'true')
     }
@@ -78,7 +78,7 @@ class App {
 
       const buf: PathInfo[] = []
       for (const pathname of args._) {
-        // Ignore all unknown flags
+        // 忽略未知 flag
         if (pathname.startsWith('--')) {
           continue
         }
@@ -105,12 +105,12 @@ class App {
       }
     })
 
-    app.on('open-file', this.openFile) // macOS only
+    app.on('open-file', this.openFile) // 仅 macOS
 
     app.on('ready', this.ready)
 
     app.on('window-all-closed', () => {
-      // Close all the image path watcher
+      // 关闭所有图片路径 watcher
       for (const watcher of watchers.values()) {
         watcher.close()
       }
@@ -121,15 +121,13 @@ class App {
     })
 
     app.on('activate', () => {
-      // macOS only
-      // On OS X it's common to re-create a window in the app when the
-      // dock icon is clicked and there are no other windows open.
+      // 仅 macOS：点击 Dock 图标且无其他窗口时重建窗口
       if (this._windowManager.windowCount === 0) {
         this.ready()
       }
     })
 
-    // Prevent to load webview and opening links or new windows via HTML/JS.
+    // 阻止 webview 加载及通过 HTML/JS 打开链接或新窗口
     app.on('web-contents-created', (_event, contents) => {
       contents.on('will-attach-webview', (event) => {
         event.preventDefault()
@@ -144,18 +142,18 @@ class App {
   }
 
   /**
-   * Initialize main process language from preferences
+   * 从偏好设置初始化主进程语言
    */
   private async _initializeLanguage(): Promise<void> {
     try {
       let currentLanguage = this._accessor.preferences.getItem<string>('language')
 
-      // If no language is set, auto-detect based on the system language
+      // 未设置语言时按系统语言自动检测
       if (!currentLanguage) {
         const systemLanguage = app.getLocale()
         log.info(`System language detected: ${systemLanguage}`)
 
-        // Supported language list (based on languages actually supported by the project)
+        // 支持的语言列表（基于项目实际支持的语言）
         const supportedLanguages = [
           'en',
           'zh-CN',
@@ -169,7 +167,7 @@ class App {
           'ru'
         ]
 
-        // Language mapping: system language code -> application language code
+        // 系统语言代码 → 应用语言代码 映射
         const languageMap: Record<string, string> = {
           'zh-CN': 'zh-CN',
           'zh-TW': 'zh-TW',
@@ -196,12 +194,12 @@ class App {
 
         currentLanguage = languageMap[systemLanguage] || 'zh-CN'
 
-        // If the detected language is not in the supported list, use Simplified Chinese
+        // 检测结果不在支持列表时使用简体中文
         if (!supportedLanguages.includes(currentLanguage)) {
           currentLanguage = 'zh-CN'
         }
 
-        // Save the detected language setting
+        // 保存检测到的语言设置
         this._accessor.preferences.setItem('language', currentLanguage)
         log.info(`Auto-detected and set language to: ${currentLanguage}`)
       }
@@ -210,7 +208,7 @@ class App {
       log.info(`Main process language initialized to: ${currentLanguage}`)
     } catch (error) {
       log.error('Failed to initialize main process language:', error)
-      // If an error occurs, use Simplified Chinese as the default language
+      // 出错时默认使用简体中文
       setLanguage('zh-CN')
     }
   }
@@ -227,7 +225,7 @@ class App {
     const { _args: args, _openFilesCache } = this
     const { preferences, editorBufferStore } = this._accessor
 
-    // Initialize language settings
+    // 初始化语言设置
     const { startUpAction, defaultDirectoryToOpen, theme, language } = preferences.getAll()
     const followSystemTheme = preferences.getItem<boolean>('followSystemTheme')
     const lastOpenedFolder = preferences.getItem<string>('lastOpenedFolder')
@@ -240,7 +238,7 @@ class App {
 
     if (args._.length) {
       for (const pathname of args._) {
-        // Ignore all unknown flags
+        // 忽略未知 flag
         if (pathname.startsWith('--')) {
           continue
         }
@@ -252,11 +250,11 @@ class App {
       }
     }
 
-    // We should NOT restore the previous buffer or open a folder if the user just wants to double click to open a file
+    // 用户仅双击打开文件时不应恢复 buffer 或打开文件夹
     let isRestorePathway = false
     if (_openFilesCache.length === 0) {
       if (startUpAction === 'restoreAll') {
-        // Restore based off the previous buffer
+        // 基于上次 buffer 恢复
         isRestorePathway = true
       } else if (startUpAction === 'folder' && defaultDirectoryToOpen) {
         const info = normalizeMarkdownPath(defaultDirectoryToOpen)
@@ -273,7 +271,7 @@ class App {
 
     nativeTheme.themeSource = getNativeThemeSource({ followSystemTheme, theme })
 
-    // Apply theme at startup if "Follow system theme" is enabled
+    // 启用「跟随系统主题」时在启动应用主题
     const isDarkTheme = isDarkApplicationTheme(theme)
     const systemIsDark = nativeTheme.shouldUseDarkColors
 
@@ -294,7 +292,7 @@ class App {
         }
         nativeTheme.themeSource = getNativeThemeSource(nextPreferences)
 
-      // When followSystemTheme is enabled, immediately switch to match system
+      // 启用 followSystemTheme 时立即切换以匹配系统
         if (change.followSystemTheme === true) {
           const systemIsDark = nativeTheme.shouldUseDarkColors
           const lightModeTheme = preferences.getItem<string>('lightModeTheme')
@@ -307,18 +305,18 @@ class App {
           selectTheme(newTheme)
           preferences.setItem('theme', newTheme)
         }
-      // When light/dark mode theme preferences change, apply immediately if following system
+      // 浅色/深色主题偏好变更且跟随系统时立即应用
         if (
           preferences.getItem<boolean>('followSystemTheme') &&
         (change.lightModeTheme || change.darkModeTheme)
         ) {
           const systemIsDark = nativeTheme.shouldUseDarkColors
 
-        // Get current values, but prefer the NEW values from the change event
+        // 取当前值，优先使用 change 事件中的新值
           let lightModeTheme = preferences.getItem<string>('lightModeTheme')
           let darkModeTheme = preferences.getItem<string>('darkModeTheme')
 
-        // If these preferences were just changed, use the new values from the change object
+        // 若偏好刚被修改，使用 change 对象中的新值
           if (change.lightModeTheme !== undefined) {
             lightModeTheme = change.lightModeTheme
           }
@@ -334,7 +332,7 @@ class App {
         }
       })
 
-    // Listen for system theme changes and auto-switch if enabled
+    // 监听系统主题变化并在启用时自动切换
     if (!this._themeListenerRegistered) {
       nativeTheme.on('updated', () => {
         const followSystemTheme = preferences.getItem<boolean>('followSystemTheme')
@@ -346,7 +344,7 @@ class App {
           const newTheme = systemIsDark ? darkModeTheme : lightModeTheme
           const currentTheme = preferences.getItem<string>('theme')
 
-          // Only switch if the theme actually needs to change
+          // 仅在实际需要切换时更新主题
           if (newTheme !== currentTheme) {
             log.info(
               `System theme changed, switching to: ${newTheme} (system ${systemIsDark ? 'dark' : 'light'})`
@@ -385,7 +383,7 @@ class App {
 
     const createWindow = (): void => {
       if (isRestorePathway) {
-        // We will restore based off the previous buffer, one window per buffer store file
+        // 按上次 buffer 恢复，每个 buffer store 文件对应一个窗口
         const bufferStores = editorBufferStore.getAll()
         const bufferStoreList = Object.values(bufferStores) as Array<{
           id: string
@@ -397,11 +395,11 @@ class App {
         }
 
         bufferStoreList.forEach((bufferStoreInfo) => {
-          // Read the buffer store file and pass the content
+          // 读取 buffer store 文件并传入内容
           this._createEditorWindow(null, [], [], {}, bufferStoreInfo)
         })
       } else if (_openFilesCache.length) {
-        // We should wipe the buffer store if not it will keep creating new windows whenever we open files via double click in the file manager
+        // 非恢复路径时应清空 buffer store，否则文件管理器双击打开会持续新建窗口
         editorBufferStore.clearBufferStoresWithAllSaved()
         this._openFilesToOpen()
       } else {
@@ -418,12 +416,12 @@ class App {
         createWindow()
       }
 
-      // Wait for theme to settle (Linux-specific issue?)
+      // 等待主题稳定（Linux 特有问题？）
       nativeTheme.once('updated', createWindowOnce)
-      // Fallback timeout in case 'updated' never fires (no theme change)
+      // 若 'updated' 永不触发则超时兜底（无主题变化）
       setTimeout(createWindowOnce, 150)
     } else {
-      // Create immediately on Windows/macOS
+      // Windows/macOS 立即创建
       createWindow()
     }
 
@@ -457,7 +455,7 @@ class App {
       this._openFilesCache.push(info as PathInfo)
 
       if (app.isReady()) {
-        // It might come more files
+        // 可能还有更多文件待打开
         if (this._openFilesTimer) {
           clearTimeout(this._openFilesTimer)
         }
@@ -469,10 +467,10 @@ class App {
     }
   }
 
-  // --- private --------------------------------
+  // --- 私有方法 ---
 
   /**
-   * Creates a new editor window.
+   * 创建新的编辑器窗口
    */
   private _createEditorWindow(
     rootDirectory: string | null = null,
@@ -494,7 +492,7 @@ class App {
   }
 
   /**
-   * Create a new setting window.
+   * 创建设置窗口
    */
   private _createSettingWindow(category?: string | null): void {
     const setting = new SettingWindow(this._accessor)
@@ -510,11 +508,10 @@ class App {
   }
 
   /**
-   * Open the path list in the best window(s).
+   * 在最合适的窗口中打开路径列表
    *
-   * @param pathsToOpen The path list to open.
-   * @param openFilesInSameWindow Open all files in the same window with
-   * the first directory and discard other directories.
+   * @param pathsToOpen 待打开的路径列表
+   * @param openFilesInSameWindow 所有文件在同一窗口打开（取首个目录，丢弃其他目录）
    */
   private _openPathList(pathsToOpen: PathInfo[], openFilesInSameWindow: boolean = false): void {
     const { _windowManager } = this
@@ -530,7 +527,7 @@ class App {
       }
     }
 
-    // Filter out directories that are already opened.
+    // 过滤已打开的目录
     for (const window of _windowManager.windows.values()) {
       if (window.type === WindowType.EDITOR) {
         const { openedRootDirectory } = window as EditorWindow
@@ -549,7 +546,7 @@ class App {
     }))
     const filesToOpen = Array.from(fileSet)
 
-    // Discard all directories except first one and add files.
+    // 同窗口模式：仅保留第一个目录并追加文件
     if (openFilesInSameWindow) {
       if (directoriesToOpen.length) {
         directoriesToOpen[0].fileList.push(...filesToOpen)
@@ -560,11 +557,11 @@ class App {
       filesToOpen.length = 0
     }
 
-    // Find the best window(s) to open the files in.
+    // 为剩余文件寻找最合适的窗口
     if (!openFilesInSameWindow && !openFilesInNewWindow) {
       const isFirstWindow = _windowManager.getActiveEditorId() === null
 
-      // Prefer new directories
+      // 优先处理新目录
       for (let i = 0; i < directoriesToOpen.length; ++i) {
         const { fileList, rootDirectory } = directoriesToOpen[i]
 
@@ -589,7 +586,7 @@ class App {
         }
       }
 
-      // Find for the remaining files the best window to open the files in.
+      // 为剩余文件寻找最佳打开窗口
       if (isFirstWindow && directoriesToOpen.length && filesToOpen.length) {
         const { fileList } = directoriesToOpen[0]
         fileList.push(...filesToOpen)
@@ -599,7 +596,7 @@ class App {
         for (const item of windowList) {
           const { windowId, fileList } = item
 
-          // File list is empty when all files are already opened.
+          // fileList 为空表示文件已全部打开
           if (fileList.length === 0) {
             continue
           }
@@ -617,13 +614,13 @@ class App {
         }
       }
 
-      // Directores are always opened in a new window if not already opened.
+      // 目录若未打开则始终在新窗口打开
       for (const item of directoriesToOpen) {
         const { rootDirectory, fileList } = item
         this._createEditorWindow(rootDirectory, fileList)
       }
     } else {
-      // Open each file and directory in a new window.
+      // 每个文件/目录各自在新窗口打开
 
       for (const pathname of filesToOpen) {
         this._createEditorWindow(null, [pathname])
@@ -635,14 +632,14 @@ class App {
       }
     }
 
-    // Empty the file list
+    // 清空待打开列表
     pathsToOpen.length = 0
   }
 
   private _openSettingsWindow(category?: string | null): void {
     const settingWins = this._windowManager.getWindowsByType(WindowType.SETTINGS)
     if (settingWins.length >= 1) {
-      // A setting window is already created
+      // 设置窗口已存在
       const browserSettingWindow = settingWins[0].win.browserWindow!
       browserSettingWindow.webContents.send('settings::change-tab', category)
       if (isLinux) {
@@ -659,7 +656,7 @@ class App {
     registerKeyboardListeners()
     registerSpellcheckerListeners()
 
-    // Handle language setting requests
+    // 处理语言设置请求
     ipcMain.on('mt::get-current-language', (event) => {
       const { language } = this._accessor.preferences.getAll()
       event.reply('mt::current-language', language || 'zh-CN')
@@ -671,21 +668,19 @@ class App {
 
     onInternalChannel('screen-capture', async(win: BrowserWindow) => {
       if (isOsx) {
-        // Use macOs `screencapture` command line when in macOs system.
+        // macOS 使用 `screencapture` 命令行
         const screenshotFileName = await this.getScreenshotFileName()
         exec('screencapture -i -c', async(err) => {
           if (err) {
             log.error(err)
             return
           }
-          // The renderer can no longer paste the clipboard bitmap via the
-          // removed `document.execCommand('paste')`, so persist the capture to a
-          // PNG and hand the path to the renderer to insert at the cursor.
+          // renderer 已无法通过已移除的 `document.execCommand('paste')` 粘贴剪贴板位图，
+          // 故将截图写入 PNG 并把路径交给 renderer 在光标处插入
           let savedPath = ''
           try {
             const image = clipboard.readImage()
-            // `screencapture` leaves the clipboard untouched when the user
-            // cancels (Esc); skip so we don't insert a stale/empty image.
+            // 用户取消（Esc）时 `screencapture` 不写入剪贴板；跳过以免插入陈旧/空图像
             if (!image.isEmpty()) {
               const bufferImage = image.toPNG()
               await fsPromises.writeFile(screenshotFileName, bufferImage)
@@ -697,7 +692,7 @@ class App {
           win.webContents.send('mt::screenshot-captured', savedPath)
         })
       } else {
-        // TODO: Do nothing, maybe we'll add screenCapture later on Linux and Windows.
+        // TODO: 暂不处理，后续可能在 Linux/Windows 加入 screenCapture
         // if (this.shortcutCapture) {
         //   this.launchScreenshotWin = win
         //   this.shortcutCapture.shortcutCapture()
@@ -764,7 +759,7 @@ class App {
       }
     )
 
-    // --- renderer -------------------
+    // --- renderer ---
 
     ipcMain.on('mt::app-try-quit', () => {
       app.quit()
@@ -811,7 +806,7 @@ class App {
       const win = BrowserWindow.fromWebContents(e.sender)
       if (!win) return
       const { keybindings } = this._accessor
-      // Convert map to object
+      // Map 转 object
       win.webContents.send('mt::keybindings-response', Object.fromEntries(keybindings.keys))
     })
 

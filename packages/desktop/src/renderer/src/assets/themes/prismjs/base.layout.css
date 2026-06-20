@@ -1,0 +1,20 @@
+/*
+ * Shared Prism.js code block layout (typography, tab size, hyphens).
+ * Imported once via themeColor.ts; theme files only define colors/tokens.
+ */
+
+code[class*='language-'],
+pre.ag-paragraph {
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  -moz-tab-size: 4;
+  tab-size: 4;
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+  overflow: visible;
+}

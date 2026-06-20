@@ -17,7 +17,7 @@
       type="text"
       class="rename"
       @click.stop="noop"
-      @keypress.enter="rename"
+      @keydown.enter="rename"
     >
     <span v-else>{{ file.name }}</span>
   </div>

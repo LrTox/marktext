@@ -169,7 +169,7 @@ export default function image(
         if (typeof isSuccess === 'undefined') {
             wrapperSelector += `.${CLASS_NAMES.MU_IMAGE_LOADING}`;
         }
-        else if (isSuccess === true) {
+        else if (isSuccess) {
             wrapperSelector += `.${CLASS_NAMES.MU_IMAGE_SUCCESS}`;
             // Tag images whose natural size is below
             // 100px in either dimension. NOTE: no CSS in this package currently

@@ -15,16 +15,21 @@
     "jsx": "preserve",
     "incremental": true,
     "plugins": [{ "name": "next" }],
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "scripts/**/*.ts",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", ".next", ".open-next"]
+  "exclude": [
+    "node_modules",
+    "node_modules.old-*",
+    ".next",
+    ".open-next"
+  ]
 }

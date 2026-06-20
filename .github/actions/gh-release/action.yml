@@ -1,0 +1,51 @@
+name: Publish GitHub Release
+description: MarkText wrapper for softprops/action-gh-release@v2.6.2
+
+inputs:
+  tag_name:
+    description: Release tag name
+    required: true
+  name:
+    description: Release title
+    required: false
+    default: ''
+  body_path:
+    description: Path to release notes file
+    required: false
+    default: ''
+  draft:
+    description: Keep release as draft
+    required: false
+    default: 'false'
+  prerelease:
+    description: Mark as prerelease
+    required: false
+    default: 'false'
+  generate_release_notes:
+    description: Auto-generate release notes
+    required: false
+    default: 'false'
+  fail_on_unmatched_files:
+    description: Fail when file globs match nothing
+    required: false
+    default: 'false'
+  files:
+    description: Newline-delimited asset globs
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - uses: softprops/action-gh-release@v2.6.2
+      with:
+        tag_name: ${{ inputs.tag_name }}
+        name: ${{ inputs.name != '' && inputs.name || inputs.tag_name }}
+        body_path: ${{ inputs.body_path }}
+        draft: ${{ inputs.draft }}
+        prerelease: ${{ inputs.prerelease }}
+        generate_release_notes: ${{ inputs.generate_release_notes }}
+        fail_on_unmatched_files: ${{ inputs.fail_on_unmatched_files }}
+        files: ${{ inputs.files }}
+      env:
+        GITHUB_TOKEN: ${{ github.token }}

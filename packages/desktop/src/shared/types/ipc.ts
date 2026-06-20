@@ -1,20 +1,19 @@
 /**
- * IPC channel contract — single source of truth for renderer↔main messaging.
+ * IPC 通道契约 — renderer↔main 消息传递的单一数据源。
  *
- * Four channel categories:
- *   - IpcInvokeChannels      : renderer → main, returns Promise<T>
- *   - IpcSendChannels        : renderer → main, fire-and-forget
- *   - IpcSyncChannels        : renderer → main, synchronous
- *   - IpcMainEventChannels   : main → renderer, push events (renderer .on)
+ * 四类通道：
+ *   - IpcInvokeChannels      : renderer → main，返回 Promise<T>
+ *   - IpcSendChannels        : renderer → main，即发即忘
+ *   - IpcSyncChannels        : renderer → main，同步
+ *   - IpcMainEventChannels   : main → renderer，推送事件（renderer .on）
  *
- * Channel names are typed strictly; argument and return shapes are
- * intentionally permissive (`unknown[]` / `unknown`) during the migration.
- * Concrete types tighten as each handler/caller converts in commits 5–8.
+ * 通道名严格类型化；参数与返回值在迁移期间刻意保持宽松（`unknown[]` / `unknown`）。
+ * 各 handler/caller 逐步转换后，具体类型会在后续 commit 中收紧。
  *
- * To register a new channel:
- *   1. Add an entry to the appropriate interface here.
- *   2. Wire the handler in src/main (ipcMain.handle / ipcMain.on / webContents.send).
- *   3. Wire the caller via the typed preload bridge in src/preload/index.ts.
+ * 注册新通道：
+ *   1. 在此文件对应 interface 中添加入口。
+ *   2. 在 src/main 中接线 handler（ipcMain.handle / ipcMain.on / webContents.send）。
+ *   3. 在 src/preload/index.ts 的类型化 preload bridge 中接线调用方。
  */
 
 import type { IKeyboardLayoutInfo, IKeyboardMapping } from 'native-keymap'
@@ -34,7 +33,7 @@ import type { BufferedState as BufferedStateType } from './bufferedState'
 import type { MenuTemplate, MenuPopupPosition } from './menu'
 
 // =================================================================
-// Invoke channels (renderer → main, returns Promise<T>)
+// Invoke 通道（renderer → main，返回 Promise<T>）
 // =================================================================
 
 export interface IpcInvokeChannels {
@@ -85,13 +84,13 @@ export interface IpcInvokeChannels {
   'mt::uploader::upload': { args: [req: unknown]; ret: unknown }
   'mt::win::is-fullscreen': { args: []; ret: boolean }
   'mt::win::is-maximized': { args: []; ret: boolean }
-  // Main derives the BrowserWindow via BrowserWindow.fromWebContents(e.sender);
-  // no need to pass windowId. Payload is the editor+project+layout snapshot.
+  // 主进程通过 BrowserWindow.fromWebContents(e.sender) 推导 BrowserWindow；
+  // 无需传 windowId。payload 为 editor+project+layout 快照。
   'update-buffer-state': { args: [payload: unknown]; ret: void }
 }
 
 // =================================================================
-// Send channels (renderer → main, fire-and-forget)
+// Send 通道（renderer → main，即发即忘）
 // =================================================================
 
 export interface IpcSendChannels {
@@ -206,7 +205,7 @@ export interface IpcSendChannels {
 }
 
 // =================================================================
-// Sync channels (synchronous renderer → main)
+// Sync 通道（同步 renderer → main）
 // =================================================================
 
 export interface IpcSyncChannels {
@@ -215,7 +214,7 @@ export interface IpcSyncChannels {
 }
 
 // =================================================================
-// Push events (main → renderer, listened on ipcRenderer.on)
+// 推送事件（main → renderer，通过 ipcRenderer.on 监听）
 // =================================================================
 
 export interface IpcMainEventChannels {
@@ -293,13 +292,12 @@ export interface IpcMainEventChannels {
 }
 
 // =================================================================
-// Auxiliary types
+// 辅助类型
 // =================================================================
 
 /**
- * Snapshot of the active OS keyboard layout, returned by
- * `mt::keybinding-get-keyboard-info`. Mirrors the runtime shape produced
- * by `native-keymap` (see `src/main/keyboard/index.ts#getKeyboardInfo`).
+ * 当前 OS 键盘布局快照，由 `mt::keybinding-get-keyboard-info` 返回。
+ * 与 `native-keymap` 运行时结构一致（见 `src/main/keyboard/index.ts#getKeyboardInfo`）。
  */
 export interface KeyboardInfo {
   layout: IKeyboardLayoutInfo
@@ -322,7 +320,7 @@ export interface BootInfo {
 }
 
 // =================================================================
-// Helper types for the preload bridge generic wrappers
+// preload bridge 泛型包装器的辅助类型
 // =================================================================
 
 export type InvokeArgs<K extends keyof IpcInvokeChannels> = IpcInvokeChannels[K]['args']

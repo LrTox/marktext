@@ -1,3 +1,5 @@
+/** 导出前清理克隆 DOM：移除工具栏、选区样式等编辑器专用节点与属性。 */
+
 const EDITOR_UI_SELECTORS = [
     '.mu-copy-header-link',
     '.mu-table-drag-container',
@@ -14,7 +16,7 @@ const STRIP_CLASSES = [
     'mu-focus',
 ];
 
-/** Remove editor-only UI and interaction state from a cloned `.mu-container` tree. */
+/** 从克隆的 `.mu-container` 树中移除仅编辑器使用的 UI 与交互状态。 */
 export function cleanEditorExportDom(root: HTMLElement): void {
     root.querySelectorAll(EDITOR_UI_SELECTORS).forEach(node => node.remove());
 

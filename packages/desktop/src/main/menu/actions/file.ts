@@ -26,6 +26,10 @@ import type { UnsavedFile } from '@shared/types/files'
 
 type Win = BrowserWindow | null | undefined
 
+const runAsync = (promise: Promise<unknown>, label: string): void => {
+  void promise.catch((error) => log.error(`${label}:`, error))
+}
+
 interface PageOptions {
   pageSize?: string
   pageSizeWidth?: number
@@ -111,13 +115,17 @@ const handleResponseForExport = async(e: IpcMainEvent, payload: ExportPayload): 
         const data = await win.webContents.printToPDF(options)
         removePrintServiceFromWindow(win)
         await writeFile(filePath, data, extension!, 'binary')
+        win.webContents.send('mt::export-success', { type, filePath })
+      } else if (!content) {
+        win.webContents.send('mt::show-notification', {
+          title: 'Export failure',
+          type: 'error',
+          message: 'No HTML content found.'
+        })
       } else {
-        if (!content) {
-          throw new Error('No HTML content found.')
-        }
         await writeFile(filePath, content, extension!, 'utf8')
+        win.webContents.send('mt::export-success', { type, filePath })
       }
-      win.webContents.send('mt::export-success', { type, filePath })
     } catch (err) {
       log.error('Error while exporting:', err)
       const ERROR_MSG =
@@ -165,7 +173,7 @@ const handleResponseForSave = async(
   }
 
   // If the file doesn't exist on disk add it to the recently used documents later
-  // and execute file from filesystem watcher for a short time. The file may exists
+  // and execute file from filesystem watcher for a short time. The file may exist
   // on disk nevertheless but is already tracked by MarkText.
   const alreadyExistOnDisk = !!pathname
 
@@ -349,7 +357,7 @@ ipcMain.on(
     }
 
     // If the file doesn't exist on disk add it to the recently used documents later
-    // and execute file from filesystem watcher for a short time. The file may exists
+    // and execute file from filesystem watcher for a short time. The file may exist
     // on disk nevertheless but is already tracked by MarkText.
     const alreadyExistOnDisk = !!pathname
 
@@ -470,7 +478,7 @@ ipcMain.on('mt::window::drop', async(e, fileList: string[]) => {
       if (!existsPandoc) {
         noticePandocNotFound(win)
       } else {
-        openPandocFile(win.id, file)
+        runAsync(openPandocFile(win.id, file), 'openPandocFile')
       }
       break
     }
@@ -600,7 +608,7 @@ ipcMain.on('mt::format-link-click', (e, { data, dirname }: FormatLinkPayload) =>
   }
 
   if (URL_REG.test(urlCandidate)) {
-    shell.openExternal(urlCandidate)
+    runAsync(shell.openExternal(urlCandidate), 'shell.openExternal')
     return
   } else if (/^[a-z0-9]+:\/\//i.test(urlCandidate)) {
     // Prevent other URLs.
@@ -621,7 +629,7 @@ ipcMain.on('mt::format-link-click', (e, { data, dirname }: FormatLinkPayload) =>
         openFileOrFolder(innerWin, pathname)
       }
     } else {
-      shell.openPath(pathname)
+      runAsync(shell.openPath(pathname), 'shell.openPath')
     }
   }
 })
@@ -630,7 +638,7 @@ ipcMain.on('mt::format-link-click', (e, { data, dirname }: FormatLinkPayload) =>
 
 ipcMain.on('mt::cmd-open-file', (e) => {
   const win = BrowserWindow.fromWebContents(e.sender)
-  openFile(win)
+  runAsync(openFile(win), 'openFile')
 })
 
 ipcMain.on('mt::cmd-new-editor-window', () => {
@@ -639,7 +647,7 @@ ipcMain.on('mt::cmd-new-editor-window', () => {
 
 ipcMain.on('mt::cmd-open-folder', (e) => {
   const win = BrowserWindow.fromWebContents(e.sender)
-  openFolder(win)
+  runAsync(openFolder(win), 'openFolder')
 })
 
 ipcMain.on('mt::cmd-close-window', (e) => {
@@ -652,7 +660,7 @@ ipcMain.on('mt::cmd-close-window', (e) => {
 ipcMain.on('mt::cmd-import-file', (e) => {
   const win = BrowserWindow.fromWebContents(e.sender)
   if (win) {
-    importFile(win)
+    runAsync(importFile(win), 'importFile')
   }
 })
 
@@ -686,7 +694,7 @@ export const importFile = async(win: BrowserWindow | null): Promise<void> => {
   })
 
   if (filePaths && filePaths[0]) {
-    openPandocFile(win.id, filePaths[0])
+    runAsync(openPandocFile(win.id, filePaths[0]), 'openPandocFile')
   }
 }
 

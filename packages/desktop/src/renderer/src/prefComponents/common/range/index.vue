@@ -26,7 +26,7 @@
       v-model="selectValue"
       :min="min"
       :max="max"
-      :format-tooltip="(value: number) => value + (unit ? unit : '')"
+      :format-tooltip="(v: number) => v + (unit ? unit : '')"
       :step="step"
       @change="select"
     />

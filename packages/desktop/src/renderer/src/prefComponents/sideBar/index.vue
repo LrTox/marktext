@@ -1,11 +1,12 @@
 <template>
-  <div class="pref-sidebar">
+  <div class="pref-sidebar electron-drag">
     <h3 class="title">
       {{ t('preferences.title') }}
     </h3>
-    <section class="search-wrapper">
+    <section class="search-wrapper electron-no-drag">
       <el-autocomplete
         v-model="state"
+        class="pref-search-autocomplete"
         popper-class="pref-autocomplete"
         :fetch-suggestions="querySearch"
         :placeholder="t('preferences.search.placeholder')"
@@ -19,14 +20,14 @@
           />
         </template>
         <template #default="{ item }">
-          <div class="name">
+          <div class="pref-search-item-name">
             {{ item.category }}
           </div>
-          <span class="addr">{{ item.preference }}</span>
+          <span class="pref-search-item-addr">{{ item.preference }}</span>
         </template>
       </el-autocomplete>
     </section>
-    <section class="category">
+    <section class="category electron-no-drag">
       <div
         v-for="c of getCategory()"
         :key="c.name"
@@ -157,9 +158,8 @@ onUnmounted(() => {
 })
 </script>
 
-<style>
+<style scoped>
 .pref-sidebar {
-  -webkit-app-region: drag;
   display: flex;
   flex-direction: column;
   background: var(--sideBarBgColor);
@@ -167,111 +167,79 @@ onUnmounted(() => {
   height: 100vh;
   padding-top: 24px;
   box-sizing: border-box;
-  & h3 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: normal;
-    text-align: center;
-    color: var(--sideBarColor);
-  }
+}
+.pref-sidebar h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: normal;
+  text-align: center;
+  color: var(--sideBarColor);
 }
 .search-wrapper {
-  -webkit-app-region: no-drag;
   padding: 0 16px;
   margin: 18px 0;
 }
-.el-autocomplete {
+.pref-search-autocomplete {
   width: 100%;
-
-  & .el-input__wrapper {
-    background: transparent;
-  }
-
-  & .el-input__inner {
-    border: none;
-    background: transparent;
-    height: 28px;
-    line-height: 28px;
-    font-size: 13px;
-  }
 }
-.pref-autocomplete {
-  background: var(--floatBgColor);
-  border-color: var(--floatBorderColor);
-  & .el-autocomplete-suggestion__wrap li:hover {
-    background: var(--floatHoverColor);
-  }
-  & .popper__arrow {
-    display: none;
-  }
-  & li {
-    line-height: normal;
-    padding: 7px;
-    opacity: 0.8;
-
-    & .name {
-      text-overflow: ellipsis;
-      overflow: hidden;
-      font-weight: 600;
-      color: var(--editorColor80);
-    }
-    & .addr {
-      font-size: 12px;
-      color: var(--editorColor);
-    }
-
-    & .highlighted .addr {
-      color: var(--editorColor);
-    }
-  }
+.pref-search-item-name {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-weight: 600;
+  color: var(--editorColor80);
+}
+.pref-search-item-addr {
+  font-size: 12px;
+  color: var(--editorColor);
 }
 .category {
-  -webkit-app-region: no-drag;
   overflow-y: auto;
-  & .item {
-    width: 100%;
-    height: 38px;
-    font-size: 16px;
-    color: var(--sideBarColor);
-    padding-left: 16px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    cursor: pointer;
-    position: relative;
-    user-select: none;
-    & > svg {
-      width: 18px;
-      height: 18px;
-      color: var(--sideBarColor);
-      margin-right: 12px;
-    }
-    &.active > svg {
-      color: var(--sideBarTitleColor);
-    }
-    &:hover {
-      background: var(--sideBarItemHoverBgColor);
-    }
-    &::before {
-      content: '';
-      width: 4px;
-      height: 0;
-      background: var(--highlightThemeColor);
-      position: absolute;
-      left: 0;
-      border-top-right-radius: 3px;
-      border-bottom-right-radius: 3px;
-      transition: height 0.25s ease-in-out;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-    &.active {
-      color: var(--sideBarTitleColor);
-    }
-    &.active::before {
-      height: 100%;
-    }
-  }
+}
+.category .item {
+  width: 100%;
+  height: 38px;
+  font-size: 16px;
+  color: var(--sideBarColor);
+  padding-left: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+.category .item > svg {
+  width: 18px;
+  height: 18px;
+  color: var(--sideBarColor);
+  margin-right: 12px;
+}
+.category .item.active > svg {
+  color: var(--sideBarTitleColor);
+}
+.category .item:hover {
+  background: var(--sideBarItemHoverBgColor);
+}
+.category .item::before {
+  content: '';
+  width: 4px;
+  height: 0;
+  background: var(--highlightThemeColor);
+  position: absolute;
+  left: 0;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  transition: height 0.25s ease-in-out;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.category .item.active {
+  color: var(--sideBarTitleColor);
+}
+.category .item.active::before {
+  height: 100%;
 }
 </style>
+
+<style src="./prefSidebarOverrides.css"></style>

@@ -1,23 +1,23 @@
 import { isHTMLElement } from './index';
 
-const isExportTable = (value: Element): value is HTMLTableElement => {
+function isExportTable(value: Element): value is HTMLTableElement {
     if (value instanceof HTMLTableElement)
         return true;
-    // happy-dom / jsdom may not pass `instanceof HTMLTableElement`.
+    // happy-dom / jsdom 可能无法通过 `instanceof HTMLTableElement`
     return value.tagName === 'TABLE' && isHTMLElement(value);
-};
+}
 
-export interface FitExportTablesOptions {
-    /** Editor / content column width in px. */
+export interface IFitExportTablesOptions {
+    /** 编辑器/内容列宽度（px） */
     measureWidthPx: number;
-    /** Printable page width in px — when set, tables fill this width (PDF/print). */
+    /** 可打印页宽（px）— 设置后表格按此宽度缩放（PDF/打印） */
     capWidthPx?: number;
 }
 
 const MEASURE_SANDBOX_CLASS = 'mt-export-measure-sandbox';
 
-/** Measure natural table size in a visible off-screen sandbox (works when ancestors are `display:none`). */
-const measureTableNaturalSize = (table: HTMLTableElement): { width: number; height: number } => {
+/** 在可见离屏沙箱中测量表格自然尺寸（祖先为 display:none 时仍可用）。 */
+function measureTableNaturalSize(table: HTMLTableElement): { width: number; height: number } {
     const sandbox = document.createElement('div');
     sandbox.className = `markdown-body ${MEASURE_SANDBOX_CLASS}`;
     sandbox.style.cssText = 'position:fixed;left:-100000px;top:0;visibility:hidden;display:block;width:max-content;max-width:none;';
@@ -61,9 +61,9 @@ const measureTableNaturalSize = (table: HTMLTableElement): { width: number; heig
         width: Math.ceil(width),
         height: Math.max(Math.ceil(height), 1),
     };
-};
+}
 
-const unwrapExportTable = (table: HTMLTableElement) => {
+function unwrapExportTable(table: HTMLTableElement) {
     let parent = table.parentElement;
     if (parent?.classList.contains('export-table-scale-inner'))
         parent = parent.parentElement;
@@ -78,9 +78,9 @@ const unwrapExportTable = (table: HTMLTableElement) => {
         legacyWrapper.parentNode?.insertBefore(table, legacyWrapper);
         legacyWrapper.remove();
     }
-};
+}
 
-const resetTableFitStyles = (table: HTMLTableElement) => {
+function resetTableFitStyles(table: HTMLTableElement) {
     table.classList.remove('export-table-fit');
     table.style.removeProperty('zoom');
     table.style.removeProperty('--export-table-scale');
@@ -92,13 +92,13 @@ const resetTableFitStyles = (table: HTMLTableElement) => {
     table.style.maxWidth = 'none';
     table.style.tableLayout = 'auto';
     table.style.display = 'table';
-};
+}
 
 /**
- * Scale markdown export tables to fit a target width (mirrors editor `Table#_fitToContainer`).
- * Skips layout tables such as `.page-container` used for PDF headers/footers.
+ * 将 Markdown 导出表格缩放到目标宽度（与编辑器 `Table#_fitToContainer` 一致）。
+ * 跳过 PDF 页眉页脚等布局用表（如 `.page-container`）。
  *
- * Uses inline `zoom` on the `<table>` — same mechanism as editor `.mu-table-inner`.
+ * 在 `<table>` 上使用内联 `zoom`，与编辑器 `.mu-table-inner` 机制相同。
  */
 export function fitExportTablesInContainer(
     container: HTMLElement,
@@ -132,7 +132,7 @@ export function fitExportTablesInContainer(
         table.style.maxWidth = 'none';
         table.style.tableLayout = 'auto';
         table.style.setProperty('--export-table-scale', scale.toFixed(4));
-        // Editor parity: `.mu-table-inner { zoom: var(--mu-table-scale, 1) }`
+        // 与编辑器一致：`.mu-table-inner { zoom: var(--mu-table-scale, 1) }`
         table.style.zoom = scale.toFixed(4);
     }
 }

@@ -2,7 +2,12 @@
  *  https://bramp.github.io/js-sequence-diagrams/
  *  (c) 2012-2017 Andrew Brampton (bramp.net)
  *  @license Simplified BSD license.
+ *
+ *  Vendored third-party library — kept verbatim for feature parity.
+ *  Excluded from ESLint (packages/muya/eslint.config.mjs) and Qodana
+ *  (qodana.yaml). Do not lint, format, or manually refactor this file.
  */
+// noinspection CommaExpressionJS,JSEqualityComparisonWithCoercion,EmptyStatementBodyJS,UnnecessaryLocalVariableJS,UnreachableCodeJS,RegExpRedundantEscape,JSUnusedLocalSymbols,JSUnusedGlobalSymbols,PointlessBooleanExpressionJS,BadExpressionStatementJS,ChainedEqualityJS,JSNonStrictModeUsed,ContinueStatementJS,LoopStatementThatDoesntLoopJS,JSUnusedAssignment,FunctionWithMultipleReturnPointsJS,FunctionWithInconsistentReturnsJS,OverlyComplexFunctionJS,OverlyLongFunctionJS,EqualityComparisonWithCoercionJS,JSBitwiseOperatorUsage,JSValidateTypes,JSUnresolvedReference,JSCheckFunctionSignatures,JSCommentMatchesSignature,JSVoidFunctionReturnValueUsed,ES6ConvertVarToLetConst,ES6MissingAwait,JSIgnoredPromiseFromCall,ExceptionCaughtLocallyJS,TrivialIfJS,RedundantIfStatementJS,UnnecessaryContinueJS,JSUnusedAssignment,UnusedAssignmentJS
 import _ from 'underscore'
 import Snap from 'snapsvg-cjs'
 import WebFont from 'webfontloader'

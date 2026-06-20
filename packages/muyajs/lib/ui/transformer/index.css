@@ -7,7 +7,7 @@
   background: var(--themeColor);
   border: 2px solid var(--editorBgColor);
   box-sizing: border-box;
-  box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.15);
 }
 
 .ag-transformer .top-left,

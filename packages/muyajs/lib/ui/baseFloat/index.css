@@ -17,7 +17,7 @@
 }
 
 .ag-float-container::-webkit-scrollbar:vertical {
-  width: 0px;
+  width: 0;
 }
 
 [data-popper-placement] {

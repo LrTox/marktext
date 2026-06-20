@@ -85,10 +85,9 @@ export default function(
     submenu.push(recentlyUsedMenu)
   } else {
     submenu.push({
-      // Electron accepts these MenuItem roles. The types stub camelCase
-      // ('recentDocuments' / 'clearRecentDocuments') in recent versions; the JS
-      // original used lowercase. Cast to satisfy strict role typing while
-      // preserving the original runtime string.
+      // Electron 接受这些 MenuItem role。新版类型桩使用 camelCase
+      // （'recentDocuments' / 'clearRecentDocuments'），原 JS 为小写。
+      // 类型断言以满足严格 role 类型，同时保留运行时字符串。
       role: 'recentdocuments' as unknown as MenuItemConstructorOptions['role'],
       submenu: [
         {

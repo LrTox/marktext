@@ -1,0 +1,32 @@
+name: Create or update PR comment
+description: MarkText wrapper for peter-evans/create-or-update-comment@v4.0.0
+
+inputs:
+  token:
+    description: GitHub token
+    required: true
+  issue-number:
+    description: Pull request number
+    required: true
+  comment-id:
+    description: Existing comment ID to update
+    required: false
+    default: ''
+  body:
+    description: Comment body
+    required: true
+  edit-mode:
+    description: How to update an existing comment
+    required: false
+    default: replace
+
+runs:
+  using: composite
+  steps:
+    - uses: peter-evans/create-or-update-comment@v4.0.0
+      with:
+        token: ${{ inputs.token }}
+        issue-number: ${{ inputs.issue-number }}
+        comment-id: ${{ inputs.comment-id }}
+        body: ${{ inputs.body }}
+        edit-mode: ${{ inputs.edit-mode }}

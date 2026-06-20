@@ -80,7 +80,6 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .search-wrapper {
-  margin-top: 8px;
   z-index: 10000;
   position: relative;
   left: 50%;

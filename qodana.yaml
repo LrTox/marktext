@@ -1,0 +1,187 @@
+#-------------------------------------------------------------------------------#
+# MarkText Qodana 静态分析配置
+# 文档：https://www.jetbrains.com/help/qodana/qodana-yaml.html
+# JS/TS：https://www.jetbrains.com/help/qodana/js.html
+# Monorepo：https://www.jetbrains.com/help/qodana/monorepo-project.html
+#-------------------------------------------------------------------------------#
+#
+# 本地运行（需 Docker）：
+#   docker pull jetbrains/qodana-js:2026.1
+#   docker run --rm -v "%cd%":/data/project jetbrains/qodana-js:2026.1
+#
+# 仅分析桌面端 / 编辑器核心：
+#   docker run ... jetbrains/qodana-js:2026.1 --only-directory packages/desktop
+#   docker run ... jetbrains/qodana-js:2026.1 --only-directory packages/muya
+#
+# 上传 Qodana Cloud（可选）：设置环境变量 QODANA_TOKEN
+# GitHub Actions：见 .github/workflows/qodana.yml
+#
+# 报告分类说明（HTML 报告见 qodana-report/index.html）：
+#   1. 校对/拼写 (~12,418) → 全局关闭 Grazie，见下方 inspection exclude
+#   2. JS/TS 代码质量 (~1,123) → ESLint + 仅扫描 packages/desktop|muya 源码
+#   警告 ~1038 分类：CSS/HTML/Markdown 多为 docs/vendor/legacy 误报，见 exclude
+#   3. XML/SVG (~436) → 排除 *.svg 与 legacy 图标目录
+#   4. Markdown 链接 (~329) → 排除 docs 与 website 内容
+#   5. HTML 可访问性 (~227) → 多为 README/SVG 误报，见下方 inspection exclude
+#   6. CSS (~218) → 排除 prism 主题 vendor 与构建产物
+#   7. 安全性 HTTP 链接 (~88) → 文档/legacy 中 http 链接，排除或弱警告
+#   8. 重复代码 (~282) → 测试夹具中预期重复，排除 __tests__
+
+version: "1.0"
+
+linter: jetbrains/qodana-js:2026.1
+
+profile:
+  name: qodana.recommended
+
+bootstrap: |+
+  set -eu
+  if ! command -v pnpm >/dev/null 2>&1; then
+    npm install -g corepack@latest
+    corepack enable
+    corepack prepare pnpm@10.33.4 --activate
+  fi
+  pnpm install --frozen-lockfile --ignore-scripts
+
+include:
+  - name: Eslint
+
+exclude:
+  # --- 路径排除：非维护目标 / 构建产物 / 第三方 ---
+  - name: All
+    paths:
+      - .home
+      - .pnpm-store
+      - .electron-cache
+      - dist
+      - out
+      - "**/dist"
+      - "**/out"
+      - "**/node_modules"
+      - test-results
+      - playwright-report
+      - coverage
+      - qodana-report
+      - qodana-summary.txt
+      - styles.css
+      - .github
+      - docs
+      - README.md
+      - "**/README*.md"
+      - "**/*.md"
+      - "**/*.svg"
+      - packages/website
+      - packages/muyajs
+      - packages/muya/e2e
+      - packages/muya/test
+      - packages/desktop/test
+      - packages/desktop/static/locales
+      - packages/desktop/src/renderer/src/assets/symbolIcon
+      - packages/desktop/src/renderer/src/assets/icons
+      - packages/desktop/src/renderer/src/assets/themes/prismjs
+      - packages/desktop/out-*
+      - packages/desktop/test/e2e/data
+      - packages/muya/lib
+      - packages/muya/examples
+      - packages/muya/e2e/host
+      - packages/muya/e2e/test-results
+      - packages/muya/src/utils/diagram/sequence/sequence-diagram-snap.js
+      - "**/sequence-diagram-snap.js"
+      - "**/__tests__"
+      - "**/*.spec.ts"
+
+  # --- 1. 校对（拼写 11,592 + 语法 647 + 样式 179）---
+  - name: GrazieInspection
+  - name: GrazieStyle
+  - name: GrazieGrammar
+  - name: SpellCheckingInspection
+
+  # --- 2. HTML：Markdown/README 当 HTML 解析、SVG 空标签 ---
+  - name: CheckTagEmptyBody
+    paths:
+      - "**/*.svg"
+  - name: HtmlUnknownAnchorTarget
+  - name: HtmlDeprecatedAttribute
+  - name: HtmlFormInputWithoutLabel
+  - name: HtmlUnknownTarget
+  - name: HtmlUnknownAttribute
+  - name: HtmlRequiredAltAttribute
+  - name: HtmlRequiredTitleElement
+  - name: CheckImageSize
+
+  # --- 3. XML/SVG 高亮误报（SVG 非 XHTML 文档）---
+  - name: XmlHighlighting
+  - name: XmlUnusedSchemaDeclaration
+  - name: XmlEmptyElement
+
+  # --- 4. Markdown 文档链接（docs 已路径排除，此处兜底）---
+  - name: MarkdownUnresolvedFileReference
+  - name: MarkdownUnresolvedHeaderReference
+  - name: MarkdownIncorrectTableFormatting
+
+  # --- 5. CSS 风格/ vendor 前缀 / Electron 专有属性 ---
+  - name: CssRedundantUnit
+  - name: CssUnknownProperty
+  - name: CssUnresolvedCustomProperty
+  - name: CssNoGenericFontName
+  - name: CssOverwrittenProperties
+  - name: CssUnusedSymbol
+
+  # --- 6. JS/TS 低优先级 / 与 ESLint 重复 ---
+  - name: DuplicatedCode
+  - name: ES6ConvertVarToLetConst
+  - name: ES6PreferShortImport
+  - name: ES6MissingAwait
+  - name: HttpUrlsUsage
+  - name: JSUnresolvedReference
+    paths:
+      - packages/muyajs/**
+      - packages/muya/src/utils/diagram/sequence/**
+  - name: JSDeprecatedSymbols
+  - name: CommaExpressionJS
+  - name: PointlessBooleanExpressionJS
+  - name: UnnecessaryLocalVariableJS
+  - name: JSUnusedGlobalSymbols
+  - name: JSUnusedLocalSymbols
+  - name: UnusedAssignmentJS
+  - name: JSUnusedAssignment
+  - name: RedundantIfStatementJS
+  - name: CommentedOutCode
+  - name: JSCommentMatchesSignature
+  - name: JSEqualityComparisonWithCoercion
+  - name: JSValidateJSDoc
+  - name: JSValidateTypes
+  - name: JSClosureCompilerSyntax
+  - name: JSCheckFunctionSignatures
+  - name: JSIgnoredPromiseFromCall
+  - name: ExceptionCaughtLocallyJS
+  - name: EmptyStatementBodyJS
+  - name: BadExpressionStatementJS
+  - name: UnreachableCodeJS
+  - name: TrivialIfJS
+  - name: UndefinedParamsPresent
+  - name: UndefinedAction
+  - name: GithubFunctionSignatureValidation
+  - name: JsonSchemaCompliance
+  - name: JsonSchemaRefReference
+  - name: JsonSchemaDeprecation
+  - name: MarkdownIncorrectlyNumberedListItem
+  - name: TypeScriptFieldCanBeMadeReadonly
+  - name: TypeScriptAbstractClassConstructorCanBeMadeProtected
+  - name: CssNonIntegerLengthInPixels
+  - name: NpmUsedModulesInstalled
+  - name: VulnerableLibrariesLocal
+
+  # --- 7. Promise/async 弱警告（多数为刻意 fire-and-forget）---
+  - name: PromiseMethodAcceptsVoidPromiseReturnValue
+  - name: JSVoidFunctionReturnValueUsed
+
+  # --- 8. TypeScript 合并导出等 IDE 误报 ---
+  - name: JSRedeclarationOfExportedName
+
+# 质量门禁（聚焦 packages/desktop + packages/muya 源码；排除后应远低于 100）
+failureConditions:
+  severityThresholds:
+    critical: 10
+    high: 50
+    any: 100

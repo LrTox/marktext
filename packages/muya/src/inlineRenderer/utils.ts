@@ -197,16 +197,14 @@ export function parseSrcAndTitle(text = '') {
         };
     }
     const rawTitle = text.replace(/^[^ ]+ +/, '');
-    let src = '';
     const TITLE_REG = /^('|")(.*?)\1$/; // we only support use `'` and `"` to indicate a title now.
     let title = '';
     if (rawTitle && TITLE_REG.test(rawTitle))
         title = rawTitle.replace(TITLE_REG, '$2');
 
-    if (title)
-        src = text.substring(0, text.length - rawTitle.length).trim();
-    else
-        src = text.trim();
+    const src = title
+        ? text.substring(0, text.length - rawTitle.length).trim()
+        : text.trim();
 
     return { src, title };
 }
@@ -254,9 +252,8 @@ function canOpenEmphasis(src: string, marker: string, pending: string) {
             || PUNCTUATION_REG.test(precededChar)
             || CJK_REG.test(precededChar)
         )
-    ) {
+    )
         return false;
-    }
 
     return true;
 }
@@ -290,9 +287,8 @@ function canCloseEmphasis(src: string, offset: number, marker: string) {
             || PUNCTUATION_REG.test(followedChar)
             || CJK_REG.test(followedChar)
         )
-    ) {
+    )
         return false;
-    }
 
     return true;
 }

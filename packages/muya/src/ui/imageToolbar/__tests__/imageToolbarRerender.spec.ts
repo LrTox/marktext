@@ -1,9 +1,9 @@
 // @vitest-environment happy-dom
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import icons from '../config';
 import { CLASS_NAMES } from '../../../config';
 import { Muya } from '../../../muya';
+import icons from '../config';
 import { ImageToolBar } from '../index';
 
 const bootedMuyas: Muya[] = [];
@@ -71,7 +71,7 @@ async function waitForToolbarShown() {
     });
 }
 
-describe('ImageToolBar rerender on repeated clicks', () => {
+describe('imageToolBar rerender on repeated clicks', () => {
     it('keeps the full new toolbar visible after a second single click', async () => {
         const src = 'https://example.com/pic.png';
         const muya = boot(`![alt](${src})`);

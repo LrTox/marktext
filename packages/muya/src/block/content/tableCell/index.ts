@@ -15,9 +15,7 @@ class TableCellContent extends Format {
     static override blockName = 'table.cell.content';
 
     static create(muya: Muya, text: string) {
-        const content = new TableCellContent(muya, text);
-
-        return content;
+        return new TableCellContent(muya, text);
     }
 
     get table() {
@@ -91,7 +89,7 @@ class TableCellContent extends Format {
 
         const nextRow = this._findNextRow();
         const { _row: row } = this;
-        let cursorBlock = null;
+        let cursorBlock: ReturnType<Cell['firstContentInDescendant']>;
         if (nextRow) {
             cursorBlock = nextRow.firstContentInDescendant();
         }
@@ -117,7 +115,7 @@ class TableCellContent extends Format {
             }
         }
 
-        cursorBlock.setCursor(0, 0, true);
+        cursorBlock?.setCursor(0, 0, true);
     }
 
     override enterHandler(event: Event) {
@@ -175,7 +173,7 @@ class TableCellContent extends Format {
                 cursorBlock?.setCursor(0, 0, true);
             }
             else {
-                let cursorBlock = null;
+                let cursorBlock: ReturnType<Cell['firstContentInDescendant']>;
                 if (tableNextContent) {
                     cursorBlock = tableNextContent;
                 }
@@ -193,7 +191,7 @@ class TableCellContent extends Format {
                     cursorBlock = newParagraphBlock.firstContentInDescendant();
                 }
 
-                cursorBlock.setCursor(0, 0, true);
+                cursorBlock?.setCursor(0, 0, true);
             }
         }
         else {

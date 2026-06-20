@@ -74,8 +74,32 @@ declare module '@muyajs/core' {
     markdown: string
     constructor(markdown: string, muya?: unknown)
     renderHtml(): Promise<string>
-    generate(options?: { title?: string; extraCSS?: string }): Promise<string>
+    generate(options?: {
+      title?: string
+      extraCSS?: string
+      inlineStyles?: boolean
+      contentWidth?: number
+      maxTableWidth?: number
+    }): Promise<string>
   }
+
+  export class EditorToHtml {
+    constructor(muya: Muya)
+    renderHtml(options?: { contentWidth?: number; maxTableWidth?: number }): string
+    generate(options?: {
+      title?: string
+      extraCSS?: string
+      contentWidth?: number
+      maxTableWidth?: number
+    }): string
+  }
+
+  export function fitEditorTablesForExport(root: HTMLElement, targetWidthPx: number): void
+  export function fitExportTablesInContainer(
+    container: HTMLElement,
+    measureWidthPx: number,
+    capWidthPx?: number
+  ): void
 
   export function renderToStaticHTML(...args: any[]): any
 

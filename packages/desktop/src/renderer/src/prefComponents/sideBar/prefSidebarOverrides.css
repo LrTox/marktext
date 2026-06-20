@@ -1,0 +1,38 @@
+/* Element Plus + teleported popper overrides for pref sidebar search. */
+/* noinspection CssUnusedSymbol */
+
+.pref-search-autocomplete .el-input__wrapper {
+  background: transparent;
+}
+
+.pref-search-autocomplete .el-input__inner {
+  border: none;
+  background: transparent;
+  height: 28px;
+  line-height: 28px;
+  font-size: 13px;
+}
+
+.pref-autocomplete {
+  background: var(--floatBgColor);
+  border-color: var(--floatBorderColor);
+}
+
+.pref-autocomplete .el-autocomplete-suggestion__wrap li:hover {
+  background: var(--floatHoverColor);
+}
+
+.pref-autocomplete .el-popper__arrow,
+.pref-autocomplete .popper__arrow {
+  display: none;
+}
+
+.pref-autocomplete li {
+  line-height: normal;
+  padding: 7px;
+  opacity: 0.8;
+}
+
+.pref-autocomplete li.highlighted .pref-search-item-addr {
+  color: var(--editorColor);
+}

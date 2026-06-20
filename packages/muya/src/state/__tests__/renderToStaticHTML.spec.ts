@@ -253,7 +253,7 @@ describe('renderToStaticHTML', () => {
             expect(html).toMatch(/<script>/);
         });
 
-        it('still strips <script> when sanitize=true (default)', () => {
+        it('still strips script tags when sanitize=true (default)', () => {
             const html = renderToStaticHTML(
                 '<script>alert(1)</script>',
                 { sanitize: true },

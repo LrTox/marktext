@@ -1,0 +1,19 @@
+.heroTitle {
+  font-size: clamp(40px, 6.6vw, 84px);
+  line-height: 0.98;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  margin: 0 auto;
+  max-width: 16ch;
+  text-wrap: balance;
+}
+
+.heroSub {
+  margin: 26px auto 0;
+  max-width: 56ch;
+  font-size: clamp(16px, 1.7vw, 20px);
+  line-height: 1.5;
+  color: var(--text-2);
+  font-weight: 400;
+  text-wrap: pretty;
+}

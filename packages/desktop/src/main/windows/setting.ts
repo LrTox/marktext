@@ -4,7 +4,7 @@ import type { BrowserWindowConstructorOptions } from 'electron'
 import { electronLocalshortcut } from '@hfelix/electron-localshortcut'
 import BaseWindow, { WindowLifecycle, WindowType, type EnvLike, type PreferenceLike } from './base'
 import type Accessor from '../app/accessor'
-import { centerWindowOptions } from './utils'
+import { centerWindowOptions, bindWindowFocusEvents } from './utils'
 import { TITLE_BAR_HEIGHT, preferencesWinOptions, isLinux, isOsx } from '../config'
 import log from 'electron-log'
 
@@ -73,15 +73,9 @@ class SettingWindow extends BaseWindow {
       this.emit('window-ready')
     })
 
-    win.on('focus', () => {
-      this.emit('window-focus')
-      win!.webContents.send('mt::window-active-status', { status: true })
-    })
-
-    // Lost focus
-    win.on('blur', () => {
-      this.emit('window-blur')
-      win!.webContents.send('mt::window-active-status', { status: false })
+    bindWindowFocusEvents(win!, {
+      onFocus: () => this.emit('window-focus'),
+      onBlur: () => this.emit('window-blur')
     })
 
     win.on('close', (event) => {

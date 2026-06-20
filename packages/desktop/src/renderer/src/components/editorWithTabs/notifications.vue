@@ -39,7 +39,7 @@ import { useEditorStore } from '@/store/editor'
 import { useLayoutStore } from '@/store/layout'
 import { storeToRefs } from 'pinia'
 import { Close } from '@element-plus/icons-vue'
-import { t } from '../../i18n'
+import { t } from '@/i18n'
 
 const editorStore = useEditorStore()
 const layoutStore = useLayoutStore()

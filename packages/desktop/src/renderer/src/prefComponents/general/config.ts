@@ -1,4 +1,4 @@
-import { t } from '../../i18n'
+import { t } from '@/i18n'
 import type { PrefSelectOption } from '../common/types'
 
 export const getTitleBarStyleOptions = (): PrefSelectOption<string>[] => [

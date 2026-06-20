@@ -335,7 +335,7 @@ export class ParagraphFrontMenu extends BaseFloat {
         if (label === 'task-list') {
             state = {
                 name: 'task-list',
-                meta: { marker: marker ?? bulletListMarker, loose: !!loose },
+                meta: { marker: marker ?? bulletListMarker, loose: loose },
                 children: childContents.map(children => ({
                     name: 'task-list-item',
                     meta: { checked: false },
@@ -346,7 +346,7 @@ export class ParagraphFrontMenu extends BaseFloat {
         else if (label === 'order-list') {
             state = {
                 name: 'order-list',
-                meta: { delimiter, loose: !!loose, start: 1 },
+                meta: { delimiter, loose: loose, start: 1 },
                 children: childContents.map(children => ({
                     name: 'list-item',
                     children,
@@ -356,7 +356,7 @@ export class ParagraphFrontMenu extends BaseFloat {
         else {
             state = {
                 name: 'bullet-list',
-                meta: { marker: marker ?? bulletListMarker, loose: !!loose },
+                meta: { marker: marker ?? bulletListMarker, loose: loose },
                 children: childContents.map(children => ({
                     name: 'list-item',
                     children,

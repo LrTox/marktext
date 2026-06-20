@@ -61,25 +61,25 @@ You can switch themes in several ways:
 
 | Cadmium Light | Graphite Light |
 |---------------|----------------|
-| ![Cadmium Light](../themeImages/cadmium-light.png) | ![Graphite Light](../themeImages/graphite-light.png) |
+| ![Cadmium Light](https://raw.githubusercontent.com/marktext/marktext/develop/docs/themeImages/cadmium-light.png) | ![Graphite Light](https://raw.githubusercontent.com/marktext/marktext/develop/docs/themeImages/graphite-light.png) |
 
 | Ulysses Light | Catppuccin Latte |
 |---------------|------------------|
-| ![Ulysses Light](../themeImages/ulysses-light.png) | ![Catppuccin Latte](../themeImages/catppuccin-latte.png) |
+| ![Ulysses Light](https://raw.githubusercontent.com/marktext/marktext/develop/docs/themeImages/ulysses-light.png) | ![Catppuccin Latte](https://raw.githubusercontent.com/marktext/marktext/develop/docs/themeImages/catppuccin-latte.png) |
 
 ### Dark Themes
 
 | Dark | Material Dark |
 |------|---------------|
-| ![Dark](../themeImages/dark.png) | ![Material Dark](../themeImages/material-dark.png) |
+| ![Dark](https://raw.githubusercontent.com/marktext/marktext/develop/docs/themeImages/dark.png) | ![Material Dark](https://raw.githubusercontent.com/marktext/marktext/develop/docs/themeImages/material-dark.png) |
 
 | One Dark | Dracula |
 |----------|---------|
-| ![One Dark](../themeImages/one-dark.png) | ![Dracula](../themeImages/dracula.png) |
+| ![One Dark](https://raw.githubusercontent.com/marktext/marktext/develop/docs/themeImages/one-dark.png) | ![Dracula](https://raw.githubusercontent.com/marktext/marktext/develop/docs/themeImages/dracula.png) |
 
 | Nord | Tokyo Night |
 |------|-------------|
-| ![Nord](../themeImages/nord.png) | ![Tokyo Night](../themeImages/tokyo-night.png) |
+| ![Nord](https://raw.githubusercontent.com/marktext/marktext/develop/docs/themeImages/nord.png) | ![Tokyo Night](https://raw.githubusercontent.com/marktext/marktext/develop/docs/themeImages/tokyo-night.png) |
 
 ## Custom Themes
 

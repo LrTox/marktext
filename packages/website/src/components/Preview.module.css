@@ -1,0 +1,5 @@
+.synt {
+  color: var(--accent);
+  opacity: 0.55;
+  font-family: var(--mono), monospace;
+}

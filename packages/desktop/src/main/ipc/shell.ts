@@ -1,3 +1,7 @@
+/**
+ * 主进程 IPC：shell 与剪贴板（打开外部链接/路径、读写文本/图片等）。
+ * 对应契约见 `@shared/types/ipc.ts` 中 `mt::shell::*` 与 `mt::clipboard::*` 通道。
+ */
 import { ipcMain, shell, clipboard, nativeImage } from 'electron'
 import log from 'electron-log'
 import plist from 'plist'

@@ -2,6 +2,7 @@ import { SECTIONS } from '@/lib/sections'
 import FeatItem from './FeatItem'
 import MockWindow from './MockWindow'
 import { BoltIcon, GridSmallIcon, LinesIcon } from './Icons'
+import styles from './Preview.module.css'
 
 export default function Preview() {
   return (
@@ -46,11 +47,11 @@ export default function Preview() {
             <MockWindow title="typing.md" docStyle={{ minHeight: 320 }}>
               <h2 style={{ marginTop: 0 }}>As you type</h2>
               <p>
-                <span className="synt">**</span>
+                <span className={styles.synt}>**</span>
                 <strong>Bold</strong>
-                <span className="synt">**</span> snaps bold, <span className="synt">_</span>
+                <span className={styles.synt}>**</span> snaps bold, <span className={styles.synt}>_</span>
                 <em>italics</em>
-                <span className="synt">_</span> lean, and links become{' '}
+                <span className={styles.synt}>_</span> lean, and links become{' '}
                 <a className="link" href="#">
                   clickable
                 </a>{' '}

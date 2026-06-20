@@ -196,8 +196,7 @@ const handleSearchResultClick = (searchMatch: SearchMatch): void => {
 }
 .search-result-item .matches ul li {
   display: block;
-  padding: 2px 16px;
-  padding-right: 0;
+  padding: 2px 0 2px 16px;
   cursor: pointer;
   /* Hide space between inline spans */
   font-size: 0;

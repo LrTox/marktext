@@ -1,10 +1,7 @@
-// Sandboxed preload: only `electron` can be required, and only a tiny subset of
-// `process` is available (platform, versions, env). Everything else lives in
-// the main process and is reached via IPC.
+// 沙箱化 preload：仅可 require electron，process 仅暴露 platform/versions/env 等子集。
+// 其余能力均在主进程，经 IPC 访问。
 //
-// All IPC traffic is funneled through the typed generics in
-// `@shared/types/ipc` so channel names, argument tuples and return shapes
-// are checked at the call site.
+// 所有 IPC 经 @shared/types/ipc 的类型泛型转发，在调用处校验 channel 名、参数与返回值。
 
 import { contextBridge, ipcRenderer, webFrame, webUtils } from 'electron'
 import type { IpcRendererEvent } from 'electron'
@@ -31,8 +28,7 @@ const invoke = <K extends keyof IpcInvokeChannels>(
 const send = <K extends keyof IpcSendChannels>(channel: K, ...args: IpcSendChannels[K]): void =>
   ipcRenderer.send(channel, ...args)
 
-// One synchronous handshake at startup so the renderer can read platform/env
-// without an `await` from inside Vue computed properties etc.
+// 启动时一次同步握手，供渲染进程在 Vue computed 等场景读取 platform/env 而无需 await。
 const bootInfo = ipcRenderer.sendSync('mt::boot-info') as BootInfo | undefined
 
 const ipcWrapper = {
@@ -109,10 +105,8 @@ const windowControlAPI = {
     send('mt::menu::popup-application', position)
 }
 
-// These three predicates are pure path-string operations: implementing them
-// in the preload keeps them synchronous so existing call sites like
-// `tabs.find(t => isSamePathSync(t.pathname, ...))` keep returning the right
-// item instead of a truthy Promise.
+// 以下三个谓词为纯路径字符串运算：放在 preload 中保持同步，
+// 使 tabs.find(t => isSamePathSync(...)) 等调用仍返回布尔值而非 Promise。
 const MARKDOWN_EXTENSIONS = [
   'markdown',
   'mdown',
@@ -145,8 +139,7 @@ const isSamePathSync = (pathA: string, pathB: string, isNormalized: boolean = fa
   if (a.length !== b.length) return false
   if (a === b) return true
   if (a.toLowerCase() === b.toLowerCase()) {
-    // Case-insensitive filesystem fallback — block briefly on a sync IPC
-    // because callers (tab matching) need a boolean answer right now.
+    // 大小写不敏感文件系统回退 — 标签匹配等调用方需要立即得到布尔结果，故短暂阻塞于同步 IPC。
     try {
       return ipcRenderer.sendSync('mt::paths::is-same-sync', a, b)
     } catch {
@@ -172,11 +165,11 @@ const fileUtilsAPI = {
   readdir: (p: string) => invoke('mt::fs::readdir', p),
   saveImageAs: (src: string, filename?: string) => invoke('mt::fs::save-image-as', src, filename),
   isExecutable: (p: string) => invoke('mt::fs::is-executable', p),
-  // Pure-string predicates — synchronous, no IPC for the common case.
+  // 纯字符串谓词 — 常见情况同步，无需 IPC。
   isChildOfDirectory,
   hasMarkdownExtension,
   isSamePathSync,
-  // isImageFile needs an fs.statSync; keep it async via IPC.
+  // isImageFile 需 fs.statSync，经 IPC 异步实现。
   isImageFile: (p: string) => invoke('mt::paths::is-image', p),
   MARKDOWN_INCLUSIONS: bootInfo?.MARKDOWN_INCLUSIONS || []
 }
@@ -247,9 +240,7 @@ const electronAPI = {
   windowControl: windowControlAPI
 }
 
-// Expose a Node-`path`-compatible API to the renderer. `pathe` is a
-// cross-platform reimplementation that always uses `/` separators and works
-// inside a sandboxed renderer.
+// 向渲染进程暴露 Node path 兼容 API。pathe 为跨平台实现，统一使用 / 分隔符，可在沙箱渲染进程中使用。
 const pathAPI = {
   basename: (...args: Parameters<typeof pathe.basename>) => pathe.basename(...args),
   dirname: (...args: Parameters<typeof pathe.dirname>) => pathe.dirname(...args),
@@ -263,16 +254,13 @@ const pathAPI = {
   format: (...args: Parameters<typeof pathe.format>) => pathe.format(...args),
   sep: pathe.sep,
   delimiter: pathe.delimiter
-  // Note: `pathe.posix` / `pathe.win32` are intentionally not exposed.
-  // Each contains a self-reference (`pathe.posix.posix === pathe.posix`),
-  // which breaks structured cloning inside `contextBridge.exposeInMainWorld`.
-  // No code in this repo reads `window.path.posix` / `window.path.win32`.
+  // 注：pathe.posix / pathe.win32 有意不暴露。
+  // 二者含自引用，会破坏 contextBridge.exposeInMainWorld 的结构化克隆。
+  // 本仓库无代码读取 window.path.posix / window.path.win32。
 }
 
-// Bundled third-party packages occasionally read `process.platform` at module
-// load time (e.g. @hfelix/electron-localshortcut/src/utils.js). Expose a
-// minimal browser-safe `process` global so those imports don't throw before
-// the Vue app can mount.
+// 部分第三方包在模块加载时读取 process.platform（如 @hfelix/electron-localshortcut）。
+// 暴露最小 browser-safe process 全局，避免 Vue 挂载前 import 抛错。
 const processShim = {
   platform: bootInfo?.platform || process.platform,
   arch: bootInfo?.arch,
@@ -280,7 +268,7 @@ const processShim = {
   env: bootInfo?.env || {},
   resourcesPath: bootInfo?.paths?.resources,
   cwd: () => bootInfo?.paths?.cwd,
-  // Some libraries call `process.nextTick`; map it to the microtask queue.
+  // 部分库调用 process.nextTick；映射到微任务队列。
   nextTick: (fn: (...args: unknown[]) => void, ...args: unknown[]) =>
     Promise.resolve().then(() => fn(...args))
 }

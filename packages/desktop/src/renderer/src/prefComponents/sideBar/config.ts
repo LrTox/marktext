@@ -138,25 +138,21 @@ export const getTranslatedSearchContent: CachedTranslator = (() => {
       const [category] = description.split('--')
       const categoryName = category ?? ''
 
-      // Map category names
-      let mappedCategory = categoryName.toLowerCase()
-      if (categoryName === 'General') mappedCategory = 'general'
-      else if (categoryName === 'Editor') mappedCategory = 'editor'
-      else if (categoryName === 'Markdown') mappedCategory = 'markdown'
-      else if (categoryName === 'Theme') mappedCategory = 'theme'
-      else if (categoryName === 'Image') mappedCategory = 'image'
-      else if (categoryName === 'View') mappedCategory = 'view'
-      else if (categoryName === 'Searcher') mappedCategory = 'searcher'
-      else if (categoryName === 'Watcher') mappedCategory = 'watcher'
-      else if (categoryName === 'Spelling') mappedCategory = 'spelling'
-      else if (categoryName === 'Custom CSS') mappedCategory = 'custom css'
-      else {
-        // Handle special category names
-        mappedCategory = categoryName.toLowerCase().replace(/\s+/g, '-')
+      const CATEGORY_MAP: Record<string, string> = {
+        General: 'general',
+        Editor: 'editor',
+        Markdown: 'markdown',
+        Theme: 'theme',
+        Image: 'image',
+        View: 'view',
+        Searcher: 'searcher',
+        Watcher: 'watcher',
+        Spelling: 'spelling',
+        'Custom CSS': 'custom css',
       }
+      const mappedCategory = CATEGORY_MAP[categoryName]
+        ?? categoryName.toLowerCase().replace(/\s+/g, '-')
 
-      // Compute the category for route navigation (only allow existing routes, otherwise fall back to general)
-      let routeCategory = mappedCategory
       const validRoutes = [
         'general',
         'editor',
@@ -164,16 +160,16 @@ export const getTranslatedSearchContent: CachedTranslator = (() => {
         'spelling',
         'theme',
         'image',
-        'keybindings'
+        'keybindings',
       ]
-      if (!validRoutes.includes(routeCategory)) routeCategory = 'general'
+      const routeCategory = validRoutes.includes(mappedCategory) ? mappedCategory : 'general'
 
       // Try to translate the category and item
       const categoryKey = `preferences.search.categories.${mappedCategory}`
       const itemKey = `preferences.search.items.${k}`
 
       // Translate the category name
-      let translatedCategory = categoryName
+      let translatedCategory: string
       const englishCategory = categoryName
       try {
         translatedCategory = t(categoryKey)
@@ -190,8 +186,8 @@ export const getTranslatedSearchContent: CachedTranslator = (() => {
       }
 
       // Translate preference description
-      let translatedPreference = description.split('--')[1] || description
       const englishPreference = description.split('--')[1] || description
+      let translatedPreference: string
       try {
         translatedPreference = t(itemKey)
       } catch (e) {

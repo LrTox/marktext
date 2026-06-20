@@ -1,0 +1,23 @@
+name: Cache dependencies
+description: MarkText wrapper for actions/cache@v4.3.0
+
+inputs:
+  path:
+    description: Paths to cache
+    required: true
+  key:
+    description: Primary cache key
+    required: true
+  restore-keys:
+    description: Restore key prefixes
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/cache@v4.3.0
+      with:
+        path: ${{ inputs.path }}
+        key: ${{ inputs.key }}
+        restore-keys: ${{ inputs.restore-keys }}

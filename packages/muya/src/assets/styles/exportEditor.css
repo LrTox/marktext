@@ -29,6 +29,7 @@
     }
 
     .export-editor-document .mu-table-inner {
+        --mu-table-scale: 1;
         zoom: var(--mu-table-scale, 1) !important;
         transform-origin: top left;
     }

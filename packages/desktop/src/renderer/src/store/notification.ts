@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import notice, { type NotifyOptions } from '../services/notification'
-import { t } from '../i18n'
+import { t } from '@/i18n'
 
 export const useNotificationStore = defineStore('notification', () => {
   function listenForNotification(): void {

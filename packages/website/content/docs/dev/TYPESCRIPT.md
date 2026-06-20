@@ -121,7 +121,9 @@ interface BaseWindowEvents {
   'will-close': [id: number, opts: { keepInBackground: boolean }]
 }
 
-class BaseWindow extends TypedEmitter<BaseWindowEvents> { ... }
+class BaseWindow extends TypedEmitter<BaseWindowEvents> {
+  // …
+}
 ```
 
 Wrong event names or mismatched listener arities fail at compile time.

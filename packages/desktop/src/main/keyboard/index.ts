@@ -56,10 +56,8 @@ class KeyboardLayoutMonitor extends EventEmitter {
     return this
   }
 
-  // NOTE: Preserves the pre-existing single-argument override; the original JS
-  // also delegated to `this.removeListener(channel, callback)` (recursive).
   override removeListener(eventNameOrCallback: unknown, _listener?: unknown): this {
-    this.removeListener(KEYBOARD_LAYOUT_MONITOR_CHANNEL_ID, eventNameOrCallback as KeyboardInfoListener)
+    super.removeListener(KEYBOARD_LAYOUT_MONITOR_CHANNEL_ID, eventNameOrCallback as KeyboardInfoListener)
     return this
   }
 

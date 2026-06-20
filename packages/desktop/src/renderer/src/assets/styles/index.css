@@ -250,11 +250,11 @@ input.el-input__inner {
   background: var(--editorColor04);
 }
 
-div.el-tabs__item {
+.el-tabs__item {
   color: var(--editorColor);
 }
 
-div.el-tab-pane {
+.el-tab-pane {
   color: var(--editorColor);
   font-size: 14px;
 }

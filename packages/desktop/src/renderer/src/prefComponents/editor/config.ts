@@ -1,5 +1,5 @@
 import { ENCODING_NAME_MAP } from 'common/encoding'
-import { t } from '../../i18n'
+import { t } from '@/i18n'
 import type { PrefSelectOption } from '../common/types'
 
 export const tabSizeOptions: PrefSelectOption<number>[] = [

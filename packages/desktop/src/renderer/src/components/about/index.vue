@@ -10,6 +10,7 @@
       <img
         class="logo"
         :src="MarkTextLogo"
+        alt="MarkText"
       >
       <el-row>
         <el-col :span="24">

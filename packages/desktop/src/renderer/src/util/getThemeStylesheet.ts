@@ -39,8 +39,8 @@ const LIGHT_THEME_CSS =
   '\n:root {\n  --link-color: var(--linkColor);\n  --blockquote-border-color: var(--blockquoteBorderColor);\n}'
 
 /**
- * Return the raw editor theme stylesheet (CSS variables + Prism theme) for a
- * given theme id. Used by the live editor and by static export.
+ * 返回指定主题 id 的原始编辑器主题样式表（CSS 变量 + Prism 主题）。
+ * 供 live 编辑器与静态导出共用。
  */
 export const getThemeStylesheet = (theme: string): string => {
   switch (theme) {

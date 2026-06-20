@@ -974,7 +974,7 @@ export class Muya {
         if (!block)
             return;
 
-        let cursorBlock: Content | null = null;
+        let cursorBlock: Content | null;
         if (block.prev) {
             cursorBlock = block.prev.lastContentInDescendant();
         }
@@ -1688,7 +1688,7 @@ export class Muya {
             return;
 
         const { bulletListMarker, orderListDelimiter } = this.options;
-        const loose = !!state.meta.loose;
+        const loose = state.meta.loose;
         const childContents: TState[][] = state.children.map(li => deepClone(li.children));
 
         let newState: IBulletListState | IOrderListState | ITaskListState;

@@ -19,7 +19,7 @@
           :label="t('exportSettings.page.label')"
           name="page"
         >
-          <!-- HTML -->
+          <!-- HTML 导出 -->
           <div v-if="!isPrintable">
             <text-box
               :description="t('exportSettings.page.pageTitle')"
@@ -29,7 +29,7 @@
             />
           </div>
 
-          <!-- PDF/Print -->
+          <!-- PDF/打印导出 -->
           <div v-if="isPrintable">
             <div v-if="exportType === 'pdf'">
               <cur-select
@@ -46,13 +46,13 @@
                 <div>{{ t('exportSettings.page.widthHeight') }}</div>
                 <el-input-number
                   v-model="pageSizeWidth"
-                  size="mini"
+                  size="small"
                   controls-position="right"
                   :min="100"
                 />
                 <el-input-number
                   v-model="pageSizeHeight"
-                  size="mini"
+                  size="small"
                   controls-position="right"
                   :min="100"
                 />
@@ -75,14 +75,14 @@
                 </div>
                 <el-input-number
                   v-model="pageMarginTop"
-                  size="mini"
+                  size="small"
                   controls-position="right"
                   :min="0"
                   :max="100"
                 />
                 <el-input-number
                   v-model="pageMarginBottom"
-                  size="mini"
+                  size="small"
                   controls-position="right"
                   :min="0"
                   :max="100"
@@ -94,14 +94,14 @@
                 </div>
                 <el-input-number
                   v-model="pageMarginLeft"
-                  size="mini"
+                  size="small"
                   controls-position="right"
                   :min="0"
                   :max="100"
                 />
                 <el-input-number
                   v-model="pageMarginRight"
-                  size="mini"
+                  size="small"
                   controls-position="right"
                   :min="0"
                   :max="100"
@@ -288,6 +288,7 @@
 </template>
 
 <script setup lang="ts">
+/** 导出设置对话框：PDF/打印/HTML 选项收集并经由 bus 触发导出。 */
 import { ref, onMounted, onBeforeUnmount, type Ref } from 'vue'
 import bus from '../../bus'
 import Bool from '@/prefComponents/common/bool/index.vue'
@@ -367,7 +368,7 @@ const showDialog = (type: unknown) => {
   showExportSettingsDialog.value = true
   bus.emit('editor-blur')
 
-  // Preview editor typography in the font override panel.
+  // 在字体覆盖面板中预览当前编辑器排版
   fontFamily.value = preferencesStore.editorFontFamily
   fontSize.value = preferencesStore.fontSize
   lineHeight.value = preferencesStore.lineHeight
@@ -474,8 +475,7 @@ const onSelectChange = (key: string, value: unknown) => {
 }
 
 const loadThemesFromDisk = async () => {
-  // marktext.paths is attached to `window` at runtime by bootstrap.ts but
-  // isn't part of the typed contextBridge surface. Cast through `unknown`.
+  // marktext.paths 由 bootstrap.ts 在运行时挂到 window，不在 contextBridge 类型表面中；经 unknown 断言访问。
   const marktext = (window as unknown as { marktext?: { paths?: { userDataPath?: string } } })
     .marktext
   const userDataPath = marktext?.paths?.userDataPath

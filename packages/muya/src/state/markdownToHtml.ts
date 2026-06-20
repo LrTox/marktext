@@ -1,3 +1,4 @@
+/** Markdown 转 HTML 导出：内联样式、渲染图表、注入标题 id、表格缩放。 */
 import type { Muya } from '../muya';
 import githubMarkdownCss from 'github-markdown-css/github-markdown-light.css?inline';
 import katexCss from 'katex/dist/katex.css?inline';
@@ -5,22 +6,18 @@ import prismCss from 'prismjs/themes/prism.css?inline';
 import exportStyle from '../assets/styles/exportStyle.css?inline';
 import { EXPORT_DOMPURIFY_CONFIG } from '../config';
 import { isHTMLElement, sanitize, unescapeHTML } from '../utils';
-import { fitExportTablesInContainer } from '../utils/fitExportTables';
 import loadRenderer from '../utils/diagram';
+import { fitExportTablesInContainer } from '../utils/fitExportTables';
 import { injectExportHeadingIds } from '../utils/injectExportHeadingIds';
 
 import { getHighlightHtml } from '../utils/marked';
 
-// Core stylesheets inlined into the exported document so the output is fully
-// self-contained and renders offline / behind CSP / air-gapped. Linking these
-// from a
-// CDN left a saved `.html` file unstyled with no network access, a regression
-// for an offline desktop editor. Callers that explicitly want the lighter
-// CDN-linked shell can opt in via `generate({ inlineStyles: false })`.
+// 核心样式表内联进导出文档，使输出自包含，可离线/CSP/隔离环境渲染。
+// 若从 CDN 引用，保存的 .html 在无网络时会无样式，对离线桌面编辑器是回归。
+// 调用方可通过 generate({ inlineStyles: false }) 显式选择较轻的 CDN 链接壳。
 const BASE_STYLESHEETS = [githubMarkdownCss, katexCss, prismCss];
 
-// CDN `<link>` tags used when `inlineStyles` is disabled. Kept verbatim from
-// the previous default so the opt-out path is byte-identical to the old output.
+// inlineStyles 为 false 时使用的 CDN <link> 标签。与旧版默认输出保持一致。
 const CDN_STYLESHEET_LINKS = `  <!-- https://cdnjs.com/libraries/github-markdown-css -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-light.css" integrity="sha512-n5zPz6LZB0QV1eraRj4OOxRbsV7a12eAGfFcrJ4bBFxxAwwYDp542z5M0w24tKPEhKk2QzjjIpR5hpOjJtGGoA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <!-- https://katex.org/docs/browser -->
@@ -127,7 +124,7 @@ export class MarkdownToHtml {
         }
     }
 
-    // Scale wide tables to fit the export content width (mirrors editor `Table#_fitToContainer`).
+    // 将过宽表格缩放至导出内容宽度（与编辑器 Table#_fitToContainer 一致）。
     private _fitExportTables(measureWidthPx: number, capWidthPx?: number) {
         const container = this._exportContainer;
         if (!container)
@@ -146,7 +143,7 @@ export class MarkdownToHtml {
         fitExportTablesInContainer(container, measureWidthPx, capWidthPx);
     }
 
-    // render pure html by marked
+    // 用 marked 渲染纯 HTML
     async renderHtml(contentWidth?: number, maxTableWidth?: number) {
         let html = getHighlightHtml(this.markdown, {
             superSubScript: this._muya?.options?.superSubScript ?? true,
@@ -164,14 +161,12 @@ export class MarkdownToHtml {
         exportContainer.innerHTML = html;
         document.body.appendChild(exportContainer);
 
-        // render only render the light theme of mermaid and diagram...
+        // 导出路径仅渲染 mermaid/图表的浅色主题…
         await this._renderMermaid();
         await this._renderDiagram();
 
-        // Inject github-compatible slug ids onto exported headings so the
-        // exported document's [TOC] / `getHtmlToc` `href="#slug"` anchors
-        // resolve. Scoped to this export DOM path — the conformance
-        // renderer (`renderToStaticHTML`) is deliberately left untouched.
+        // 为导出标题注入 GitHub 兼容 slug id，使 [TOC] / getHtmlToc 的 href="#slug" 可解析。
+        // 仅作用于本导出 DOM；一致性渲染器 renderToStaticHTML 有意保持不变。
         injectExportHeadingIds(exportContainer);
 
         if (contentWidth && contentWidth > 0)
@@ -180,8 +175,8 @@ export class MarkdownToHtml {
         let result = exportContainer.innerHTML;
         exportContainer.remove();
 
-        // hack to add arrow marker to output html
-        // TODO: JOCS, are these codes still needed?
+        // 为输出 HTML 补全箭头 marker（flowchart/sequence 等 SVG）
+        // TODO: JOCS，这些代码是否仍需要？
         const paths = document.querySelectorAll('path[id^=raphael-marker-]');
         const def = '<defs style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">';
         result = result.replace(def, () => {
@@ -198,29 +193,29 @@ export class MarkdownToHtml {
     }
 
     /**
-     * Get HTML with style.
+     * 生成带样式的完整 HTML 文档。
      *
-     * @param options Document options.
-     * @param options.title Document `<title>`.
-     * @param options.extraCSS Extra CSS appended after the base stylesheets.
-     * @param options.inlineStyles Inline the core stylesheets so the output is
-     * self-contained and renders offline (default `true`); pass `false` to fall
-     * back to CDN `<link>` tags.
+     * @param options 文档选项。
+     * @param options.title 文档 <title>。
+     * @param options.extraCSS 追加在基础样式表之后的 CSS。
+     * @param options.inlineStyles 内联核心样式表以实现离线自包含（默认 true）；传 false 则回退为 CDN link。
+     * @param options.contentWidth 编辑器内容宽度（px），用于计算表格 zoom。
+     * @param options.maxTableWidth 表格最大宽度（px），PDF/打印页宽上限。
      */
     async generate(
         options: {
             title?: string;
             extraCSS?: string;
             inlineStyles?: boolean;
-            /** Editor content width in px — used to compute table zoom (editor parity). */
+            /** 编辑器内容宽度（px），用于计算表格 zoom（与编辑器一致）。 */
             contentWidth?: number;
-            /** Max table width in px — caps zoom for PDF/print page width. */
+            /** 表格最大宽度（px），PDF/打印页宽上限。 */
             maxTableWidth?: number;
         } = {},
     ) {
         const html = await this.renderHtml(options.contentWidth, options.maxTableWidth);
 
-        // `extraCSS` may changed in the mean time.
+        // extraCSS 可能在 await renderHtml 期间已被外部更新。
         const { title = '', extraCSS = '', inlineStyles = true } = options;
 
         const baseStyles = inlineStyles
